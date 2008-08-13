@@ -1,4 +1,5 @@
---oUF.colors.power[0] = { r = 0.0, g = 0.8, b = 1.0 }
+oUF.colors.power[0] = { r = 0.0, g = 0.8, b = 1.0 }
+
 local function menu(self)
 	local unit = self.unit:sub(1, -2)
 	local cunit = self.unit:gsub('(.)', string.upper, 1)
@@ -63,7 +64,7 @@ local function updateHappiness(self, event, unit)
 	end
 end
 
-local function updateHealth(self, event, unit, bar, min, max)
+local function updateHealth(self, event, bar, unit, min, max)
 	if(UnitIsDead(unit)) then
 		bar.value:SetText('Dead')
 	elseif(UnitIsGhost(unit)) then
@@ -93,7 +94,7 @@ local function updateHealth(self, event, unit, bar, min, max)
 	end
 end
 
-local function updatePower(self, event, unit, bar, min, max)
+local function updatePower(self, event, bar, unit, min, max)
 	updateColor(self, bar, unit, 'SetStatusBarColor')
 	updateColor(self, bar.bg, unit, 'SetVertexColor')
 
@@ -143,7 +144,7 @@ local function style(settings, self, unit)
 	self.Health = CreateFrame('StatusBar', nil, self)
 	self.Health:SetStatusBarTexture('Interface\\AddOns\\oUF_P3lim\\minimalist')
 	self.Health:SetStatusBarColor(0.25, 0.25, 0.35)
-	self.Health:SetHeight(22)
+	self.Health:SetHeight(unit and 22 or 16)
 	self.Health:SetPoint('TOPLEFT')
 	self.Health:SetPoint('TOPRIGHT')
 
@@ -190,6 +191,13 @@ local function style(settings, self, unit)
 	self.Name:SetTextColor(1, 1, 1)
 
 	if(unit == 'player') then
+		self.Spark = self.Power:CreateTexture(nil, 'OVERLAY')
+		self.Spark:SetTexture('Interface\\CastingBar\\UI-CastingBar-Spark')
+		self.Spark:SetBlendMode('ADD')
+		self.Spark:SetHeight(8)
+		self.Spark:SetWidth(8)
+		self.Spark.manatick = true
+
 		self.Name:Hide()
 	end
 
@@ -254,7 +262,6 @@ local function style(settings, self, unit)
 
 	if(settings.units == 'party') then
 		self.Power.value:Hide()
-		self.Health:SetHeight(16)
 		self.outsideRangeAlpha = 0.4
 		self.inRangeAlpha = 1.0
 		self.Range = true
