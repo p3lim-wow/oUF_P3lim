@@ -1,0 +1,9 @@
+## Interface: 30000
+## Author: p3lim
+## Version: wowi:revision
+## Title: oUF P3lim
+## Notes: Custom oUF Layout
+## RequiredDeps: oUF
+## OptionalDeps: oUF_Banzai, oUF_DruidMana, oUF_PowerSpark, oUF_ReadyCheck
+
+oUF_P3lim.lua
