@@ -199,6 +199,20 @@ local function style(settings, self, unit)
 		self.Spark.manatick = true
 
 		self.Name:Hide()
+
+		if(select(2, UnitClass(unit)) == 'DRUID') then
+			self.DruidManaBar = CreateFrame('StatusBar', nil, self)
+			self.DruidManaBar:SetHeight(1)
+			self.DruidManaBar:SetStatusBarTexture('Interface\\AddOns\\oUF_P3lim\\minimalist')
+			self.DruidManaBar:SetPoint('BOTTOMRIGHT", self.Power, 'TOPRIGHT')
+			self.DruidManaBar:SetPoint('BOTTOMLEFT", self.Power, 'TOPLEFT')
+
+			self.DruidManaText = self.DruidManaBar:CreateFontString(nil, 'OVERLAY')
+			self.DruidManaText:SetFont('Interface\\AddOns\\oUF_P3lim\\font.ttf', 10)
+			self.DruidManaText:SetShadowColor(0, 0, 0)
+			self.DruidManaText:SetShadowOffset(0.8, 0.8)
+			self.DruidManaText:SetPoint('CENTER')
+		end
 	end
 
 	if(unit == 'target') then
