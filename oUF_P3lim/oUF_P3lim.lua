@@ -239,19 +239,20 @@ local function style(settings, self, unit)
 		self.Power.value:Hide()
 
 		self.Buffs = CreateFrame('Frame', nil, self)
-		self.Buffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 2, 0)
-		self.Buffs:SetHeight(22 * 2)
-		self.Buffs:SetWidth(230)
-		self.Buffs.size = 22
+		self.Buffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 2, 1)
+		self.Buffs:SetHeight(24 * 2)
+		self.Buffs:SetWidth(270)
+		self.Buffs.num = 20
+		self.Buffs.size = 24
 		self.Buffs.spacing = 2
 		self.Buffs.initialAnchor = 'TOPLEFT'
 		self.Buffs['growth-y'] = 'DOWN'
 
 		self.Debuffs = CreateFrame('Frame', nil, self)
-		self.Debuffs:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -2)
-		self.Debuffs:SetHeight(22)
+		self.Debuffs:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', -1, -2)
+		self.Debuffs:SetHeight(22 * 0.97)
 		self.Debuffs:SetWidth(230)
-		self.Debuffs.size = 22
+		self.Debuffs.size = 22 * 0.97
 		self.Debuffs.spacing = 2
 		self.Debuffs.initialAnchor = 'TOPLEFT'
 		self.Debuffs.showDebuffType = true
@@ -270,18 +271,18 @@ local function style(settings, self, unit)
 		self.Power:Hide()
 
 		self.Debuffs = CreateFrame('Frame', nil, self)
-		self.Debuffs:SetHeight(20)
+		self.Debuffs:SetHeight(23)
 		self.Debuffs:SetWidth(180)
-		self.Debuffs.size = 22
+		self.Debuffs.size = 23
 		self.Debuffs.spacing = 2
 		self.Debuffs.showDebuffType = true
 		self.Debuffs.num = 2
 
 		if(unit == 'focus') then
-			self.Debuffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 2, 0)
+			self.Debuffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 2, 1)
 			self.Debuffs.initialAnchor = 'TOPLEFT'
 		elseif(unit == 'targettarget') then
-			self.Debuffs:SetPoint('TOPRIGHT', self, 'TOPLEFT', -2, 0)
+			self.Debuffs:SetPoint('TOPRIGHT', self, 'TOPLEFT', -2, 1)
 			self.Debuffs.initialAnchor = 'TOPRIGHT'
 			self.Debuffs['growth-x'] = 'LEFT'
 		end
@@ -312,7 +313,7 @@ oUF:RegisterStyle('P3limPet', setmetatable({
 	['initial-height'] = 27,
 }, {__call = style }))
 oUF:RegisterStyle('P3limFoToT', setmetatable({
-	['initial-width'] = 180,
+	['initial-width'] = 181,
 	['initial-height'] = 21,
 	['units'] = 'fotot',
 }, {__call = style }))
