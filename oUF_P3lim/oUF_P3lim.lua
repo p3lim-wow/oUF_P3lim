@@ -1,4 +1,8 @@
-oUF.colors.power[0] = { r = 0.0, g = 0.8, b = 1.0 }
+oUF.colors.power[0].r = 0.0
+oUF.colors.power[0].g = 0.8
+oUF.colors.power[0].b = 1.0
+
+local dummy, class = UnitClass('player')
 
 local function menu(self)
 	local unit = self.unit:sub(1, -2)
@@ -22,12 +26,13 @@ local classification = {
 
 local function updateColor(self, element, unit, func)
 	local color
+	local dummy, enClass = UnitClass(unit)
 	if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) or not UnitIsConnected(unit)) then
 		color = self.colors.health[1]
 	elseif(unit == 'pet') then
-		color = self.colors.happiness[GetPetHappiness()]
+		color = self.colors.happiness[GetPetHappiness()] or self.colors.power[UnitPowerType(unit)]
 	elseif(UnitIsPlayer(unit)) then
-		color = RAID_CLASS_COLORS[select(2, UnitClass(unit))]
+		color = RAID_CLASS_COLORS[enClass]
 	else
 		color = UnitReactionColor[UnitReaction(unit, 'player')] or self.colors.health[1]
 	end
@@ -59,9 +64,7 @@ local function updateName(self, event, unit)
 end
 
 local function updateHappiness(self, event, unit)
-	if(unit == self.unit) then
-		updateColor(self, self.Power, unit, 'SetStatusBarColor')
-	end
+	updateColor(self, self.Power, unit, 'SetStatusBarColor')
 end
 
 local function updateHealth(self, event, bar, unit, min, max)
@@ -73,7 +76,7 @@ local function updateHealth(self, event, bar, unit, min, max)
 		bar.value:SetText('Offline')
 	else
 		if(unit == 'target' and UnitClassification('target') == 'worldboss') then
-			bar.value:SetFormattedText("%d (%d|cff0090ff%%|r)", min, floor(min/max*100)) -- show percentages on raid bosses
+			bar.value:SetFormattedText('%d (%d|cff0090ff%%|r)', min, floor(min/max*100)) -- show percentages on raid bosses
 		else
 			if(min ~= max) then
 				if(unit == 'player') then
@@ -126,9 +129,20 @@ local function updatePower(self, event, bar, unit, min, max)
 	end
 end
 
+local function updateBanzai(self, unit, aggro)
+	if(aggro == 1) then
+		self.Name:SetTextColor(1.0, 0.0, 0.0)
+	else
+		updateName(self, nil, unit)
+	end
+end
+
 local function auraIcon(self, button, icons, index, debuff)
 	button.cd:SetReverse()
---	button.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+	button.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+	button.overlay:SetTexture('Interface\\AddOns\\oUF_P3lim\\border')
+	button.overlay:SetTexCoord(0.0, 1.0, 0.0, 1.0)
+	button.overlay.Hide = function(self) self:SetVertexColor(0.25, 0.25, 0.25) end
 end
 
 local function style(settings, self, unit)
@@ -200,23 +214,21 @@ local function style(settings, self, unit)
 
 		self.Name:Hide()
 
-		if(select(2, UnitClass(unit)) == 'DRUID') then
+		if(class == 'DRUID') then
 			self.DruidManaBar = CreateFrame('StatusBar', nil, self)
 			self.DruidManaBar:SetHeight(1)
 			self.DruidManaBar:SetStatusBarTexture('Interface\\AddOns\\oUF_P3lim\\minimalist')
-			self.DruidManaBar:SetPoint('BOTTOMRIGHT", self.Power, 'TOPRIGHT')
-			self.DruidManaBar:SetPoint('BOTTOMLEFT", self.Power, 'TOPLEFT')
+			self.DruidManaBar:SetPoint('BOTTOMRIGHT', self.Power, 'TOPRIGHT')
+			self.DruidManaBar:SetPoint('BOTTOMLEFT', self.Power, 'TOPLEFT')
 
 			self.DruidManaText = self.DruidManaBar:CreateFontString(nil, 'OVERLAY')
-			self.DruidManaText:SetFont('Interface\\AddOns\\oUF_P3lim\\font.ttf', 10)
-			self.DruidManaText:SetShadowColor(0, 0, 0)
-			self.DruidManaText:SetShadowOffset(0.8, 0.8)
+			self.DruidManaText:SetFontObject(GameFontNormalSmall)
 			self.DruidManaText:SetPoint('CENTER')
 		end
 	end
 
 	if(unit == 'target') then
-		if(select(2, UnitClass('player')) == 'ROGUE' or select(2, UnitClass('player')) == 'DRUID') then
+		if(class == 'ROGUE' or class == 'DRUID') then
 			self.CPoints = self:CreateFontString(nil, 'OVERLAY')
 			self.CPoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
 			self.CPoints:SetFontObject(SubZoneTextFont)
@@ -246,8 +258,9 @@ local function style(settings, self, unit)
 		self.Debuffs['growth-y'] = 'DOWN'
 	end
 
-	if(unit == 'pet') then
+	if(unit == 'pet' and class == 'HUNTER') then
 		self.UNIT_HAPPINESS = updateHappiness
+		self:RegisterEvent('UNIT_HAPPINESS')
 	end
 
 	if(settings.units == 'fotot') then
@@ -335,7 +348,7 @@ partyToggle:SetScript('OnEvent', function(self)
 		self:RegisterEvent('PLAYER_REGEN_ENABLED')
 	else
 		self:UnregisterEvent('PLAYER_REGEN_DISABLED')
-		if(HIDE_PARTY_INTERFACE == "1" and GetNumRaidMembers() > 0) then
+		if(HIDE_PARTY_INTERFACE == '1' and GetNumRaidMembers() > 0) then
 			party:Hide()
 		else
 			party:Show()
