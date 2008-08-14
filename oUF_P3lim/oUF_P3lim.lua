@@ -2,7 +2,7 @@ oUF.colors.power[0].r = 0.0
 oUF.colors.power[0].g = 0.8
 oUF.colors.power[0].b = 1.0
 
-local dummy, class = UnitClass('player')
+local dummy, pClass = UnitClass('player')
 
 local function menu(self)
 	local unit = self.unit:sub(1, -2)
@@ -16,23 +16,23 @@ local function menu(self)
 end
 
 local classification = {
-	worldboss = 'B',
-	rareelite = '%s R',
+	worldboss = 'Boss',
+	rareelite = '%s+ Rare',
 	elite = '%s+',
-	rare = '%s r',
+	rare = '%s Rare',
 	normal = '%s',
 	trivial = '%s',
 }
 
 local function updateColor(self, element, unit, func)
 	local color
-	local dummy, enClass = UnitClass(unit)
+	local dummy, rClass = UnitClass(unit)
 	if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) or not UnitIsConnected(unit)) then
 		color = self.colors.health[1]
 	elseif(unit == 'pet') then
 		color = self.colors.happiness[GetPetHappiness()] or self.colors.power[UnitPowerType(unit)]
 	elseif(UnitIsPlayer(unit)) then
-		color = RAID_CLASS_COLORS[enClass]
+		color = RAID_CLASS_COLORS[rClass]
 	else
 		color = UnitReactionColor[UnitReaction(unit, 'player')] or self.colors.health[1]
 	end
@@ -47,19 +47,19 @@ local function updateColor(self, element, unit, func)
 end
 
 local function updateName(self, event, unit)
-	if(self.unit ~= unit) then return end
-	if(unit == 'target') then
-		local level = UnitLevel(unit) < 0 and '??' or UnitLevel(unit)
-
+	if(self.unit == unit) then
 		if(UnitIsPlayer(unit)) then
-			self.Name:SetTextColor(1, 1, 1)
-			self.Name:SetFormattedText('%s |cff0090ff%s|r', UnitName(unit), level)
+			self.Name:SetTextColor(1.0, 1.0, 1.0)
 		else
 			updateColor(self, self.Name, unit, 'SetTextColor')
-			self.Name:SetFormattedText('%s |cff0090ff%s|r', UnitName(unit), format(classification[UnitClassification(unit)], level))
 		end
-	else
-		self.Name:SetText(UnitName(unit))
+
+		if(unit == 'target') then
+			local level = UnitLevel(unit) < 0 and '??' or UnitLevel(unit)
+			self.Name:SetFormattedText('%s |cff0090ff%s|r', UnitName(unit), format(classification[UnitClassification(unit)], level))
+		else
+			self.Name:SetText(UnitName(unit))
+		end
 	end
 end
 
@@ -79,7 +79,7 @@ local function updateHealth(self, event, bar, unit, min, max)
 			bar.value:SetFormattedText('%d (%d|cff0090ff%%|r)', min, floor(min/max*100)) -- show percentages on raid bosses
 		else
 			if(min ~= max) then
-				if(unit == 'player') then
+				if(unit == 'player' or unit:match('^party')) then
 					bar.value:SetFormattedText('|cffff8080%d|r |cff0090ff/|r %d|cff0090ff%%|r', min-max, floor(min/max*100))
 				else
 					bar.value:SetFormattedText('%d |cff0090ff/|r %d', min, max)
@@ -112,6 +112,8 @@ local function updatePower(self, event, bar, unit, min, max)
 		elseif(not UnitIsConnected(unit)) then
 			bar.value:SetText()
 		else
+			local c = self.colors.power[UnitPowerType(unit)]
+			bar.value:SetTextColor(c.r, c.g, c.b)
 			if(unit ~= 'player') then
 				if(min ~= max) then
 					bar.value:SetFormattedText('%d|cff0090ff - |r', max-(max-min))
@@ -126,14 +128,6 @@ local function updatePower(self, event, bar, unit, min, max)
 				end
 			end
 		end
-	end
-end
-
-local function updateBanzai(self, unit, aggro)
-	if(aggro == 1) then
-		self.Name:SetTextColor(1.0, 0.0, 0.0)
-	else
-		updateName(self, nil, unit)
 	end
 end
 
@@ -153,12 +147,12 @@ local function style(settings, self, unit)
 	self:SetScript('OnLeave', UnitFrame_OnLeave)
 
 	self:SetBackdrop({bgFile = 'Interface\\ChatFrame\\ChatFrameBackground', insets = {top = -1, left = -1, bottom = -1, right = -1}})
-	self:SetBackdropColor(0, 0, 0, 1)
+	self:SetBackdropColor(0.0, 0.0, 0.0, 1.0)
 
 	self.Health = CreateFrame('StatusBar', nil, self)
 	self.Health:SetStatusBarTexture('Interface\\AddOns\\oUF_P3lim\\minimalist')
 	self.Health:SetStatusBarColor(0.25, 0.25, 0.35)
-	self.Health:SetHeight(unit and 22 or 16)
+	self.Health:SetHeight(unit and 22 or 18)
 	self.Health:SetPoint('TOPLEFT')
 	self.Health:SetPoint('TOPRIGHT')
 
@@ -174,7 +168,7 @@ local function style(settings, self, unit)
 
 	self.Power = CreateFrame('StatusBar', nil, self)
 	self.Power:SetStatusBarTexture('Interface\\AddOns\\oUF_P3lim\\minimalist')
-	self.Power:SetHeight(4)
+	self.Power:SetHeight(unit and 4 or 2)
 	self.Power:SetPoint('TOPLEFT', self.Health, 'BOTTOMLEFT', 0, -1)
 	self.Power:SetPoint('TOPRIGHT', self.Health, 'BOTTOMRIGHT', 0, -1)
 
@@ -228,7 +222,7 @@ local function style(settings, self, unit)
 	end
 
 	if(unit == 'target') then
-		if(class == 'ROGUE' or class == 'DRUID') then
+		if(pClass == 'ROGUE' or pClass == 'DRUID') then
 			self.CPoints = self:CreateFontString(nil, 'OVERLAY')
 			self.CPoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
 			self.CPoints:SetFontObject(SubZoneTextFont)
@@ -259,12 +253,12 @@ local function style(settings, self, unit)
 		self.Debuffs['growth-y'] = 'DOWN'
 	end
 
-	if(unit == 'pet' and class == 'HUNTER') then
+	if(unit == 'pet' and pClass == 'HUNTER') then
 		self.UNIT_HAPPINESS = updateHappiness
 		self:RegisterEvent('UNIT_HAPPINESS')
 	end
 
-	if(settings.units == 'fotot') then
+	if(settings.focustot) then
 		self.Health:SetHeight(20)
 		self.Health.value:SetPoint('RIGHT', -2, -1)
 		self.Power.value:Hide()
@@ -288,7 +282,7 @@ local function style(settings, self, unit)
 		end
 	end
 
-	if(settings.units == 'party') then
+	if(not unit) then
 		self.Power.value:Hide()
 		self.outsideRangeAlpha = 0.4
 		self.inRangeAlpha = 1.0
@@ -315,12 +309,11 @@ oUF:RegisterStyle('P3limPet', setmetatable({
 oUF:RegisterStyle('P3limFoToT', setmetatable({
 	['initial-width'] = 181,
 	['initial-height'] = 21,
-	['units'] = 'fotot',
+	['focustot'] = true,
 }, {__call = style }))
 oUF:RegisterStyle('P3limParty', setmetatable({
 	['initial-width'] = 180,
 	['initial-height'] = 21,
-	['units'] = 'party',
 }, {__call = style }))
 
 oUF:SetActiveStyle('P3lim')
