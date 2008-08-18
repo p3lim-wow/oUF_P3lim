@@ -1,6 +1,6 @@
-oUF.colors.power[0].r = 0.0
-oUF.colors.power[0].g = 0.8
-oUF.colors.power[0].b = 1.0
+oUF.colors.power[0].r = 0
+oUF.colors.power[0].g = 144/255
+oUF.colors.power[0].b = 1
 
 local dummy, pClass = UnitClass('player')
 
@@ -208,7 +208,7 @@ local function style(settings, self, unit)
 
 		self.Name:Hide()
 
-		if(class == 'DRUID') then
+		if(pClass == 'DRUID') then
 			self.DruidManaBar = CreateFrame('StatusBar', nil, self)
 			self.DruidManaBar:SetHeight(1)
 			self.DruidManaBar:SetStatusBarTexture('Interface\\AddOns\\oUF_P3lim\\minimalist')
