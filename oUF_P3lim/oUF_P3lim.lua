@@ -140,7 +140,7 @@ local function styleFunc(self, unit)
 
 	self.Health.bg = self.Health:CreateTexture(nil, 'BORDER')
 	self.Health.bg:SetAllPoints(self.Health)
-	self.Health.bg:SetTexture(0.25 * 1.2, 0.25 * 1.2, 0.35 * 0.8)
+	self.Health.bg:SetTexture(0.3, 0.3, 0.3)
 
 	self.Health.value = self.Health:CreateFontString(nil, 'OVERLAY')
 	self.Health.value:SetFontObject(GameFontNormalSmall)
@@ -161,6 +161,7 @@ local function styleFunc(self, unit)
 	self.Power.bg = self.Power:CreateTexture(nil, 'BACKGROUND')
 	self.Power.bg:SetAllPoints(self.Power)
 	self.Power.bg:SetTexture([[Interface\ChatFrame\ChatFrameBackground]])
+	self.Power.bg:SetAlpha(0.3)
 
 	self.Power.value = self.Health:CreateFontString(nil, 'OVERLAY')
 	self.Power.value:SetFontObject(GameFontNormalSmall)
@@ -268,11 +269,23 @@ local function styleFunc(self, unit)
 		end
 	end
 
+	if(unit == 'player' or unit == 'target') then
+		self.CombatFeedbackText = self.Health:CreateFontString(nil, 'OVERLAY')
+		self.CombatFeedbackText:SetPoint('CENTER', self)
+		self.CombatFeedbackText:SetFontObject(GameFontNormal)
+	end
+
 	if(not unit) then
 		self.Power.value:Hide()
 		self.outsideRangeAlpha = 0.4
 		self.inRangeAlpha = 1.0
 		self.Range = true
+
+		self.ReadyCheck = self.Health:CreateTexture(nil, 'OVERLAY')
+		self.ReadyCheck:SetPoint('TOPRIGHT', self, 0, 8)
+		self.ReadyCheck:SetHeight(16)
+		self.ReadyCheck:SetWidth(16)
+		self.ReadyCheck:Hide()
 	end
 
 	if(unit == 'player' or unit == 'target') then
@@ -287,7 +300,12 @@ local function styleFunc(self, unit)
 	elseif(not unit) then
 		self:SetAttribute('initial-height', 21)
 		self:SetAttribute('initial-width', 181)
+		self:SetAttribute('showParty', true)
+		self:SetAttribute('yOffset', -5)
 	end
+
+	self.DebuffHighlightBackdrop = true
+	self.DebuffHighlightFilter = true
 
 	self.UNIT_NAME_UPDATE = updateName
 	self.PostCreateAuraIcon = auraIcon
@@ -304,15 +322,10 @@ oUF:SetActiveStyle('P3lim')
 
 oUF:Spawn('player'):SetPoint('CENTER', UIParent, -220, -250)
 oUF:Spawn('target'):SetPoint('CENTER', UIParent, 220, -250)
-
 oUF:Spawn('pet'):SetPoint('RIGHT', oUF.units.player, 'LEFT', -25, 0)
-
 oUF:Spawn('targettarget'):SetPoint('BOTTOMRIGHT', oUF.units.target, 'TOPRIGHT', 0, 5)
 oUF:Spawn('focus'):SetPoint('BOTTOMLEFT', oUF.units.player, 'TOPLEFT', 0, 5)
-
-local party = oUF:Spawn('header', 'oUF_Party')
-party:SetPoint('TOPLEFT', UIParent, 15, -15)
-party:SetManyAttributes('yOffset', -5, 'showParty', true)
+oUF:Spawn('header', 'oUF_Party'):SetPoint('TOPLEFT', UIParent, 15, -15)
 
 local partyToggle = CreateFrame('Frame')
 partyToggle:RegisterEvent('PLAYER_LOGIN')
@@ -323,11 +336,11 @@ partyToggle:SetScript('OnEvent', function(self)
 	if(InCombatLockdown()) then
 		self:RegisterEvent('PLAYER_REGEN_ENABLED')
 	else
-		self:UnregisterEvent('PLAYER_REGEN_DISABLED')
+		self:UnregisterEvent('PLAYER_REGEN_ENABLED')
 		if(HIDE_PARTY_INTERFACE == '1' and GetNumRaidMembers() > 0) then
-			party:Hide()
+			oUF_Party:Hide()
 		else
-			party:Show()
+			oUF_Party:Show()
 		end
 	end
 end)

@@ -4,6 +4,6 @@
 ## Title: oUF P3lim
 ## Notes: Custom oUF Layout
 ## RequiredDeps: oUF
-## OptionalDeps: oUF_Banzai, oUF_DruidMana, oUF_PowerSpark
+## OptionalDeps: oUF_Banzai, oUF_CombatFeedback, oUF_DebuffHighlight, oUF_DruidMana, oUF_PowerSpark, oUF_ReadyCheck
 
 oUF_P3lim.lua
