@@ -22,12 +22,14 @@ local classification = {
 
 local function updateColor(self, element, unit, func)
 	local color
-	if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit) or not UnitIsConnected(unit)) then
+	if(UnitIsPlayer(unit)) then
+		return element[func](element, 1, 1, 1)
+	elseif(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) then
 		color = self.colors.tapped
+	elseif(not UnitIsConnected(unit)) then
+		color = self.colors.disconnected
 	elseif(unit == 'pet') then
 		color = self.colors.happiness[GetPetHappiness()] or self.colors.power[UnitPowerType(unit)]
-	elseif(UnitIsPlayer(unit)) then
-		color = {1, 1, 1}
 	else
 		color = self.colors.reaction[UnitReaction(unit, 'player')]
 	end
@@ -41,7 +43,9 @@ local function updateName(self, event, unit)
 	if(self.unit == unit) then
 		updateColor(self, self.Name, unit, 'SetTextColor')
 
-		if(unit == 'target') then
+		if(unit == 'player' or unit == 'pet') then
+			self.Name:SetText()
+		elseif(unit == 'target') then
 			local level = UnitLevel(unit) < 0 and '??' or UnitLevel(unit)
 			self.Name:SetFormattedText('%s |cff0090ff%s|r', UnitName(unit), format(classification[UnitClassification(unit)], level))
 		else
@@ -77,31 +81,31 @@ local function updateHealth(self, event, unit, bar, min, max)
 end
 
 local function updatePower(self, event, unit, bar, min, max)
-	if(bar.value) then
-		if(not UnitIsPlayer(unit)) then
+	if(unit ~= 'player') then
+		bar.value:Hide()
+	else
+		if(min == 0) then
+			bar.value:SetText()
+		elseif(UnitIsDead(unit) or UnitIsGhost(unit)) then
+			bar:SetValue(0)
+		elseif(not UnitIsConnected(unit)) then
+			bar.value:SetText()
+		elseif(not UnitIsPlayer(unit)) then
 			bar.value:SetText()
 		else
-			if(min == 0) then
-				bar.value:SetText()
-			elseif(UnitIsDead(unit) or UnitIsGhost(unit)) then
-				bar:SetValue(0)
-			elseif(not UnitIsConnected(unit)) then
-				bar.value:SetText()
-			else
-				local color = self.colors.power[UnitPowerType(unit)]
-				bar.value:SetTextColor(color[1], color[2], color[3])
-				if(unit ~= 'player') then
-					if(min ~= max) then
-						bar.value:SetFormattedText('%d|cff0090ff - |r', max-(max-min))
-					else
-						bar.value:SetFormattedText('%d|cff0090ff - |r', min)
-					end
+			local color = self.colors.power[UnitPowerType(unit)]
+			bar.value:SetTextColor(color[1], color[2], color[3])
+			if(unit ~= 'player') then
+				if(min ~= max) then
+					bar.value:SetFormattedText('%d|cff0090ff - |r', max-(max-min))
 				else
-					if(min ~= max) then
-						bar.value:SetText(max-(max-min))
-					else
-						bar.value:SetText(min)
-					end
+					bar.value:SetFormattedText('%d|cff0090ff - |r', min)
+				end
+			else
+				if(min ~= max) then
+					bar.value:SetText(max-(max-min))
+				else
+					bar.value:SetText(min)
 				end
 			end
 		end
@@ -144,7 +148,7 @@ local function styleFunc(self, unit)
 
 	self.Health.value = self.Health:CreateFontString(nil, 'OVERLAY')
 	self.Health.value:SetFontObject(GameFontNormalSmall)
-	self.Health.value:SetPoint('RIGHT', -2, -1)
+	self.Health.value:SetPoint('RIGHT', self.Health, -2, -1)
 	self.Health.value:SetTextColor(1, 1, 1)
 	self.Health.value:SetJustifyH('RIGHT')
 
@@ -154,9 +158,10 @@ local function styleFunc(self, unit)
 	self.Power:SetPoint('TOPLEFT', self.Health, 'BOTTOMLEFT', 0, -1)
 	self.Power:SetPoint('TOPRIGHT', self.Health, 'BOTTOMRIGHT', 0, -1)
 	self.Power.colorTapping = true
+	self.Power.colorDisconnected = true
 	self.Power.colorHappiness = true
-	self.Power.colorReaction = true
 	self.Power.colorClass = true
+	self.Power.colorReaction = true
 
 	self.Power.bg = self.Power:CreateTexture(nil, 'BACKGROUND')
 	self.Power.bg:SetAllPoints(self.Power)
@@ -193,8 +198,6 @@ local function styleFunc(self, unit)
 		self.Spark:SetWidth(8)
 		self.Spark.manatick = true
 
-		self.Name:Hide()
-
 		if(class == 'DRUID') then
 			self.DruidManaBar = CreateFrame('StatusBar', nil, self)
 			self.DruidManaBar:SetHeight(1)
@@ -216,8 +219,6 @@ local function styleFunc(self, unit)
 			self.CPoints:SetTextColor(1, 1, 1)
 			self.CPoints:SetJustifyH('RIGHT')
 		end
-
-		self.Power.value:Hide()
 
 		self.Buffs = CreateFrame('Frame', nil, self)
 		self.Buffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 2, 1)
@@ -246,10 +247,8 @@ local function styleFunc(self, unit)
 	end
 
 	if(unit == 'focus' or unit == 'targettarget') then
-		self.Health:SetHeight(20)
-		self.Health.value:SetPoint('RIGHT', -2, -1)
-		self.Power.value:Hide()
 		self.Power:Hide()
+		self.Health:SetHeight(20)
 
 		self.Debuffs = CreateFrame('Frame', nil, self)
 		self.Debuffs:SetHeight(23)
@@ -276,7 +275,6 @@ local function styleFunc(self, unit)
 	end
 
 	if(not unit) then
-		self.Power.value:Hide()
 		self.outsideRangeAlpha = 0.4
 		self.inRangeAlpha = 1.0
 		self.Range = true
@@ -300,8 +298,6 @@ local function styleFunc(self, unit)
 	elseif(not unit) then
 		self:SetAttribute('initial-height', 21)
 		self:SetAttribute('initial-width', 181)
-		self:SetAttribute('showParty', true)
-		self:SetAttribute('yOffset', -5)
 	end
 
 	self.DebuffHighlightBackdrop = true
@@ -323,9 +319,12 @@ oUF:SetActiveStyle('P3lim')
 oUF:Spawn('player'):SetPoint('CENTER', UIParent, -220, -250)
 oUF:Spawn('target'):SetPoint('CENTER', UIParent, 220, -250)
 oUF:Spawn('pet'):SetPoint('RIGHT', oUF.units.player, 'LEFT', -25, 0)
-oUF:Spawn('targettarget'):SetPoint('BOTTOMRIGHT', oUF.units.target, 'TOPRIGHT', 0, 5)
 oUF:Spawn('focus'):SetPoint('BOTTOMLEFT', oUF.units.player, 'TOPLEFT', 0, 5)
-oUF:Spawn('header', 'oUF_Party'):SetPoint('TOPLEFT', UIParent, 15, -15)
+oUF:Spawn('targettarget'):SetPoint('BOTTOMRIGHT', oUF.units.target, 'TOPRIGHT', 0, 5)
+
+local party = oUF:Spawn('header', 'oUF_Party')
+party:SetPoint('TOPLEFT', UIParent, 15, -15)
+party:SetManyAttributes('yOffset', -5, 'showParty', true)
 
 local partyToggle = CreateFrame('Frame')
 partyToggle:RegisterEvent('PLAYER_LOGIN')
@@ -337,10 +336,10 @@ partyToggle:SetScript('OnEvent', function(self)
 		self:RegisterEvent('PLAYER_REGEN_ENABLED')
 	else
 		self:UnregisterEvent('PLAYER_REGEN_ENABLED')
-		if(HIDE_PARTY_INTERFACE == '1' and GetNumRaidMembers() > 0) then
-			oUF_Party:Hide()
+		if(GetNumRaidMembers() > 0) then
+			party:Hide()
 		else
-			oUF_Party:Show()
+			party:Show()
 		end
 	end
 end)
