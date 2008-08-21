@@ -28,8 +28,6 @@ local function updateColor(self, element, unit, func)
 		color = self.colors.tapped
 	elseif(not UnitIsConnected(unit)) then
 		color = self.colors.disconnected
-	elseif(unit == 'pet') then
-		color = self.colors.happiness[GetPetHappiness()] or self.colors.power[UnitPowerType(unit)]
 	else
 		color = self.colors.reaction[UnitReaction(unit, 'player')]
 	end
@@ -44,7 +42,7 @@ local function updateName(self, event, unit)
 		updateColor(self, self.Name, unit, 'SetTextColor')
 
 		if(unit == 'player' or unit == 'pet') then
-			self.Name:SetText()
+			self.Name:Hide()
 		elseif(unit == 'target') then
 			local level = UnitLevel(unit) < 0 and '??' or UnitLevel(unit)
 			self.Name:SetFormattedText('%s |cff0090ff%s|r', UnitName(unit), format(classification[UnitClassification(unit)], level))
@@ -81,7 +79,7 @@ local function updateHealth(self, event, unit, bar, min, max)
 end
 
 local function updatePower(self, event, unit, bar, min, max)
-	if(unit ~= 'player') then
+	if(unit ~= 'player' or unit ~= 'pet') then
 		bar.value:Hide()
 	else
 		if(min == 0) then
@@ -159,7 +157,6 @@ local function styleFunc(self, unit)
 	self.Power:SetPoint('TOPRIGHT', self.Health, 'BOTTOMRIGHT', 0, -1)
 	self.Power.colorTapping = true
 	self.Power.colorDisconnected = true
-	self.Power.colorHappiness = true
 	self.Power.colorClass = true
 	self.Power.colorReaction = true
 
@@ -242,8 +239,9 @@ local function styleFunc(self, unit)
 	end
 
 	if(unit == 'pet' and class == 'HUNTER') then
+		self.Power.colorHappiness = true
 		self:RegisterEvent('UNIT_HAPPINESS')
-		self.UNIT_HAPPINESS = self.UNIT_NAME_UPDATE
+		self.UNIT_HAPPINESS = self.UNIT_MANA
 	end
 
 	if(unit == 'focus' or unit == 'targettarget') then
