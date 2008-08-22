@@ -79,7 +79,7 @@ local function updateHealth(self, event, unit, bar, min, max)
 end
 
 local function updatePower(self, event, unit, bar, min, max)
-	if(unit ~= 'player' or unit ~= 'pet') then
+	if(unit ~= 'player' and unit ~= 'pet') then
 		bar.value:Hide()
 	else
 		if(min == 0) then
@@ -300,6 +300,13 @@ local function styleFunc(self, unit)
 
 	self.DebuffHighlightBackdrop = true
 	self.DebuffHighlightFilter = true
+	self.Banzai = function(self, unit, aggro)
+		if(aggro == 1) then
+			self.Health:SetStatusBarColor(1, 0, 0)
+		else
+			self.Health:SetStatusBarColor(0.25, 0.25, 0.35)
+		end
+	end
 
 	self.UNIT_NAME_UPDATE = updateName
 	self.PostCreateAuraIcon = auraIcon
