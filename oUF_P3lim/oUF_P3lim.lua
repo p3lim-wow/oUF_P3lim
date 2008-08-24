@@ -82,6 +82,7 @@ local function updatePower(self, event, unit, bar, min, max)
 	if(unit ~= 'player' and unit ~= 'pet') then
 		bar.value:Hide()
 	else
+		local color = self.colors.power[UnitPowerType(unit)]
 		if(min == 0) then
 			bar.value:SetText()
 		elseif(UnitIsDead(unit) or UnitIsGhost(unit)) then
@@ -91,20 +92,11 @@ local function updatePower(self, event, unit, bar, min, max)
 		elseif(not UnitIsPlayer(unit)) then
 			bar.value:SetText()
 		else
-			local color = self.colors.power[UnitPowerType(unit)]
 			bar.value:SetTextColor(color[1], color[2], color[3])
-			if(unit ~= 'player') then
-				if(min ~= max) then
-					bar.value:SetFormattedText('%d|cff0090ff - |r', max-(max-min))
-				else
-					bar.value:SetFormattedText('%d|cff0090ff - |r', min)
-				end
+			if(min ~= max) then
+				bar.value:SetText(max-(max-min))
 			else
-				if(min ~= max) then
-					bar.value:SetText(max-(max-min))
-				else
-					bar.value:SetText(min)
-				end
+				bar.value:SetText(min)
 			end
 		end
 	end
@@ -137,8 +129,8 @@ local function styleFunc(self, unit)
 	self.Health:SetStatusBarTexture([[Interface\AddOns\oUF_P3lim\minimalist]])
 	self.Health:SetStatusBarColor(0.25, 0.25, 0.35)
 	self.Health:SetHeight(unit and 22 or 18)
-	self.Health:SetPoint('TOPLEFT')
-	self.Health:SetPoint('TOPRIGHT')
+	self.Health:SetPoint('TOPLEFT', self)
+	self.Health:SetPoint('TOPRIGHT', self)
 
 	self.Health.bg = self.Health:CreateTexture(nil, 'BORDER')
 	self.Health.bg:SetAllPoints(self.Health)
@@ -165,9 +157,9 @@ local function styleFunc(self, unit)
 	self.Power.bg:SetTexture([[Interface\ChatFrame\ChatFrameBackground]])
 	self.Power.bg:SetAlpha(0.3)
 
-	self.Power.value = self.Health:CreateFontString(nil, 'OVERLAY')
+	self.Power.value = self.Power:CreateFontString(nil, 'OVERLAY')
 	self.Power.value:SetFontObject(GameFontNormalSmall)
-	self.Power.value:SetPoint('LEFT', 2, -1)
+	self.Power.value:SetPoint('LEFT', self.Health, 2, -1)
 	self.Power.value:SetTextColor(1, 1, 1)
 
 	self.Leader = self.Health:CreateTexture(nil, 'OVERLAY')
@@ -184,7 +176,7 @@ local function styleFunc(self, unit)
 
 	self.Name = self.Health:CreateFontString(nil, 'OVERLAY')
 	self.Name:SetFontObject(GameFontNormalSmall)
-	self.Name:SetPoint('LEFT', 2, -1)
+	self.Name:SetPoint('LEFT', self.Health, 2, -1)
 	self.Name:SetTextColor(1, 1, 1)
 
 	if(unit == 'player') then
@@ -204,7 +196,7 @@ local function styleFunc(self, unit)
 
 			self.DruidManaText = self.DruidManaBar:CreateFontString(nil, 'OVERLAY')
 			self.DruidManaText:SetFontObject(GameFontNormalSmall)
-			self.DruidManaText:SetPoint('CENTER')
+			self.DruidManaText:SetPoint('CENTER', self.DruidManaBar)
 		end
 	end
 
@@ -238,10 +230,15 @@ local function styleFunc(self, unit)
 		self.Debuffs['growth-y'] = 'DOWN'
 	end
 
-	if(unit == 'pet' and class == 'HUNTER') then
-		self.Power.colorHappiness = true
-		self:RegisterEvent('UNIT_HAPPINESS')
-		self.UNIT_HAPPINESS = self.UNIT_MANA
+	if(unit == 'pet') then
+		if(class == 'HUNTER') then
+			self.Power.colorHappiness = true
+			self:RegisterEvent('UNIT_HAPPINESS')
+			self.UNIT_HAPPINESS = self.UNIT_MANA
+		end
+
+		self:SetAttribute('initial-height', 27)
+		self:SetAttribute('initial-width', 130)
 	end
 
 	if(unit == 'focus' or unit == 'targettarget') then
@@ -264,12 +261,43 @@ local function styleFunc(self, unit)
 			self.Debuffs.initialAnchor = 'TOPRIGHT'
 			self.Debuffs['growth-x'] = 'LEFT'
 		end
+
+		self:SetAttribute('initial-height', 21)
+		self:SetAttribute('initial-width', 181)
 	end
 
 	if(unit == 'player' or unit == 'target') then
 		self.CombatFeedbackText = self.Health:CreateFontString(nil, 'OVERLAY')
 		self.CombatFeedbackText:SetPoint('CENTER', self)
 		self.CombatFeedbackText:SetFontObject(GameFontNormal)
+
+		self.Castbar = CreateFrame('StatusBar', nil, self)
+		self.Castbar:SetPoint('TOP', self, 'BOTTOM', 0, -100)
+		self.Castbar:SetWidth(230)
+		self.Castbar:SetHeight(22)
+		self.Castbar:SetStatusBarTexture([[Interface\AddOns\oUF_P3lim\minimalist]])
+		self.Castbar:SetStatusBarColor(0.25, 0.25, 0.35)
+		self.Castbar:SetBackdrop({bgFile = [[Interface\ChatFrame\ChatFrameBackground]], insets = {top = -1, left = -1, bottom = -1, right = -1}})
+		self.Castbar:SetBackdropColor(0.0, 0.0, 0.0, 1.0)
+
+		self.Castbar.bg = self.Castbar:CreateTexture(nil, 'BACKGROUND')
+		self.Castbar.bg:SetAllPoints(self.Castbar)
+		self.Castbar.bg:SetTexture(0.3, 0.3, 0.3)
+
+		self.Castbar.text = self.Castbar:CreateFontString(nil, 'OVERLAY')
+		self.Castbar.text:SetPoint('LEFT', self.Castbar, 2, -1)
+		self.Castbar.text:SetFontObject(GameFontNormalSmall)
+		self.Castbar.text:SetTextColor(1, 1, 1)
+		self.Castbar.text:SetJustifyH('LEFT')
+
+		self.Castbar.casttime = self.Castbar:CreateFontString(nil, 'OVERLAY')
+		self.Castbar.casttime:SetPoint('RIGHT', self.Castbar, -2, -1)
+		self.Castbar.casttime:SetFontObject(GameFontNormalSmall)
+		self.Castbar.casttime:SetTextColor(1, 1, 1)
+		self.Castbar.casttime:SetJustifyH('RIGHT')
+
+		self:SetAttribute('initial-height', 27)
+		self:SetAttribute('initial-width', 230)
 	end
 
 	if(not unit) then
@@ -281,19 +309,7 @@ local function styleFunc(self, unit)
 		self.ReadyCheck:SetPoint('TOPRIGHT', self, 0, 8)
 		self.ReadyCheck:SetHeight(16)
 		self.ReadyCheck:SetWidth(16)
-		self.ReadyCheck:Hide()
-	end
 
-	if(unit == 'player' or unit == 'target') then
-		self:SetAttribute('initial-height', 27)
-		self:SetAttribute('initial-width', 230)
-	elseif(unit == 'pet') then
-		self:SetAttribute('initial-height', 27)
-		self:SetAttribute('initial-width', 130)
-	elseif(unit == 'focus' or unit == 'targettarget') then
-		self:SetAttribute('initial-height', 21)
-		self:SetAttribute('initial-width', 181)
-	elseif(not unit) then
 		self:SetAttribute('initial-height', 21)
 		self:SetAttribute('initial-width', 181)
 	end
