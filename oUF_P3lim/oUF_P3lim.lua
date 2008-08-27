@@ -20,16 +20,18 @@ local classification = {
 	trivial = '%s',
 }
 
-local function updateColor(self, element, unit, func)
+local function UpdateColor(self, element, unit, func)
 	local color
-	if(UnitIsPlayer(unit)) then
-		return element[func](element, 1, 1, 1)
-	elseif(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) then
+	if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) then
 		color = self.colors.tapped
-	elseif(not UnitIsConnected(unit)) then
+	elseif(UnitIsDead(unit) or UnitIsGhost(unit) or not UnitIsConnected(unit)) then
 		color = self.colors.disconnected
 	else
-		color = self.colors.reaction[UnitReaction(unit, 'player')]
+		if(not UnitIsPlayer(unit)) then
+			color = self.colors.reaction[UnitReaction(unit, 'player')] or self.colors.health
+		else
+			return element[func](element, 1, 1, 1)
+		end
 	end
 
 	if(color) then
@@ -37,14 +39,14 @@ local function updateColor(self, element, unit, func)
 	end
 end
 
-local function updateName(self, event, unit)
+local function OverrideUpdateName(self, event, unit)
 	if(self.unit == unit) then
-		updateColor(self, self.Name, unit, 'SetTextColor')
+		UpdateColor(self, self.Name, unit, 'SetTextColor')
 
 		if(unit == 'player' or unit == 'pet') then
 			self.Name:Hide()
 		elseif(unit == 'target') then
-			local level = UnitLevel(unit) < 0 and '??' or UnitLevel(unit)
+			local level = UnitLevel(unit) < 1 and '??' or UnitLevel(unit)
 			self.Name:SetFormattedText('%s |cff0090ff%s|r', UnitName(unit), format(classification[UnitClassification(unit)], level))
 		else
 			self.Name:SetText(UnitName(unit))
@@ -52,51 +54,50 @@ local function updateName(self, event, unit)
 	end
 end
 
-local function updateHealth(self, event, unit, bar, min, max)
+local function PostUpdateHealth(self, event, unit, bar, min, max)
 	if(UnitIsDead(unit)) then
-		bar.value:SetText('Dead')
+		bar.text:SetText('Dead')
 	elseif(UnitIsGhost(unit)) then
-		bar.value:SetText('Ghost')
+		bar.text:SetText('Ghost')
 	elseif(not UnitIsConnected(unit)) then
-		bar.value:SetText('Offline')
+		bar.text:SetText('Offline')
 	else
 		if(unit == 'target' and UnitClassification('target') == 'worldboss') then
-			bar.value:SetFormattedText('%d (%d|cff0090ff%%|r)', min, floor(min/max*100)) -- show percentages on raid bosses
+			bar.text:SetFormattedText('%d (%d|cff0090ff%%|r)', min, floor(min/max*100)) -- show percentages on raid bosses
 		else
 			if(min ~= max) then
 				if(unit == 'player' or unit:match('^party')) then
-					bar.value:SetFormattedText('|cffff8080%d|r |cff0090ff/|r %d|cff0090ff%%|r', min-max, floor(min/max*100))
+					bar.text:SetFormattedText('|cffff8080%d|r |cff0090ff/|r %d|cff0090ff%%|r', min-max, floor(min/max*100))
 				else
-					bar.value:SetFormattedText('%d |cff0090ff/|r %d', min, max)
+					bar.text:SetFormattedText('%d |cff0090ff/|r %d', min, max)
 				end
 			else
-				bar.value:SetText(max)
+				bar.text:SetText(max)
 			end
 		end
 	end
 
+	bar:SetStatusBarColor(0.25, 0.25, 0.35)
 	self:UNIT_NAME_UPDATE(self, event, unit)
 end
 
-local function updatePower(self, event, unit, bar, min, max)
+local function PostUpdatePower(self, event, unit, bar, min, max)
 	if(unit ~= 'player' and unit ~= 'pet') then
-		bar.value:Hide()
+		bar.text:Hide()
 	else
-		local color = self.colors.power[UnitPowerType(unit)]
 		if(min == 0) then
-			bar.value:SetText()
-		elseif(UnitIsDead(unit) or UnitIsGhost(unit)) then
-			bar:SetValue(0)
+			bar.text:SetText()
 		elseif(not UnitIsConnected(unit)) then
-			bar.value:SetText()
+			bar.text:SetText()
 		elseif(not UnitIsPlayer(unit)) then
-			bar.value:SetText()
+			bar.text:SetText()
 		else
-			bar.value:SetTextColor(color[1], color[2], color[3])
+			local color = self.colors.power[UnitPowerType(unit)]
+			bar.text:SetTextColor(color[1], color[2], color[3])
 			if(min ~= max) then
-				bar.value:SetText(max-(max-min))
+				bar.text:SetText(max-(max-min))
 			else
-				bar.value:SetText(min)
+				bar.text:SetText(min)
 			end
 		end
 	end
@@ -104,7 +105,7 @@ local function updatePower(self, event, unit, bar, min, max)
 	self.UNIT_NAME_UPDATE(self, event, unit)
 end
 
-local function auraIcon(self, button, icons, index, debuff)
+local function PostCreateAuraIcon(self, button, icons, index, debuff)
 	icons.showDebuffType = true
 	button.cd:SetReverse()
 	button.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
@@ -126,57 +127,57 @@ local function styleFunc(self, unit)
 	self:SetBackdropColor(0.0, 0.0, 0.0, 1.0)
 
 	self.Health = CreateFrame('StatusBar', nil, self)
-	self.Health:SetStatusBarTexture([[Interface\AddOns\oUF_P3lim\minimalist]])
-	self.Health:SetStatusBarColor(0.25, 0.25, 0.35)
-	self.Health:SetHeight(unit and 22 or 18)
-	self.Health:SetPoint('TOPLEFT', self)
 	self.Health:SetPoint('TOPRIGHT', self)
+	self.Health:SetPoint('TOPLEFT', self)
+	self.Health:SetStatusBarTexture([[Interface\AddOns\oUF_P3lim\minimalist]])
+	self.Health:SetHeight(unit and 22 or 18)
 
 	self.Health.bg = self.Health:CreateTexture(nil, 'BORDER')
 	self.Health.bg:SetAllPoints(self.Health)
 	self.Health.bg:SetTexture(0.3, 0.3, 0.3)
 
-	self.Health.value = self.Health:CreateFontString(nil, 'OVERLAY')
-	self.Health.value:SetFontObject(GameFontNormalSmall)
-	self.Health.value:SetPoint('RIGHT', self.Health, -2, -1)
-	self.Health.value:SetTextColor(1, 1, 1)
-	self.Health.value:SetJustifyH('RIGHT')
+	self.Health.text = self.Health:CreateFontString(nil, 'OVERLAY')
+	self.Health.text:SetPoint('RIGHT', self.Health, -2, -1)
+	self.Health.text:SetFontObject(GameFontNormalSmall)
+	self.Health.text:SetTextColor(1, 1, 1)
+	self.Health.text:SetJustifyH('RIGHT')
 
 	self.Power = CreateFrame('StatusBar', nil, self)
+	self.Power:SetPoint('TOPRIGHT', self.Health, 'BOTTOMRIGHT', 0, -1)
+	self.Power:SetPoint('TOPLEFT', self.Health, 'BOTTOMLEFT', 0, -1)
 	self.Power:SetStatusBarTexture([[Interface\AddOns\oUF_P3lim\minimalist]])
 	self.Power:SetHeight(unit and 4 or 2)
-	self.Power:SetPoint('TOPLEFT', self.Health, 'BOTTOMLEFT', 0, -1)
-	self.Power:SetPoint('TOPRIGHT', self.Health, 'BOTTOMRIGHT', 0, -1)
+
 	self.Power.colorTapping = true
 	self.Power.colorDisconnected = true
 	self.Power.colorClass = true
 	self.Power.colorReaction = true
 
-	self.Power.bg = self.Power:CreateTexture(nil, 'BACKGROUND')
+	self.Power.bg = self.Power:CreateTexture(nil, 'BORDER')
 	self.Power.bg:SetAllPoints(self.Power)
 	self.Power.bg:SetTexture([[Interface\ChatFrame\ChatFrameBackground]])
 	self.Power.bg:SetAlpha(0.3)
 
-	self.Power.value = self.Power:CreateFontString(nil, 'OVERLAY')
-	self.Power.value:SetFontObject(GameFontNormalSmall)
-	self.Power.value:SetPoint('LEFT', self.Health, 2, -1)
-	self.Power.value:SetTextColor(1, 1, 1)
+	self.Power.text = self.Power:CreateFontString(nil, 'OVERLAY')
+	self.Power.text:SetPoint('LEFT', self.Health, 2, -1)
+	self.Power.text:SetFontObject(GameFontNormalSmall)
+	self.Power.text:SetTextColor(1, 1, 1)
 
 	self.Leader = self.Health:CreateTexture(nil, 'OVERLAY')
-	self.Leader:SetHeight(16)
-	self.Leader:SetWidth(16)
 	self.Leader:SetPoint('TOPLEFT', self, 0, 8)
 	self.Leader:SetTexture([[Interface\GroupFrame\UI-Group-LeaderIcon]])
+	self.Leader:SetHeight(16)
+	self.Leader:SetWidth(16)
 
 	self.RaidIcon = self.Health:CreateTexture(nil, 'OVERLAY')
-	self.RaidIcon:SetHeight(16)
-	self.RaidIcon:SetWidth(16)
 	self.RaidIcon:SetPoint('TOP', self, 0, 8)
 	self.RaidIcon:SetTexture([[Interface\TargetingFrame\UI-RaidTargetingIcons]])
+	self.RaidIcon:SetHeight(16)
+	self.RaidIcon:SetWidth(16)
 
 	self.Name = self.Health:CreateFontString(nil, 'OVERLAY')
-	self.Name:SetFontObject(GameFontNormalSmall)
 	self.Name:SetPoint('LEFT', self.Health, 2, -1)
+	self.Name:SetFontObject(GameFontNormalSmall)
 	self.Name:SetTextColor(1, 1, 1)
 
 	if(unit == 'player') then
@@ -187,17 +188,41 @@ local function styleFunc(self, unit)
 		self.Spark:SetWidth(8)
 		self.Spark.manatick = true
 
-		if(class == 'DRUID') then
-			self.DruidManaBar = CreateFrame('StatusBar', nil, self)
-			self.DruidManaBar:SetHeight(1)
-			self.DruidManaBar:SetStatusBarTexture([[Interface\AddOns\oUF_P3lim\minimalist]])
-			self.DruidManaBar:SetPoint('BOTTOMRIGHT', self.Power, 'TOPRIGHT')
-			self.DruidManaBar:SetPoint('BOTTOMLEFT', self.Power, 'TOPLEFT')
+		self.Experience = CreateFrame('StatusBar', nil, self)
+		self.Experience:SetPoint('TOP', self, 'BOTTOM', 0, -10)
+		self.Experience:SetStatusBarTexture([[Interface\AddOns\oUF_P3lim\minimalist]])
+		self.Experience:SetStatusBarColor(unpack(self.colors.health))
+		self.Experience:SetHeight(11)
+		self.Experience:SetWidth(230)
 
-			self.DruidManaText = self.DruidManaBar:CreateFontString(nil, 'OVERLAY')
-			self.DruidManaText:SetFontObject(GameFontNormalSmall)
-			self.DruidManaText:SetPoint('CENTER', self.DruidManaBar)
-		end
+		self.Experience.rested = CreateFrame('StatusBar', nil, self)
+		self.Experience.rested:SetAllPoints(self.Experience)
+		self.Experience.rested:SetStatusBarTexture([[Interface\AddOns\oUF_P3lim\minimalist]])
+		self.Experience.rested:SetStatusBarColor(0, 0.39, 0.88, 0.5)
+		self.Experience.rested:SetBackdrop({bgFile = [[Interface\ChatFrame\ChatFrameBackground]], insets = {top = -1, left = -1, bottom = -1, right = -1}})
+		self.Experience.rested:SetBackdropColor(0, 0, 0)
+
+		self.Experience.bg = self.Experience.rested:CreateTexture(nil, 'BORDER')
+		self.Experience.bg:SetAllPoints(self.Experience)
+		self.Experience.bg:SetTexture(0.3, 0.3, 0.3)
+
+		self.Experience.text = self.Experience:CreateFontString(nil, 'OVERLAY')
+		self.Experience.text:SetPoint('CENTER', self.Experience)
+		self.Experience.text:SetFontObject(GameFontNormalSmall)
+		self.Experience.text:SetTextColor(1, 1, 1)
+		self.Experience.text:SetJustifyH('LEFT')
+
+		self.DruidMana = CreateFrame('StatusBar', nil, self)
+		self.DruidMana:SetPoint('BOTTOM', self.Power, 'TOP')
+		self.DruidMana:SetStatusBarTexture([[Interface\AddOns\oUF_P3lim\minimalist]])
+		self.DruidMana:SetStatusBarColor(0, 144/255, 1)
+		self.DruidMana:SetHeight(1)
+		self.DruidMana:SetWidth(230)
+
+		self.DruidMana.text = self.DruidMana:CreateFontString(nil, 'OVERLAY')
+		self.DruidMana.text:SetPoint('CENTER', self.DruidMana)
+		self.DruidMana.text:SetFontObject(GameFontNormalSmall)
+		self.DruidMana.text:SetTextColor(0, 144/255, 1)
 	end
 
 	if(unit == 'target') then
@@ -272,15 +297,15 @@ local function styleFunc(self, unit)
 		self.CombatFeedbackText:SetFontObject(GameFontNormal)
 
 		self.Castbar = CreateFrame('StatusBar', nil, self)
-		self.Castbar:SetPoint('TOP', self, 'BOTTOM', 0, -100)
-		self.Castbar:SetWidth(230)
-		self.Castbar:SetHeight(22)
+		self.Castbar:SetPoint('TOPRIGHT', self, 'BOTTOMRIGHT', 0, -100)
+		self.Castbar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -100)
 		self.Castbar:SetStatusBarTexture([[Interface\AddOns\oUF_P3lim\minimalist]])
 		self.Castbar:SetStatusBarColor(0.25, 0.25, 0.35)
 		self.Castbar:SetBackdrop({bgFile = [[Interface\ChatFrame\ChatFrameBackground]], insets = {top = -1, left = -1, bottom = -1, right = -1}})
-		self.Castbar:SetBackdropColor(0.0, 0.0, 0.0, 1.0)
+		self.Castbar:SetBackdropColor(0, 0, 0)
+		self.Castbar:SetHeight(22)
 
-		self.Castbar.bg = self.Castbar:CreateTexture(nil, 'BACKGROUND')
+		self.Castbar.bg = self.Castbar:CreateTexture(nil, 'BORDER')
 		self.Castbar.bg:SetAllPoints(self.Castbar)
 		self.Castbar.bg:SetTexture(0.3, 0.3, 0.3)
 
@@ -303,7 +328,7 @@ local function styleFunc(self, unit)
 	if(not unit) then
 		self.outsideRangeAlpha = 0.4
 		self.inRangeAlpha = 1.0
-		self.Range = true
+		self.Range = false
 
 		self.ReadyCheck = self.Health:CreateTexture(nil, 'OVERLAY')
 		self.ReadyCheck:SetPoint('TOPRIGHT', self, 0, 8)
@@ -316,18 +341,11 @@ local function styleFunc(self, unit)
 
 	self.DebuffHighlightBackdrop = true
 	self.DebuffHighlightFilter = true
-	self.Banzai = function(self, unit, aggro)
-		if(aggro == 1) then
-			self.Health:SetStatusBarColor(1, 0, 0)
-		else
-			self.Health:SetStatusBarColor(0.25, 0.25, 0.35)
-		end
-	end
 
-	self.UNIT_NAME_UPDATE = updateName
-	self.PostCreateAuraIcon = auraIcon
-	self.PostUpdateHealth = updateHealth
-	self.PostUpdatePower = updatePower
+	self.UNIT_NAME_UPDATE = OverrideUpdateName
+	self.PostCreateAuraIcon = PostCreateAuraIcon
+	self.PostUpdateHealth = PostUpdateHealth
+	self.PostUpdatePower = PostUpdatePower
 
 	return self
 end
@@ -339,9 +357,9 @@ oUF:SetActiveStyle('P3lim')
 
 oUF:Spawn('player'):SetPoint('CENTER', UIParent, -220, -250)
 oUF:Spawn('target'):SetPoint('CENTER', UIParent, 220, -250)
-oUF:Spawn('pet'):SetPoint('RIGHT', oUF.units.player, 'LEFT', -25, 0)
-oUF:Spawn('focus'):SetPoint('BOTTOMLEFT', oUF.units.player, 'TOPLEFT', 0, 5)
 oUF:Spawn('targettarget'):SetPoint('BOTTOMRIGHT', oUF.units.target, 'TOPRIGHT', 0, 5)
+oUF:Spawn('focus'):SetPoint('BOTTOMLEFT', oUF.units.player, 'TOPLEFT', 0, 5)
+oUF:Spawn('pet'):SetPoint('RIGHT', oUF.units.player, 'LEFT', -25, 0)
 
 local party = oUF:Spawn('header', 'oUF_Party')
 party:SetPoint('TOPLEFT', UIParent, 15, -15)
