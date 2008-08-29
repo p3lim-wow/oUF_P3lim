@@ -108,15 +108,14 @@ end
 local function PostCreateAuraIcon(self, button, icons, index, debuff)
 	icons.showDebuffType = true
 	button.cd:SetReverse()
-	button.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+	button.cd:SetPoint('TOPLEFT', button, 4, -3) 
+	button.cd:SetPoint('BOTTOMRIGHT', button, -3, 4)
 	button.overlay:SetTexture([[Interface\AddOns\oUF_P3lim\border]])
-	button.overlay:SetTexCoord(0.0, 1.0, 0.0, 1.0)
+	button.overlay:SetTexCoord(0, 1, 0, 1)
 	button.overlay.Hide = function(self) self:SetVertexColor(0.25, 0.25, 0.25) end
 end
 
 local function styleFunc(self, unit)
-	local _, class = UnitClass('player')
-
 	self.menu = menu
 	self:RegisterForClicks('AnyUp')
 	self:SetAttribute('*type2', 'menu')
@@ -124,7 +123,7 @@ local function styleFunc(self, unit)
 	self:SetScript('OnLeave', UnitFrame_OnLeave)
 
 	self:SetBackdrop({bgFile = [[Interface\ChatFrame\ChatFrameBackground]], insets = {top = -1, left = -1, bottom = -1, right = -1}})
-	self:SetBackdropColor(0.0, 0.0, 0.0, 1.0)
+	self:SetBackdropColor(0, 0, 0)
 
 	self.Health = CreateFrame('StatusBar', nil, self)
 	self.Health:SetPoint('TOPRIGHT', self)
@@ -177,8 +176,10 @@ local function styleFunc(self, unit)
 
 	self.Name = self.Health:CreateFontString(nil, 'OVERLAY')
 	self.Name:SetPoint('LEFT', self.Health, 2, -1)
+	self.Name:SetPoint('RIGHT', self.Health.text, 'LEFT')
 	self.Name:SetFontObject(GameFontNormalSmall)
 	self.Name:SetTextColor(1, 1, 1)
+	self.Name:SetJustifyH('LEFT')
 
 	if(unit == 'player') then
 		self.Spark = self.Power:CreateTexture(nil, 'OVERLAY')
@@ -194,6 +195,8 @@ local function styleFunc(self, unit)
 		self.Experience:SetStatusBarColor(unpack(self.colors.health))
 		self.Experience:SetHeight(11)
 		self.Experience:SetWidth(230)
+
+		self.Experience.tooltip = true
 
 		self.Experience.rested = CreateFrame('StatusBar', nil, self)
 		self.Experience.rested:SetAllPoints(self.Experience)
@@ -226,13 +229,11 @@ local function styleFunc(self, unit)
 	end
 
 	if(unit == 'target') then
-		if(class == 'ROGUE' or class == 'DRUID') then
-			self.CPoints = self:CreateFontString(nil, 'OVERLAY')
-			self.CPoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
-			self.CPoints:SetFontObject(SubZoneTextFont)
-			self.CPoints:SetTextColor(1, 1, 1)
-			self.CPoints:SetJustifyH('RIGHT')
-		end
+		self.CPoints = self:CreateFontString(nil, 'OVERLAY')
+		self.CPoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
+		self.CPoints:SetFontObject(SubZoneTextFont)
+		self.CPoints:SetTextColor(1, 1, 1)
+		self.CPoints:SetJustifyH('RIGHT')
 
 		self.Buffs = CreateFrame('Frame', nil, self)
 		self.Buffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 2, 1)
@@ -251,16 +252,19 @@ local function styleFunc(self, unit)
 		self.Debuffs.size = 22 * 0.97
 		self.Debuffs.spacing = 2
 		self.Debuffs.initialAnchor = 'TOPLEFT'
-		self.Debuffs.showDebuffType = true
 		self.Debuffs['growth-y'] = 'DOWN'
 	end
 
 	if(unit == 'pet') then
-		if(class == 'HUNTER') then
+		if(select(2, UnitClass('player') == 'HUNTER')) then
 			self.Power.colorHappiness = true
-			self:RegisterEvent('UNIT_HAPPINESS')
 			self.UNIT_HAPPINESS = self.UNIT_MANA
+		else
+			self.Power.colorPower = true
+			self.Power.colorReaction = false
 		end
+
+		self.BarFade = true
 
 		self:SetAttribute('initial-height', 27)
 		self:SetAttribute('initial-width', 130)
@@ -271,17 +275,15 @@ local function styleFunc(self, unit)
 		self.Health:SetHeight(20)
 
 		self.Debuffs = CreateFrame('Frame', nil, self)
+		self.Debuffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 2, 1)
 		self.Debuffs:SetHeight(23)
 		self.Debuffs:SetWidth(180)
+		self.Debuffs.num = 2
 		self.Debuffs.size = 23
 		self.Debuffs.spacing = 2
-		self.Debuffs.showDebuffType = true
-		self.Debuffs.num = 2
+		self.Debuffs.initialAnchor = 'TOPLEFT'
 
-		if(unit == 'focus') then
-			self.Debuffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 2, 1)
-			self.Debuffs.initialAnchor = 'TOPLEFT'
-		elseif(unit == 'targettarget') then
+		if(unit == 'targettarget') then
 			self.Debuffs:SetPoint('TOPRIGHT', self, 'TOPLEFT', -2, 1)
 			self.Debuffs.initialAnchor = 'TOPRIGHT'
 			self.Debuffs['growth-x'] = 'LEFT'
@@ -321,6 +323,8 @@ local function styleFunc(self, unit)
 		self.Castbar.casttime:SetTextColor(1, 1, 1)
 		self.Castbar.casttime:SetJustifyH('RIGHT')
 
+		self.BarFade = true
+
 		self:SetAttribute('initial-height', 27)
 		self:SetAttribute('initial-width', 230)
 	end
@@ -334,6 +338,15 @@ local function styleFunc(self, unit)
 		self.ReadyCheck:SetPoint('TOPRIGHT', self, 0, 8)
 		self.ReadyCheck:SetHeight(16)
 		self.ReadyCheck:SetWidth(16)
+
+		self.Debuffs = CreateFrame('Frame', nil, self)
+		self.Debuffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 2, 1)
+		self.Debuffs:SetHeight(23)
+		self.Debuffs:SetWidth(230)
+		self.Debuffs.size = 23
+		self.Debuffs.spacing = 2
+		self.Debuffs.initialAnchor = 'TOPLEFT'
+		self.Debuffs.filter = true
 
 		self:SetAttribute('initial-height', 21)
 		self:SetAttribute('initial-width', 181)
@@ -352,7 +365,6 @@ end
 
 oUF:RegisterSubTypeMapping('UNIT_LEVEL')
 oUF:RegisterStyle('P3lim', styleFunc)
-
 oUF:SetActiveStyle('P3lim')
 
 oUF:Spawn('player'):SetPoint('CENTER', UIParent, -220, -250)
