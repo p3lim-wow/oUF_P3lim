@@ -35,7 +35,7 @@ local function UpdateColor(self, element, unit, func)
 	end
 
 	if(color) then
-		element[func](element, color[1], color[2], color[3])
+		element[func](element, unpack(color))
 	end
 end
 
@@ -115,7 +115,7 @@ local function PostCreateAuraIcon(self, button, icons, index, debuff)
 	button.overlay.Hide = function(self) self:SetVertexColor(0.25, 0.25, 0.25) end
 end
 
-local function styleFunc(self, unit)
+local function CreateStyle(self, unit)
 	self.menu = menu
 	self:RegisterForClicks('AnyUp')
 	self:SetAttribute('*type2', 'menu')
@@ -189,14 +189,21 @@ local function styleFunc(self, unit)
 		self.Spark:SetWidth(8)
 		self.Spark.manatick = true
 
+		self.BarFade = true
+
 		self.Experience = CreateFrame('StatusBar', nil, self)
 		self.Experience:SetPoint('TOP', self, 'BOTTOM', 0, -10)
 		self.Experience:SetStatusBarTexture([[Interface\AddOns\oUF_P3lim\minimalist]])
 		self.Experience:SetStatusBarColor(unpack(self.colors.health))
 		self.Experience:SetHeight(11)
 		self.Experience:SetWidth(230)
-
 		self.Experience.tooltip = true
+
+		self.Experience.text = self.Experience:CreateFontString(nil, 'OVERLAY')
+		self.Experience.text:SetPoint('CENTER', self.Experience)
+		self.Experience.text:SetFontObject(GameFontNormalSmall)
+		self.Experience.text:SetTextColor(1, 1, 1)
+		self.Experience.text:SetJustifyH('LEFT')
 
 		self.Experience.rested = CreateFrame('StatusBar', nil, self)
 		self.Experience.rested:SetAllPoints(self.Experience)
@@ -209,11 +216,10 @@ local function styleFunc(self, unit)
 		self.Experience.bg:SetAllPoints(self.Experience)
 		self.Experience.bg:SetTexture(0.3, 0.3, 0.3)
 
-		self.Experience.text = self.Experience:CreateFontString(nil, 'OVERLAY')
-		self.Experience.text:SetPoint('CENTER', self.Experience)
-		self.Experience.text:SetFontObject(GameFontNormalSmall)
-		self.Experience.text:SetTextColor(1, 1, 1)
-		self.Experience.text:SetJustifyH('LEFT')
+		if(not IsAddOnLoaded('oUF_Experience')) then
+			self.Experience:Hide()
+			self.Experience.rested:Hide()
+		end
 
 		self.DruidMana = CreateFrame('StatusBar', nil, self)
 		self.DruidMana:SetPoint('BOTTOM', self.Power, 'TOP')
@@ -256,14 +262,9 @@ local function styleFunc(self, unit)
 	end
 
 	if(unit == 'pet') then
-		if(select(2, UnitClass('player') == 'HUNTER')) then
-			self.Power.colorHappiness = true
-			self.UNIT_HAPPINESS = self.UNIT_MANA
-		else
-			self.Power.colorPower = true
-			self.Power.colorReaction = false
-		end
-
+		self.Power.colorPower = true
+		self.Power.colorHappiness = true
+		self.Power.colorReaction = false
 		self.BarFade = true
 
 		self:SetAttribute('initial-height', 27)
@@ -323,8 +324,6 @@ local function styleFunc(self, unit)
 		self.Castbar.casttime:SetTextColor(1, 1, 1)
 		self.Castbar.casttime:SetJustifyH('RIGHT')
 
-		self.BarFade = true
-
 		self:SetAttribute('initial-height', 27)
 		self:SetAttribute('initial-width', 230)
 	end
@@ -364,7 +363,7 @@ local function styleFunc(self, unit)
 end
 
 oUF:RegisterSubTypeMapping('UNIT_LEVEL')
-oUF:RegisterStyle('P3lim', styleFunc)
+oUF:RegisterStyle('P3lim', CreateStyle)
 oUF:SetActiveStyle('P3lim')
 
 oUF:Spawn('player'):SetPoint('CENTER', UIParent, -220, -250)
