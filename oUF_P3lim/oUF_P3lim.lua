@@ -1,3 +1,21 @@
+local classification = {
+	worldboss = 'Boss',
+	rareelite = '%s+ Rare',
+	elite = '%s+',
+	rare = '%s Rare',
+	normal = '%s',
+	trivial = '%s',
+}
+
+local colors = setmetatable({
+	power = setmetatable({
+		['MANA'] = {0, 144/255, 1},
+		['RUNIC_POWER'] = {185/255, 0, 1},
+	}, {__index = oUF.colors.power}),
+}, {__index = oUF.colors})
+colors.power[0] = colors.power.MANA
+colors.power[6] = colors.power.RUNIC_POWER
+
 local function menu(self)
 	local unit = self.unit:sub(1, -2)
 	local cunit = self.unit:gsub('(.)', string.upper, 1)
@@ -9,37 +27,18 @@ local function menu(self)
 	end
 end
 
-local classification = {
-	worldboss = 'Boss',
-	rareelite = '%s+ Rare',
-	elite = '%s+',
-	rare = '%s Rare',
-	normal = '%s',
-	trivial = '%s',
-}
-
-local function UpdateColor(self, element, unit, func)
-	local color
-	if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) then
-		color = self.colors.tapped
-	elseif(UnitIsDead(unit) or UnitIsGhost(unit) or not UnitIsConnected(unit)) then
-		color = self.colors.disconnected
-	else
-		if(not UnitIsPlayer(unit)) then
-			color = self.colors.reaction[UnitReaction(unit, 'player')] or self.colors.health
-		else
-			return element[func](element, 1, 1, 1)
-		end
-	end
-
-	if(color) then
-		element[func](element, unpack(color))
-	end
-end
-
 local function OverrideUpdateName(self, event, unit)
 	if(self.unit == unit) then
-		UpdateColor(self, self.Name, unit, 'SetTextColor')
+		local color = {1, 1, 1}
+		if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) then
+			color = self.colors.tapped
+		elseif(UnitIsDead(unit) or UnitIsGhost(unit) or not UnitIsConnected(unit)) then
+			color = self.colors.disconnected
+		elseif(not UnitIsPlayer(unit)) then
+			color = self.colors.reaction[UnitReaction(unit, 'player')] or self.colors.health
+		end
+
+		self.Name:SetTextColor(unpack(color))
 
 		if(unit == 'player' or unit == 'pet') then
 			self.Name:Hide()
@@ -76,7 +75,7 @@ local function PostUpdateHealth(self, event, unit, bar, min, max)
 	end
 
 	bar:SetStatusBarColor(0.25, 0.25, 0.35)
-	self:UNIT_NAME_UPDATE(self, event, unit)
+	self:UNIT_NAME_UPDATE(event, unit)
 end
 
 local function PostUpdatePower(self, event, unit, bar, min, max)
@@ -91,7 +90,7 @@ local function PostUpdatePower(self, event, unit, bar, min, max)
 			bar.text:SetText()
 		else
 			local num, str = UnitPowerType(unit)
-			local color = self.colors.power[(select(4, GetBuildInfo)) and str or num]
+			local color = self.colors.power[select(4, GetBuildInfo()) >= 3e4 and str or num]
 			bar.text:SetTextColor(color[1], color[2], color[3])
 			if(min ~= max) then
 				bar.text:SetText(max-(max-min))
@@ -101,7 +100,7 @@ local function PostUpdatePower(self, event, unit, bar, min, max)
 		end
 	end
 
-	self.UNIT_NAME_UPDATE(self, event, unit)
+	self:UNIT_NAME_UPDATE(event, unit)
 end
 
 local function PostCreateAuraIcon(self, button, icons, index, debuff)
@@ -115,13 +114,12 @@ local function PostCreateAuraIcon(self, button, icons, index, debuff)
 end
 
 local function CreateStyle(self, unit)
+	self.colors = colors
 	self.menu = menu
 	self:RegisterForClicks('AnyUp')
 	self:SetAttribute('*type2', 'menu')
 	self:SetScript('OnEnter', UnitFrame_OnEnter)
 	self:SetScript('OnLeave', UnitFrame_OnLeave)
-
-	self.colors.power[0] = {0, 144/255, 1}
 
 	self:SetBackdrop({bgFile = [[Interface\ChatFrame\ChatFrameBackground]], insets = {top = -1, left = -1, bottom = -1, right = -1}})
 	self:SetBackdropColor(0, 0, 0)
@@ -335,7 +333,7 @@ local function CreateStyle(self, unit)
 	if(not unit) then
 		self.outsideRangeAlpha = 0.4
 		self.inRangeAlpha = 1.0
-		self.Range = false
+		self.Range = true
 
 		self.ReadyCheck = self.Health:CreateTexture(nil, 'OVERLAY')
 		self.ReadyCheck:SetPoint('TOPRIGHT', self, 0, 8)
