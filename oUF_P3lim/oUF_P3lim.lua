@@ -1,5 +1,3 @@
-oUF.colors.power[0] = {0, 144/255, 1}
-
 local function menu(self)
 	local unit = self.unit:sub(1, -2)
 	local cunit = self.unit:gsub('(.)', string.upper, 1)
@@ -92,7 +90,8 @@ local function PostUpdatePower(self, event, unit, bar, min, max)
 		elseif(not UnitIsPlayer(unit)) then
 			bar.text:SetText()
 		else
-			local color = self.colors.power[UnitPowerType(unit)]
+			local num, str = UnitPowerType(unit)
+			local color = self.colors.power[(select(4, GetBuildInfo)) and str or num]
 			bar.text:SetTextColor(color[1], color[2], color[3])
 			if(min ~= max) then
 				bar.text:SetText(max-(max-min))
@@ -121,6 +120,8 @@ local function CreateStyle(self, unit)
 	self:SetAttribute('*type2', 'menu')
 	self:SetScript('OnEnter', UnitFrame_OnEnter)
 	self:SetScript('OnLeave', UnitFrame_OnLeave)
+
+	self.colors.power[0] = {0, 144/255, 1}
 
 	self:SetBackdrop({bgFile = [[Interface\ChatFrame\ChatFrameBackground]], insets = {top = -1, left = -1, bottom = -1, right = -1}})
 	self:SetBackdropColor(0, 0, 0)
@@ -221,17 +222,20 @@ local function CreateStyle(self, unit)
 			self.Experience.rested:Hide()
 		end
 
-		self.DruidMana = CreateFrame('StatusBar', nil, self)
-		self.DruidMana:SetPoint('BOTTOM', self.Power, 'TOP')
-		self.DruidMana:SetStatusBarTexture([[Interface\AddOns\oUF_P3lim\minimalist]])
-		self.DruidMana:SetStatusBarColor(0, 144/255, 1)
-		self.DruidMana:SetHeight(1)
-		self.DruidMana:SetWidth(230)
+		local l, class = UnitClass('player')
+		if(class == 'DRUID') then
+			self.DruidMana = CreateFrame('StatusBar', nil, self)
+			self.DruidMana:SetPoint('BOTTOM', self.Power, 'TOP')
+			self.DruidMana:SetStatusBarTexture([[Interface\AddOns\oUF_P3lim\minimalist]])
+			self.DruidMana:SetStatusBarColor(0, 144/255, 1)
+			self.DruidMana:SetHeight(1)
+			self.DruidMana:SetWidth(230)
 
-		self.DruidMana.text = self.DruidMana:CreateFontString(nil, 'OVERLAY')
-		self.DruidMana.text:SetPoint('CENTER', self.DruidMana)
-		self.DruidMana.text:SetFontObject(GameFontNormalSmall)
-		self.DruidMana.text:SetTextColor(0, 144/255, 1)
+			self.DruidManaText = self.DruidMana:CreateFontString(nil, 'OVERLAY')
+			self.DruidManaText:SetPoint('CENTER', self.DruidMana)
+			self.DruidManaText:SetFontObject(GameFontNormalSmall)
+			self.DruidManaText:SetTextColor(0, 144/255, 1)
+		end
 	end
 
 	if(unit == 'target') then
@@ -312,17 +316,17 @@ local function CreateStyle(self, unit)
 		self.Castbar.bg:SetAllPoints(self.Castbar)
 		self.Castbar.bg:SetTexture(0.3, 0.3, 0.3)
 
-		self.Castbar.text = self.Castbar:CreateFontString(nil, 'OVERLAY')
-		self.Castbar.text:SetPoint('LEFT', self.Castbar, 2, -1)
-		self.Castbar.text:SetFontObject(GameFontNormalSmall)
-		self.Castbar.text:SetTextColor(1, 1, 1)
-		self.Castbar.text:SetJustifyH('LEFT')
+		self.Castbar.Text = self.Castbar:CreateFontString(nil, 'OVERLAY')
+		self.Castbar.Text:SetPoint('LEFT', self.Castbar, 2, -1)
+		self.Castbar.Text:SetFontObject(GameFontNormalSmall)
+		self.Castbar.Text:SetTextColor(1, 1, 1)
+		self.Castbar.Text:SetJustifyH('LEFT')
 
-		self.Castbar.casttime = self.Castbar:CreateFontString(nil, 'OVERLAY')
-		self.Castbar.casttime:SetPoint('RIGHT', self.Castbar, -2, -1)
-		self.Castbar.casttime:SetFontObject(GameFontNormalSmall)
-		self.Castbar.casttime:SetTextColor(1, 1, 1)
-		self.Castbar.casttime:SetJustifyH('RIGHT')
+		self.Castbar.Time = self.Castbar:CreateFontString(nil, 'OVERLAY')
+		self.Castbar.Time:SetPoint('RIGHT', self.Castbar, -2, -1)
+		self.Castbar.Time:SetFontObject(GameFontNormalSmall)
+		self.Castbar.Time:SetTextColor(1, 1, 1)
+		self.Castbar.Time:SetJustifyH('RIGHT')
 
 		self:SetAttribute('initial-height', 27)
 		self:SetAttribute('initial-width', 230)
