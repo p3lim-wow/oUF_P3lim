@@ -1,20 +1,18 @@
 local classification = {
 	worldboss = 'Boss',
-	rareelite = '%s+ Rare',
-	elite = '%s+',
-	rare = '%s Rare',
-	normal = '%s',
-	trivial = '%s',
+	rareelite = '+!',
+	elite = '+',
+	rare = '!',
+	normal = '',
+	trivial = '',
 }
 
 local colors = setmetatable({
 	power = setmetatable({
 		['MANA'] = {0, 144/255, 1},
-		['RUNIC_POWER'] = {185/255, 0, 1},
 	}, {__index = oUF.colors.power}),
 }, {__index = oUF.colors})
 colors.power[0] = colors.power.MANA
-colors.power[6] = colors.power.RUNIC_POWER
 
 local function menu(self)
 	local unit = self.unit:sub(1, -2)
@@ -44,7 +42,7 @@ local function OverrideUpdateName(self, event, unit)
 			self.Name:Hide()
 		elseif(unit == 'target') then
 			local level = UnitLevel(unit) < 1 and '??' or UnitLevel(unit)
-			self.Name:SetFormattedText('%s |cff0090ff%s|r', UnitName(unit), format(classification[UnitClassification(unit)], level))
+			self.Name:SetFormattedText('%s |cff0090ff%s%s|r', UnitName(unit), level, classification[UnitClassification(unit)])
 		else
 			self.Name:SetText(UnitName(unit))
 		end
@@ -104,11 +102,8 @@ local function PostUpdatePower(self, event, unit, bar, min, max)
 end
 
 local function PostCreateAuraIcon(self, button, icons, index, debuff)
-	icons.showDebuffType = true
 	button.cd:SetReverse()
-	button.cd:SetPoint('TOPLEFT', button, 4, -3) 
-	button.cd:SetPoint('BOTTOMRIGHT', button, -3, 4)
-	button.overlay:SetTexture([[Interface\AddOns\oUF_P3lim\border]])
+	button.overlay:SetTexture([=[Interface\AddOns\oUF_P3lim\border]=])
 	button.overlay:SetTexCoord(0, 1, 0, 1)
 	button.overlay.Hide = function(self) self:SetVertexColor(0.25, 0.25, 0.25) end
 end
@@ -121,29 +116,27 @@ local function CreateStyle(self, unit)
 	self:SetScript('OnEnter', UnitFrame_OnEnter)
 	self:SetScript('OnLeave', UnitFrame_OnLeave)
 
-	self:SetBackdrop({bgFile = [[Interface\ChatFrame\ChatFrameBackground]], insets = {top = -1, left = -1, bottom = -1, right = -1}})
+	self:SetBackdrop({bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=], insets = {top = -1, left = -1, bottom = -1, right = -1}})
 	self:SetBackdropColor(0, 0, 0)
 
 	self.Health = CreateFrame('StatusBar', nil, self)
 	self.Health:SetPoint('TOPRIGHT', self)
 	self.Health:SetPoint('TOPLEFT', self)
-	self.Health:SetStatusBarTexture([[Interface\AddOns\oUF_P3lim\minimalist]])
+	self.Health:SetStatusBarTexture([=[Interface\AddOns\oUF_P3lim\minimalist]=])
 	self.Health:SetHeight(unit and 22 or 18)
 
 	self.Health.bg = self.Health:CreateTexture(nil, 'BORDER')
 	self.Health.bg:SetAllPoints(self.Health)
 	self.Health.bg:SetTexture(0.3, 0.3, 0.3)
 
-	self.Health.text = self.Health:CreateFontString(nil, 'OVERLAY')
+	self.Health.text = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
 	self.Health.text:SetPoint('RIGHT', self.Health, -2, -1)
-	self.Health.text:SetFontObject(GameFontNormalSmall)
-	self.Health.text:SetTextColor(1, 1, 1)
 	self.Health.text:SetJustifyH('RIGHT')
 
 	self.Power = CreateFrame('StatusBar', nil, self)
 	self.Power:SetPoint('TOPRIGHT', self.Health, 'BOTTOMRIGHT', 0, -1)
 	self.Power:SetPoint('TOPLEFT', self.Health, 'BOTTOMLEFT', 0, -1)
-	self.Power:SetStatusBarTexture([[Interface\AddOns\oUF_P3lim\minimalist]])
+	self.Power:SetStatusBarTexture([=[Interface\AddOns\oUF_P3lim\minimalist]=])
 	self.Power:SetHeight(unit and 4 or 2)
 
 	self.Power.colorTapping = true
@@ -153,36 +146,30 @@ local function CreateStyle(self, unit)
 
 	self.Power.bg = self.Power:CreateTexture(nil, 'BORDER')
 	self.Power.bg:SetAllPoints(self.Power)
-	self.Power.bg:SetTexture([[Interface\ChatFrame\ChatFrameBackground]])
+	self.Power.bg:SetTexture([=[Interface\ChatFrame\ChatFrameBackground]=])
 	self.Power.bg:SetAlpha(0.3)
 
-	self.Power.text = self.Power:CreateFontString(nil, 'OVERLAY')
+	self.Power.text = self.Power:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
 	self.Power.text:SetPoint('LEFT', self.Health, 2, -1)
-	self.Power.text:SetFontObject(GameFontNormalSmall)
-	self.Power.text:SetTextColor(1, 1, 1)
 
 	self.Leader = self.Health:CreateTexture(nil, 'OVERLAY')
 	self.Leader:SetPoint('TOPLEFT', self, 0, 8)
-	self.Leader:SetTexture([[Interface\GroupFrame\UI-Group-LeaderIcon]])
 	self.Leader:SetHeight(16)
 	self.Leader:SetWidth(16)
 
 	self.RaidIcon = self.Health:CreateTexture(nil, 'OVERLAY')
 	self.RaidIcon:SetPoint('TOP', self, 0, 8)
-	self.RaidIcon:SetTexture([[Interface\TargetingFrame\UI-RaidTargetingIcons]])
 	self.RaidIcon:SetHeight(16)
 	self.RaidIcon:SetWidth(16)
 
-	self.Name = self.Health:CreateFontString(nil, 'OVERLAY')
+	self.Name = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
 	self.Name:SetPoint('LEFT', self.Health, 2, -1)
 	self.Name:SetPoint('RIGHT', self.Health.text, 'LEFT')
-	self.Name:SetFontObject(GameFontNormalSmall)
-	self.Name:SetTextColor(1, 1, 1)
 	self.Name:SetJustifyH('LEFT')
 
 	if(unit == 'player') then
 		self.Spark = self.Power:CreateTexture(nil, 'OVERLAY')
-		self.Spark:SetTexture([[Interface\CastingBar\UI-CastingBar-Spark]])
+		self.Spark:SetTexture([=[Interface\CastingBar\UI-CastingBar-Spark]=])
 		self.Spark:SetBlendMode('ADD')
 		self.Spark:SetHeight(8)
 		self.Spark:SetWidth(8)
@@ -192,23 +179,22 @@ local function CreateStyle(self, unit)
 
 		self.Experience = CreateFrame('StatusBar', nil, self)
 		self.Experience:SetPoint('TOP', self, 'BOTTOM', 0, -10)
-		self.Experience:SetStatusBarTexture([[Interface\AddOns\oUF_P3lim\minimalist]])
+		self.Experience:SetStatusBarTexture([=[Interface\AddOns\oUF_P3lim\minimalist]=])
 		self.Experience:SetStatusBarColor(unpack(self.colors.health))
 		self.Experience:SetHeight(11)
 		self.Experience:SetWidth(230)
 		self.Experience.tooltip = true
 
-		self.Experience.text = self.Experience:CreateFontString(nil, 'OVERLAY')
+		self.Experience.text = self.Experience:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
 		self.Experience.text:SetPoint('CENTER', self.Experience)
-		self.Experience.text:SetFontObject(GameFontNormalSmall)
 		self.Experience.text:SetTextColor(1, 1, 1)
 		self.Experience.text:SetJustifyH('LEFT')
 
 		self.Experience.rested = CreateFrame('StatusBar', nil, self)
 		self.Experience.rested:SetAllPoints(self.Experience)
-		self.Experience.rested:SetStatusBarTexture([[Interface\AddOns\oUF_P3lim\minimalist]])
+		self.Experience.rested:SetStatusBarTexture([=[Interface\AddOns\oUF_P3lim\minimalist]=])
 		self.Experience.rested:SetStatusBarColor(0, 0.39, 0.88, 0.5)
-		self.Experience.rested:SetBackdrop({bgFile = [[Interface\ChatFrame\ChatFrameBackground]], insets = {top = -1, left = -1, bottom = -1, right = -1}})
+		self.Experience.rested:SetBackdrop({bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=], insets = {top = -1, left = -1, bottom = -1, right = -1}})
 		self.Experience.rested:SetBackdropColor(0, 0, 0)
 
 		self.Experience.bg = self.Experience.rested:CreateTexture(nil, 'BORDER')
@@ -224,22 +210,20 @@ local function CreateStyle(self, unit)
 		if(class == 'DRUID') then
 			self.DruidMana = CreateFrame('StatusBar', nil, self)
 			self.DruidMana:SetPoint('BOTTOM', self.Power, 'TOP')
-			self.DruidMana:SetStatusBarTexture([[Interface\AddOns\oUF_P3lim\minimalist]])
-			self.DruidMana:SetStatusBarColor(0, 144/255, 1)
+			self.DruidMana:SetStatusBarTexture([=[Interface\AddOns\oUF_P3lim\minimalist]=])
+			self.DruidMana:SetStatusBarColor(self.colors.MANA)
 			self.DruidMana:SetHeight(1)
 			self.DruidMana:SetWidth(230)
 
-			self.DruidManaText = self.DruidMana:CreateFontString(nil, 'OVERLAY')
+			self.DruidManaText = self.DruidMana:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
 			self.DruidManaText:SetPoint('CENTER', self.DruidMana)
-			self.DruidManaText:SetFontObject(GameFontNormalSmall)
-			self.DruidManaText:SetTextColor(0, 144/255, 1)
+			self.DruidManaText:SetTextColor(self.colors.MANA)
 		end
 	end
 
 	if(unit == 'target') then
-		self.CPoints = self:CreateFontString(nil, 'OVERLAY')
+		self.CPoints = self:CreateFontString(nil, 'OVERLAY', 'SubZoneTextFont')
 		self.CPoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
-		self.CPoints:SetFontObject(SubZoneTextFont)
 		self.CPoints:SetTextColor(1, 1, 1)
 		self.CPoints:SetJustifyH('RIGHT')
 
@@ -260,6 +244,7 @@ local function CreateStyle(self, unit)
 		self.Debuffs.size = 22 * 0.97
 		self.Debuffs.spacing = 2
 		self.Debuffs.initialAnchor = 'TOPLEFT'
+		self.Debuffs.showDebuffType = true
 		self.Debuffs['growth-y'] = 'DOWN'
 	end
 
@@ -285,11 +270,14 @@ local function CreateStyle(self, unit)
 		self.Debuffs.size = 23
 		self.Debuffs.spacing = 2
 		self.Debuffs.initialAnchor = 'TOPLEFT'
+		self.Debuffs.showDebuffType = true
 
 		if(unit == 'targettarget') then
 			self.Debuffs:SetPoint('TOPRIGHT', self, 'TOPLEFT', -2, 1)
 			self.Debuffs.initialAnchor = 'TOPRIGHT'
 			self.Debuffs['growth-x'] = 'LEFT'
+		else
+			self.Debuffs.onlyShowDuration = true
 		end
 
 		self:SetAttribute('initial-height', 21)
@@ -297,16 +285,15 @@ local function CreateStyle(self, unit)
 	end
 
 	if(unit == 'player' or unit == 'target') then
-		self.CombatFeedbackText = self.Health:CreateFontString(nil, 'OVERLAY')
+		self.CombatFeedbackText = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
 		self.CombatFeedbackText:SetPoint('CENTER', self)
-		self.CombatFeedbackText:SetFontObject(GameFontNormal)
 
 		self.Castbar = CreateFrame('StatusBar', nil, self)
 		self.Castbar:SetPoint('TOPRIGHT', self, 'BOTTOMRIGHT', 0, -100)
 		self.Castbar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -100)
-		self.Castbar:SetStatusBarTexture([[Interface\AddOns\oUF_P3lim\minimalist]])
+		self.Castbar:SetStatusBarTexture([=[Interface\AddOns\oUF_P3lim\minimalist]=])
 		self.Castbar:SetStatusBarColor(0.25, 0.25, 0.35)
-		self.Castbar:SetBackdrop({bgFile = [[Interface\ChatFrame\ChatFrameBackground]], insets = {top = -1, left = -1, bottom = -1, right = -1}})
+		self.Castbar:SetBackdrop({bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=], insets = {top = -1, left = -1, bottom = -1, right = -1}})
 		self.Castbar:SetBackdropColor(0, 0, 0)
 		self.Castbar:SetHeight(22)
 
@@ -314,16 +301,12 @@ local function CreateStyle(self, unit)
 		self.Castbar.bg:SetAllPoints(self.Castbar)
 		self.Castbar.bg:SetTexture(0.3, 0.3, 0.3)
 
-		self.Castbar.Text = self.Castbar:CreateFontString(nil, 'OVERLAY')
+		self.Castbar.Text = self.Castbar:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
 		self.Castbar.Text:SetPoint('LEFT', self.Castbar, 2, -1)
-		self.Castbar.Text:SetFontObject(GameFontNormalSmall)
-		self.Castbar.Text:SetTextColor(1, 1, 1)
 		self.Castbar.Text:SetJustifyH('LEFT')
 
-		self.Castbar.Time = self.Castbar:CreateFontString(nil, 'OVERLAY')
+		self.Castbar.Time = self.Castbar:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
 		self.Castbar.Time:SetPoint('RIGHT', self.Castbar, -2, -1)
-		self.Castbar.Time:SetFontObject(GameFontNormalSmall)
-		self.Castbar.Time:SetTextColor(1, 1, 1)
 		self.Castbar.Time:SetJustifyH('RIGHT')
 
 		self:SetAttribute('initial-height', 27)
@@ -347,6 +330,7 @@ local function CreateStyle(self, unit)
 		self.Debuffs.size = 23
 		self.Debuffs.spacing = 2
 		self.Debuffs.initialAnchor = 'TOPLEFT'
+		self.Debuffs.showDebuffType = true
 		self.Debuffs.filter = true
 
 		self:SetAttribute('initial-height', 21)
