@@ -1,3 +1,5 @@
+local wotlk = select(4, GetBuildInfo()) >= 3e4
+
 local classification = {
 	worldboss = 'Boss',
 	rareelite = '+!',
@@ -33,7 +35,12 @@ local function OverrideUpdateName(self, event, unit)
 		elseif(UnitIsDead(unit) or UnitIsGhost(unit) or not UnitIsConnected(unit)) then
 			color = self.colors.disconnected
 		elseif(not UnitIsPlayer(unit)) then
-			color = self.colors.reaction[UnitReaction(unit, 'player')] or self.colors.health
+			if(wotlk) then
+				local r, g, b = UnitSelectionColor(unit)
+				color = {r, g, b}
+			else
+				color = self.colors.reaction[UnitReaction(unit, 'player')] or self.colors.health
+			end
 		end
 
 		self.Name:SetTextColor(unpack(color))
@@ -88,7 +95,7 @@ local function PostUpdatePower(self, event, unit, bar, min, max)
 			bar.text:SetText()
 		else
 			local num, str = UnitPowerType(unit)
-			local color = self.colors.power[select(4, GetBuildInfo()) >= 3e4 and str or num]
+			local color = self.colors.power[wotlk and str or num]
 			bar.text:SetTextColor(color[1], color[2], color[3])
 			if(min ~= max) then
 				bar.text:SetText(max-(max-min))
@@ -211,13 +218,13 @@ local function CreateStyle(self, unit)
 			self.DruidMana = CreateFrame('StatusBar', nil, self)
 			self.DruidMana:SetPoint('BOTTOM', self.Power, 'TOP')
 			self.DruidMana:SetStatusBarTexture([=[Interface\AddOns\oUF_P3lim\minimalist]=])
-			self.DruidMana:SetStatusBarColor(self.colors.MANA)
+			self.DruidMana:SetStatusBarColor(unpack(self.colors.power[0]))
 			self.DruidMana:SetHeight(1)
 			self.DruidMana:SetWidth(230)
 
 			self.DruidManaText = self.DruidMana:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
 			self.DruidManaText:SetPoint('CENTER', self.DruidMana)
-			self.DruidManaText:SetTextColor(self.colors.MANA)
+			self.DruidManaText:SetTextColor(unpack(self.colors.power[0]))
 		end
 	end
 
@@ -327,6 +334,7 @@ local function CreateStyle(self, unit)
 		self.Debuffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 2, 1)
 		self.Debuffs:SetHeight(23)
 		self.Debuffs:SetWidth(230)
+		self.Debuffs.num = 5
 		self.Debuffs.size = 23
 		self.Debuffs.spacing = 2
 		self.Debuffs.initialAnchor = 'TOPLEFT'
