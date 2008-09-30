@@ -1,9 +1,9 @@
 ## Interface: 20400
 ## Author: p3lim
-## Version: wowi:revision
+## Version: 20400.wowi:revision
 ## Title: oUF P3lim
-## Notes: Custom oUF Layout
+## Notes: Just another oUF layout
 ## RequiredDeps: oUF
-## OptionalDeps: oUF_Banzai, oUF_CombatFeedback, oUF_DebuffHighlight, oUF_DruidMana, oUF_Experience, oUF_PowerSpark, oUF_ReadyCheck
+## OptionalDeps: oUF_CombatFeedback, oUF_DebuffHighlight, oUF_DruidMana, oUF_Experience, oUF_PowerSpark, oUF_ReadyCheck
 
 oUF_P3lim.lua
