@@ -145,18 +145,36 @@ local function CreateStyle(self, unit)
 	self.RaidIcon:SetHeight(16)
 	self.RaidIcon:SetWidth(16)
 
-	if(unit ~= 'focus' and wotlk) then
+	if(wotlk) then
 		self.Threat = self:CreateTexture(nil, 'OVERLAY')
 		self.Threat:SetPoint('TOPRIGHT', self, 0, -8)
 		self.Threat:SetHeight(20)
 		self.Threat:SetWidth(20)
-		self.Threat:SetTexture([=[Interface\Minimap\ObjectIcons]=])
-		self.Threat:SetTexCoord(6/8, 7/8, 1/2, 1)
 	end
 
 	if(unit == 'player' or unit == 'pet') then
 		self.Power.text = self.Power:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
 		self.Power.text:SetPoint('LEFT', self.Health, 2, -1)
+
+		if(IsAddOnLoaded('oUF_Experience')) then
+			self.Experience = CreateFrame('StatusBar', nil, self)
+			self.Experience:SetPoint('TOP', self, 'BOTTOM', 0, -10)
+			self.Experience:SetStatusBarTexture(texture)
+			self.Experience:SetStatusBarColor(unpack(self.colors.health))
+			self.Experience:SetHeight(11)
+			self.Experience:SetWidth((unit == 'pet') and 130 or 230)
+			self.Experience:SetBackdrop({bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=], insets = {top = -1, left = -1, bottom = -1, right = -1}})
+			self.Experience:SetBackdropColor(0, 0, 0)
+
+			self.Experience.Tooltip = true
+
+			self.Experience.Text = self.Experience:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
+			self.Experience.Text:SetPoint('CENTER', self.Experience)
+
+			self.Experience.bg = self.Experience:CreateTexture(nil, 'BORDER')
+			self.Experience.bg:SetAllPoints(self.Experience)
+			self.Experience.bg:SetTexture(0.3, 0.3, 0.3)
+		end
 
 		if(unit == 'player') then
 			self.Spark = self.Power:CreateTexture(nil, 'OVERLAY')
@@ -167,32 +185,6 @@ local function CreateStyle(self, unit)
 			self.Spark.manatick = true
 
 			self.BarFade = true
-
-			if(IsAddOnLoaded('oUF_Experience')) then
-				self.Experience = CreateFrame('StatusBar', nil, self)
-				self.Experience:SetPoint('TOP', self, 'BOTTOM', 0, -10)
-				self.Experience:SetStatusBarTexture(texture)
-				self.Experience:SetStatusBarColor(unpack(self.colors.health))
-				self.Experience:SetHeight(11)
-				self.Experience:SetWidth(230)
-				self.Experience.tooltip = true
-
-				self.Experience.text = self.Experience:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
-				self.Experience.text:SetPoint('CENTER', self.Experience)
-				self.Experience.text:SetTextColor(1, 1, 1)
-				self.Experience.text:SetJustifyH('LEFT')
-
-				self.Experience.rested = CreateFrame('StatusBar', nil, self)
-				self.Experience.rested:SetAllPoints(self.Experience)
-				self.Experience.rested:SetStatusBarTexture(texture)
-				self.Experience.rested:SetStatusBarColor(0, 0.39, 0.88, 0.5)
-				self.Experience.rested:SetBackdrop({bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=], insets = {top = -1, left = -1, bottom = -1, right = -1}})
-				self.Experience.rested:SetBackdropColor(0, 0, 0)
-
-				self.Experience.bg = self.Experience.rested:CreateTexture(nil, 'BORDER')
-				self.Experience.bg:SetAllPoints(self.Experience)
-				self.Experience.bg:SetTexture(0.3, 0.3, 0.3)
-			end
 
 			if(IsAddOnLoaded('oUF_DruidMana') and class == 'DRUID') then
 				self.DruidMana = CreateFrame('StatusBar', nil, self)
