@@ -160,13 +160,13 @@ local function CreateStyle(self, unit)
 			self.Experience = CreateFrame('StatusBar', nil, self)
 			self.Experience:SetPoint('TOP', self, 'BOTTOM', 0, -10)
 			self.Experience:SetStatusBarTexture(texture)
-			self.Experience:SetStatusBarColor(unpack(self.colors.health))
 			self.Experience:SetHeight(11)
 			self.Experience:SetWidth((unit == 'pet') and 130 or 230)
 			self.Experience:SetBackdrop({bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=], insets = {top = -1, left = -1, bottom = -1, right = -1}})
 			self.Experience:SetBackdropColor(0, 0, 0)
 
 			self.Experience.Tooltip = true
+			self.colorReputation = true
 
 			self.Experience.Text = self.Experience:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
 			self.Experience.Text:SetPoint('CENTER', self.Experience)
