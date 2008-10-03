@@ -156,6 +156,8 @@ local function CreateStyle(self, unit)
 		self.Power.text = self.Power:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
 		self.Power.text:SetPoint('LEFT', self.Health, 2, -1)
 
+		self.barFade = true
+
 		if(IsAddOnLoaded('oUF_Experience')) then
 			self.Experience = CreateFrame('StatusBar', nil, self)
 			self.Experience:SetPoint('TOP', self, 'BOTTOM', 0, -10)
@@ -184,8 +186,6 @@ local function CreateStyle(self, unit)
 			self.Spark:SetWidth(8)
 			self.Spark.manatick = true
 
-			self.BarFade = true
-
 			if(IsAddOnLoaded('oUF_DruidMana') and class == 'DRUID') then
 				self.DruidMana = CreateFrame('StatusBar', nil, self)
 				self.DruidMana:SetPoint('BOTTOM', self.Power, 'TOP')
@@ -202,7 +202,6 @@ local function CreateStyle(self, unit)
 			self.Power.colorPower = true
 			self.Power.colorHappiness = true
 			self.Power.colorReaction = false
-			self.BarFade = true
 
 			self.Buffs = CreateFrame('Frame', nil, self)
 			self.Buffs:SetPoint('TOPRIGHT', self, 'TOPLEFT', -2, 1)
