@@ -168,7 +168,6 @@ local function CreateStyle(self, unit)
 			self.Experience:SetBackdropColor(0, 0, 0)
 
 			self.Experience.Tooltip = true
-			self.colorReputation = true
 
 			self.Experience.Text = self.Experience:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
 			self.Experience.Text:SetPoint('CENTER', self.Experience)
