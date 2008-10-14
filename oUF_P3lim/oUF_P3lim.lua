@@ -134,6 +134,7 @@ local function CreateStyle(self, unit)
 	self.Health:SetPoint('TOPLEFT', self)
 	self.Health:SetStatusBarTexture(texture)
 	self.Health:SetHeight(22)
+	self.Health.frequentUpdates = true
 
 	self.Health.Text = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
 	self.Health.Text:SetPoint('RIGHT', self.Health, -2, -1)
@@ -148,6 +149,7 @@ local function CreateStyle(self, unit)
 	self.Power:SetPoint('TOPLEFT', self.Health, 'BOTTOMLEFT', 0, -1)
 	self.Power:SetStatusBarTexture(texture)
 	self.Power:SetHeight(4)
+	self.Power.frequentUpdates = true
 
 	self.Power.colorTapping = true
 	self.Power.colorDisconnected = true
@@ -257,7 +259,7 @@ local function CreateStyle(self, unit)
 	else
 		self.Info = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
 		self.Info:SetPoint('LEFT', self.Health, 2, -1)
-		self.Info:SetPoint('RIGHT', self.Health.text, 'LEFT')
+		self.Info:SetPoint('RIGHT', self.Health.Text, 'LEFT')
 		self.Info:SetJustifyH('LEFT')
 		self.Info:SetText(unit == 'target' and '[name] |cff0090ff[smartlevel] [rare]|r' or '[name]')
 		self.TaggedStrings = {self.Info}
