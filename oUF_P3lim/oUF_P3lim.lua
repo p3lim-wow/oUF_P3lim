@@ -1,9 +1,5 @@
-local wotlk = select(4, GetBuildInfo()) >= 3e4
 local _, class = UnitClass('player')
 local texture = [=[Interface\AddOns\oUF_P3lim\minimalist]=]
-
-local manamin, manamax, powertype, druidmana
-
 
 local colors = setmetatable({
 	power = setmetatable({
@@ -21,6 +17,14 @@ local function menu(self)
 	end
 end
 
+local function siValue(value)
+	if(value >= 1e4) then
+		return ("%.1f"):format(value / 1e3):gsub('%.', 'k')
+	else
+		return value
+	end
+end
+
 local function UpdateInfoColor(self, unit)
 	if(self.Info) then
 		local color = {1, 1, 1}
@@ -29,12 +33,8 @@ local function UpdateInfoColor(self, unit)
 		elseif(UnitIsDead(unit) or UnitIsGhost(unit) or not UnitIsConnected(unit)) then
 			color = self.colors.disconnected
 		elseif(not UnitIsPlayer(unit)) then
-			if(wotlk) then
-				local r, g, b = UnitSelectionColor(unit)
-				color = {r, g, b}
-			else
-				color = self.colors.reaction[UnitReaction(unit, 'player')] or self.colors.health
-			end
+			local r, g, b = UnitSelectionColor(unit)
+			color = {r, g, b} or self.colors.health
 		end
 
 		self.Info:SetTextColor(unpack(color))
@@ -43,23 +43,23 @@ end
 
 local function PostUpdateHealth(self, event, unit, bar, min, max)
 	if(not UnitIsConnected(unit)) then
-		bar.text:SetText('Offline')
+		bar.Text:SetText('Offline')
 	elseif(UnitIsDead(unit)) then
-		bar.text:SetText('Dead')
+		bar.Text:SetText('Dead')
 	elseif(UnitIsGhost(unit)) then
-		bar.text:SetText('Ghost')
+		bar.Text:SetText('Ghost')
 	else
-		if(unit == 'target' and UnitClassification('target') == 'worldboss') then
-			bar.text:SetFormattedText('%d (%d|cff0090ff%%|r)', min, floor(min/max*100))
+		if(unit == 'target' and UnitCanAttack('player', 'target')) then
+			bar.Text:SetFormattedText('%s |cff0090ff/|r %s (%d|cff0090ff%%|r)', siValue(min), siValue(max), floor(min/max*100))
 		else
 			if(min ~= max) then
 				if(unit == 'player') then
-					bar.text:SetFormattedText('|cffff8080%d|r %d|cff0090ff%%|r', min-max, floor(min/max*100))
+					bar.Text:SetFormattedText('|cffff8080%d|r %d|cff0090ff%%|r', min-max, floor(min/max*100))
 				else
-					bar.text:SetFormattedText('%d |cff0090ff/|r %d', min, max)
+					bar.Text:SetFormattedText('%d |cff0090ff/|r %d', min, max)
 				end
 			else
-				bar.text:SetText(max)
+				bar.Text:SetText(max)
 			end
 		end
 	end
@@ -69,22 +69,22 @@ local function PostUpdateHealth(self, event, unit, bar, min, max)
 end
 
 local function PostUpdatePower(self, event, unit, bar, min, max)
-	if(bar.text) then
+	if(bar.Text) then
 		if(min == 0) then
-			bar.text:SetText()
+			bar.Text:SetText()
 		elseif(not UnitIsPlayer(unit) or not UnitIsConnected(unit)) then
-			bar.text:SetText()
+			bar.Text:SetText()
 		else
 			if(min ~= max) then
-				bar.text:SetText(max-(max-min))
+				bar.Text:SetText(max-(max-min))
 			else
-				bar.text:SetText(min)
+				bar.Text:SetText(min)
 			end
 		end
 
-		local num, str = UnitPowerType(unit)
-		local color = self.colors.power[wotlk and str or num]
-		bar.text:SetTextColor(color[1], color[2], color[3])
+		local _, ptype = UnitPowerType(unit)
+		local color = self.colors.power[ptype]
+		bar.Text:SetTextColor(color[1], color[2], color[3])
 	end
 
 	UpdateInfoColor(self, unit)
@@ -92,22 +92,23 @@ end
 
 local function PreUpdatePower(self, event, unit)
 	if(self.unit ~= 'player') then return end
-	_, powertype = UnitPowerType('player')
-	manamin = UnitPower('player', SPELL_POWER_MANA)
-	manamax = UnitPowerMax('player', SPELL_POWER_MANA)
-	druidmana = self.DruidMana
 
-	druidmana:SetMinMaxValues(0, manamax)
-	druidmana:SetValue(manamin)
+	local _, ptype = UnitPowerType('player')
+	local min = UnitPower('player', SPELL_POWER_MANA)
+	local max = UnitPowerMax('player', SPELL_POWER_MANA)
+	local druidmana = self.DruidMana
 
-	if(manamin ~= manamax) then
-		druidmana.Text:SetFormattedText('%d%%', math.floor(manamin / manamax * 100))
+	local druidmana:SetMinMaxValues(0, max)
+	local druidmana:SetValue(min)
+
+	if(min ~= max) then
+		druidmana.Text:SetFormattedText('%d%%', math.floor(min / max * 100))
 	else
 		druidmana.Text:SetText()
 	end
 
-	druidmana:SetAlpha((powertype ~= 0) and 1 or 0)
-	druidmana.Text:SetAlpha((powertype ~= 0) and 1 or 0)
+	druidmana:SetAlpha((ptype ~= 0) and 1 or 0)
+	druidmana.Text:SetAlpha((ptype ~= 0) and 1 or 0)
 end
 
 local function PostCreateAuraIcon(self, button, icons, index, debuff)
@@ -134,13 +135,13 @@ local function CreateStyle(self, unit)
 	self.Health:SetStatusBarTexture(texture)
 	self.Health:SetHeight(22)
 
+	self.Health.Text = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
+	self.Health.Text:SetPoint('RIGHT', self.Health, -2, -1)
+	self.Health.Text:SetJustifyH('RIGHT')
+
 	self.Health.bg = self.Health:CreateTexture(nil, 'BORDER')
 	self.Health.bg:SetAllPoints(self.Health)
 	self.Health.bg:SetTexture(0.3, 0.3, 0.3)
-
-	self.Health.text = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
-	self.Health.text:SetPoint('RIGHT', self.Health, -2, -1)
-	self.Health.text:SetJustifyH('RIGHT')
 
 	self.Power = CreateFrame('StatusBar', nil, self)
 	self.Power:SetPoint('TOPRIGHT', self.Health, 'BOTTOMRIGHT', 0, -1)
@@ -168,16 +169,14 @@ local function CreateStyle(self, unit)
 	self.RaidIcon:SetHeight(16)
 	self.RaidIcon:SetWidth(16)
 
-	if(wotlk) then
-		self.Threat = self:CreateTexture(nil, 'OVERLAY')
-		self.Threat:SetPoint('TOPRIGHT', self, 0, -8)
-		self.Threat:SetHeight(20)
-		self.Threat:SetWidth(20)
-	end
+	self.Threat = self.Health:CreateTexture(nil, 'OVERLAY')
+	self.Threat:SetPoint('TOPRIGHT', self.Health, 0, -8)
+	self.Threat:SetHeight(20)
+	self.Threat:SetWidth(20)
 
 	if(unit == 'player' or unit == 'pet') then
-		self.Power.text = self.Power:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
-		self.Power.text:SetPoint('LEFT', self.Health, 2, -1)
+		self.Power.Text = self.Power:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
+		self.Power.Text:SetPoint('LEFT', self.Health, 2, -1)
 
 		self.barFade = true
 
@@ -282,8 +281,6 @@ local function CreateStyle(self, unit)
 			self.Debuffs:SetPoint('TOPRIGHT', self, 'TOPLEFT', -2, 1)
 			self.Debuffs.initialAnchor = 'TOPRIGHT'
 			self.Debuffs['growth-x'] = 'LEFT'
-		else
-			self.Debuffs.onlyShowDuration = true
 		end
 
 		self:SetAttribute('initial-height', 21)
@@ -303,10 +300,6 @@ local function CreateStyle(self, unit)
 		self.Castbar:SetBackdropColor(0, 0, 0)
 		self.Castbar:SetHeight(22)
 
-		self.Castbar.bg = self.Castbar:CreateTexture(nil, 'BORDER')
-		self.Castbar.bg:SetAllPoints(self.Castbar)
-		self.Castbar.bg:SetTexture(0.3, 0.3, 0.3)
-
 		self.Castbar.Text = self.Castbar:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
 		self.Castbar.Text:SetPoint('LEFT', self.Castbar, 2, -1)
 		self.Castbar.Text:SetJustifyH('LEFT')
@@ -314,6 +307,10 @@ local function CreateStyle(self, unit)
 		self.Castbar.Time = self.Castbar:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
 		self.Castbar.Time:SetPoint('RIGHT', self.Castbar, -2, -1)
 		self.Castbar.Time:SetJustifyH('RIGHT')
+
+		self.Castbar.bg = self.Castbar:CreateTexture(nil, 'BORDER')
+		self.Castbar.bg:SetAllPoints(self.Castbar)
+		self.Castbar.bg:SetTexture(0.3, 0.3, 0.3)
 
 		self:SetAttribute('initial-height', 27)
 		self:SetAttribute('initial-width', 230)
