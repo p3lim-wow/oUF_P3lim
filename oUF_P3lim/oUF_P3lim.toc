@@ -1,4 +1,4 @@
-## Interface: 20400
+## Interface: 30000
 ## Author: p3lim
 ## Version: 30000.wowi:revision
 ## Title: oUF P3lim

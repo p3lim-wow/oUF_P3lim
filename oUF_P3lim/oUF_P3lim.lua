@@ -6,7 +6,6 @@ local colors = setmetatable({
 		['MANA'] = {0, 144/255, 1},
 	}, {__index = oUF.colors.power}),
 }, {__index = oUF.colors})
-colors.power[0] = colors.power.MANA
 
 oUF.Tags['[smartlevel]'] = function(u) return UnitClassification(u) == "worldboss" and "Boss" or oUF.Tags['[level]'](u) .. oUF.Tags["[plus]"](u) end
 
