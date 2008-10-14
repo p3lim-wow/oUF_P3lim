@@ -2,6 +2,9 @@ local wotlk = select(4, GetBuildInfo()) >= 3e4
 local _, class = UnitClass('player')
 local texture = [=[Interface\AddOns\oUF_P3lim\minimalist]=]
 
+local manamin, manamax, powertype, druidmana
+
+
 local colors = setmetatable({
 	power = setmetatable({
 		['MANA'] = {0, 144/255, 1},
@@ -85,6 +88,26 @@ local function PostUpdatePower(self, event, unit, bar, min, max)
 	end
 
 	UpdateInfoColor(self, unit)
+end
+
+local function PreUpdatePower(self, event, unit)
+	if(self.unit ~= 'player') then return end
+	_, powertype = UnitPowerType('player')
+	manamin = UnitPower('player', SPELL_POWER_MANA)
+	manamax = UnitPowerMax('player', SPELL_POWER_MANA)
+	druidmana = self.DruidMana
+
+	druidmana:SetMinMaxValues(0, manamax)
+	druidmana:SetValue(manamin)
+
+	if(manamin ~= manamax) then
+		druidmana.Text:SetFormattedText('%d%%', math.floor(manamin / manamax * 100))
+	else
+		druidmana.Text:SetText()
+	end
+
+	druidmana:SetAlpha((powertype ~= 0) and 1 or 0)
+	druidmana.Text:SetAlpha((powertype ~= 0) and 1 or 0)
 end
 
 local function PostCreateAuraIcon(self, button, icons, index, debuff)
@@ -185,7 +208,25 @@ local function CreateStyle(self, unit)
 			self.Spark:SetWidth(8)
 			self.Spark.manatick = true
 
-			if(IsAddOnLoaded('oUF_DruidMana') and class == 'DRUID') then
+			if(IsAddOnLoaded('oUF_AutoShot') and class == 'HUNTER') then
+				self.AutoShot = CreateFrame('StatusBar', nil, self)
+				self.AutoShot:SetPoint('TOP', self, 'BOTTOM', 0, -80)
+				self.AutoShot:SetStatusBarTexture(texture)
+				self.AutoShot:SetStatusBarColor(1, 0.7, 0)
+				self.AutoShot:SetHeight(6)
+				self.AutoShot:SetWidth(230)
+				self.AutoShot:SetBackdrop({bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=], insets = {top = -1, left = -1, bottom = -1, right = -1}})
+				self.AutoShot:SetBackdropColor(0, 0, 0)
+
+				self.AutoShot.Time = self.AutoShot:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
+				self.AutoShot.Time:SetPoint('CENTER', self.AutoShot)
+
+				self.AutoShot.bg = self.AutoShot:CreateTexture(nil, 'BORDER')
+				self.AutoShot.bg:SetAllPoints(self.AutoShot)
+				self.AutoShot.bg:SetTexture(0.3, 0.3, 0.3)				
+			end
+
+			if(class == 'DRUID') then
 				self.DruidMana = CreateFrame('StatusBar', nil, self)
 				self.DruidMana:SetPoint('BOTTOM', self.Power, 'TOP')
 				self.DruidMana:SetStatusBarTexture(texture)
@@ -193,9 +234,9 @@ local function CreateStyle(self, unit)
 				self.DruidMana:SetHeight(1)
 				self.DruidMana:SetWidth(230)
 
-				self.DruidManaText = self.DruidMana:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
-				self.DruidManaText:SetPoint('CENTER', self.DruidMana)
-				self.DruidManaText:SetTextColor(unpack(self.colors.power[0]))
+				self.DruidMana.Text = self.DruidMana:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
+				self.DruidMana.Text:SetPoint('CENTER', self.DruidMana)
+				self.DruidMana.Text:SetTextColor(unpack(self.colors.power[0]))
 			end
 		elseif(unit == 'pet') then
 			self.Power.colorPower = true
@@ -311,6 +352,7 @@ local function CreateStyle(self, unit)
 	self.PostCreateAuraIcon = PostCreateAuraIcon
 	self.PostUpdateHealth = PostUpdateHealth
 	self.PostUpdatePower = PostUpdatePower
+	self.PreUpdatePower = PreUpdatePower
 
 	return self
 end
