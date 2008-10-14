@@ -106,8 +106,8 @@ local function PreUpdatePower(self, event, unit)
 		druidmana.Text:SetText()
 	end
 
-	druidmana:SetAlpha((ptype ~= 0) and 1 or 0)
-	druidmana.Text:SetAlpha((ptype ~= 0) and 1 or 0)
+	druidmana:SetAlpha((ptype ~= 'MANA') and 1 or 0)
+	druidmana.Text:SetAlpha((ptype ~= 'MANA') and 1 or 0)
 end
 
 local function PostCreateAuraIcon(self, button, icons, index, debuff)
@@ -230,13 +230,13 @@ local function CreateStyle(self, unit)
 				self.DruidMana = CreateFrame('StatusBar', nil, self)
 				self.DruidMana:SetPoint('BOTTOM', self.Power, 'TOP')
 				self.DruidMana:SetStatusBarTexture(texture)
-				self.DruidMana:SetStatusBarColor(unpack(self.colors.power[0]))
+				self.DruidMana:SetStatusBarColor(unpack(self.colors.power['MANA']))
 				self.DruidMana:SetHeight(1)
 				self.DruidMana:SetWidth(230)
 
 				self.DruidMana.Text = self.DruidMana:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
 				self.DruidMana.Text:SetPoint('CENTER', self.DruidMana)
-				self.DruidMana.Text:SetTextColor(unpack(self.colors.power[0]))
+				self.DruidMana.Text:SetTextColor(unpack(self.colors.power['MANA']))
 			end
 		elseif(unit == 'pet') then
 			self.Power.colorPower = true
