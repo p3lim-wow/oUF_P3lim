@@ -98,8 +98,8 @@ local function PreUpdatePower(self, event, unit)
 	local max = UnitPowerMax('player', SPELL_POWER_MANA)
 	local druidmana = self.DruidMana
 
-	local druidmana:SetMinMaxValues(0, max)
-	local druidmana:SetValue(min)
+	druidmana:SetMinMaxValues(0, max)
+	druidmana:SetValue(min)
 
 	if(min ~= max) then
 		druidmana.Text:SetFormattedText('%d%%', math.floor(min / max * 100))
