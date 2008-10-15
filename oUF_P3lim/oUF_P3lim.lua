@@ -90,8 +90,6 @@ local function PostUpdatePower(self, event, unit, bar, min, max)
 end
 
 local function PreUpdatePower(self, event, unit)
-	if(self.unit ~= 'player') then return end
-
 	local _, ptype = UnitPowerType('player')
 	local min = UnitPower('player', SPELL_POWER_MANA)
 	local max = UnitPowerMax('player', SPELL_POWER_MANA)
@@ -133,7 +131,7 @@ local function CreateStyle(self, unit)
 	self.Health:SetPoint('TOPLEFT', self)
 	self.Health:SetStatusBarTexture(texture)
 	self.Health:SetHeight(22)
-	self.Health.frequentUpdates = true
+--	self.Health.frequentUpdates = true
 
 	self.Health.Text = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
 	self.Health.Text:SetPoint('RIGHT', self.Health, -2, -1)
@@ -148,7 +146,7 @@ local function CreateStyle(self, unit)
 	self.Power:SetPoint('TOPLEFT', self.Health, 'BOTTOMLEFT', 0, -1)
 	self.Power:SetStatusBarTexture(texture)
 	self.Power:SetHeight(4)
-	self.Power.frequentUpdates = true
+--	self.Power.frequentUpdates = true
 
 	self.Power.colorTapping = true
 	self.Power.colorDisconnected = true
@@ -169,11 +167,6 @@ local function CreateStyle(self, unit)
 	self.RaidIcon:SetPoint('TOP', self, 0, 8)
 	self.RaidIcon:SetHeight(16)
 	self.RaidIcon:SetWidth(16)
-
-	self.Threat = self.Health:CreateTexture(nil, 'OVERLAY')
-	self.Threat:SetPoint('TOPRIGHT', self.Health, 0, -8)
-	self.Threat:SetHeight(20)
-	self.Threat:SetWidth(20)
 
 	if(unit == 'player' or unit == 'pet') then
 		self.Power.Text = self.Power:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
@@ -237,6 +230,8 @@ local function CreateStyle(self, unit)
 				self.DruidMana.Text = self.DruidMana:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
 				self.DruidMana.Text:SetPoint('CENTER', self.DruidMana)
 				self.DruidMana.Text:SetTextColor(unpack(self.colors.power['MANA']))
+
+				self.PreUpdatePower = PreUpdatePower
 			end
 		elseif(unit == 'pet') then
 			self.Power.colorPower = true
@@ -350,7 +345,6 @@ local function CreateStyle(self, unit)
 	self.PostCreateAuraIcon = PostCreateAuraIcon
 	self.PostUpdateHealth = PostUpdateHealth
 	self.PostUpdatePower = PostUpdatePower
-	self.PreUpdatePower = PreUpdatePower
 
 	return self
 end
