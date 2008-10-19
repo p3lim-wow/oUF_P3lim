@@ -224,12 +224,11 @@ local function CreateStyle(self, unit)
 				self.DruidMana:SetStatusBarColor(unpack(self.colors.power['MANA']))
 				self.DruidMana:SetHeight(1)
 				self.DruidMana:SetWidth(230)
+				self.DruidMana:SetScript('OnUpdate', UpdateDruidMana)
 
 				self.DruidMana.Text = self.DruidMana:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
 				self.DruidMana.Text:SetPoint('CENTER', self.DruidMana)
 				self.DruidMana.Text:SetTextColor(unpack(self.colors.power['MANA']))
-
-				self.DruidMana:SetScript('OnUpdate', UpdateDruidMana)
 			end
 		elseif(unit == 'pet') then
 			self.Power.colorPower = true
