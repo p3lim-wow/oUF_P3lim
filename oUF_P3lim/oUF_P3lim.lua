@@ -10,15 +10,17 @@ local colors = setmetatable({
 oUF.Tags['[smartlevel]'] = function(u) return UnitClassification(u) == "worldboss" and "Boss" or oUF.Tags['[level]'](u) .. oUF.Tags["[plus]"](u) end
 
 local function menu(self)
-	local unit = self.unit:gsub('(.)', string.upper, 1)
+	local unit = string.gsub(self.unit, '(.)', string.upper, 1)
 	if(_G[unit..'FrameDropDown']) then
 		ToggleDropDownMenu(1, nil, _G[unit..'FrameDropDown'], 'cursor')
 	end
 end
 
-local function siValue(value)
-	if(value >= 1e4) then
-		return ("%.1f"):format(value / 1e3):gsub('%.', 'k')
+local function truncate(value)
+	if(value >= 1e6) then
+		return ('%.0fm'):format(value / 1e6)
+	elseif(value >= 1e4) then
+		return ("%.0fk"):format(value / 1e3)
 	else
 		return value
 	end
@@ -40,6 +42,28 @@ local function UpdateInfoColor(self, unit)
 	end
 end
 
+local manamin, manamax, ptype
+local function UpdateDruidMana(self)
+	ptype = UnitPowerType('player')
+	if(ptype ~= 0) then
+		manamin = UnitPower('player', 0)
+		manamax = UnitPowerMax('player', 0)
+
+		self:SetMinMaxValues(0, manamax)
+		self:SetValue(manamin)
+
+		if(manamin ~= manamax) then
+			self.Text:SetFormattedText('%d - %d%%', manamin, math.floor(manamin / manamax * 100))
+		else
+			self.Text:SetText()
+		end
+
+		self:SetAlpha(1)
+	else
+		self:SetAlpha(0)
+	end
+end
+
 local function PostUpdateHealth(self, event, unit, bar, min, max)
 	if(not UnitIsConnected(unit)) then
 		bar.Text:SetText('Offline')
@@ -49,7 +73,7 @@ local function PostUpdateHealth(self, event, unit, bar, min, max)
 		bar.Text:SetText('Ghost')
 	else
 		if(unit == 'target' and UnitCanAttack('player', 'target')) then
-			bar.Text:SetFormattedText('%s |cff0090ff/|r %s (%d|cff0090ff%%|r)', siValue(min), siValue(max), floor(min/max*100))
+			bar.Text:SetFormattedText('%s (%d|cff0090ff%%|r)', truncate(min), floor(min/max*100))
 		else
 			if(min ~= max) then
 				if(unit == 'player') then
@@ -89,26 +113,7 @@ local function PostUpdatePower(self, event, unit, bar, min, max)
 	UpdateInfoColor(self, unit)
 end
 
-local function PreUpdatePower(self, event, unit)
-	local _, ptype = UnitPowerType('player')
-	local min = UnitPower('player', SPELL_POWER_MANA)
-	local max = UnitPowerMax('player', SPELL_POWER_MANA)
-	local druidmana = self.DruidMana
-
-	druidmana:SetMinMaxValues(0, max)
-	druidmana:SetValue(min)
-
-	if(min ~= max) then
-		druidmana.Text:SetFormattedText('%d%%', math.floor(min / max * 100))
-	else
-		druidmana.Text:SetText()
-	end
-
-	druidmana:SetAlpha((ptype ~= 'MANA') and 1 or 0)
-	druidmana.Text:SetAlpha((ptype ~= 'MANA') and 1 or 0)
-end
-
-local function PostCreateAuraIcon(self, button, icons, index, debuff)
+local function PostCreateAuraIcon(self, button)
 	button.cd:SetReverse()
 	button.overlay:SetTexture([=[Interface\AddOns\oUF_P3lim\border]=])
 	button.overlay:SetTexCoord(0, 1, 0, 1)
@@ -194,13 +199,6 @@ local function CreateStyle(self, unit)
 		end
 
 		if(unit == 'player') then
-			self.Spark = self.Power:CreateTexture(nil, 'OVERLAY')
-			self.Spark:SetTexture([=[Interface\CastingBar\UI-CastingBar-Spark]=])
-			self.Spark:SetBlendMode('ADD')
-			self.Spark:SetHeight(8)
-			self.Spark:SetWidth(8)
-			self.Spark.manatick = true
-
 			if(IsAddOnLoaded('oUF_AutoShot') and class == 'HUNTER') then
 				self.AutoShot = CreateFrame('StatusBar', nil, self)
 				self.AutoShot:SetPoint('TOP', self, 'BOTTOM', 0, -80)
@@ -231,7 +229,7 @@ local function CreateStyle(self, unit)
 				self.DruidMana.Text:SetPoint('CENTER', self.DruidMana)
 				self.DruidMana.Text:SetTextColor(unpack(self.colors.power['MANA']))
 
-				self.PreUpdatePower = PreUpdatePower
+				self.DruidMana:SetScript('OnUpdate', UpdateDruidMana)
 			end
 		elseif(unit == 'pet') then
 			self.Power.colorPower = true
