@@ -187,7 +187,7 @@ local function CreateStyle(self, unit)
 		self.Power.Text = self.Power:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
 		self.Power.Text:SetPoint('LEFT', self.Health, 2, -1)
 
-		self.barFade = true
+		self.BarFade = true
 
 		if(IsAddOnLoaded('oUF_Experience')) then
 			self.Experience = CreateFrame('StatusBar', nil, self)
