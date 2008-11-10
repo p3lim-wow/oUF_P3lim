@@ -148,6 +148,7 @@ local function CreateStyle(self, unit)
 	self.Health:SetStatusBarTexture(texture)
 	self.Health:SetHeight(22)
 	self.Health.frequentUpdates = true
+	self.Health.Smooth = true
 
 	self.Health.Text = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallRight')
 	self.Health.Text:SetPoint('RIGHT', self.Health, -2, -1)
@@ -162,6 +163,7 @@ local function CreateStyle(self, unit)
 	self.Power:SetStatusBarTexture(texture)
 	self.Power:SetHeight(4)
 	self.Power.frequentUpdates = true
+	self.Power.Smooth = true
 
 	self.Power.colorTapping = true
 	self.Power.colorDisconnected = true

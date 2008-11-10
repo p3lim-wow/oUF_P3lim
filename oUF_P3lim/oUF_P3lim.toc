@@ -4,6 +4,6 @@
 ## Title: oUF P3lim
 ## Notes: Just another oUF layout
 ## RequiredDeps: oUF
-## OptionalDeps: oUF_AutoShot, oUF_BarFader, oUF_DebuffHighlight, oUF_Experience
+## OptionalDeps: oUF_AutoShot, oUF_BarFader, oUF_DebuffHighlight, oUF_Experience, oUF_Smooth
 
 oUF_P3lim.lua
