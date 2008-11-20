@@ -16,7 +16,7 @@ end
 
 local function truncate(value)
 	if(value >= 1e6) then
-		return string.format('%.1fm', value / 1e6)
+		return string.format('%dm', value / 1e6)
 	elseif(value >= 1e4) then
 		return string.format('%dk', value / 1e3)
 	else
@@ -37,7 +37,7 @@ local function UpdateInfoColor(self, unit, func)
 end
 
 local manamin, manamax, ptype
-local function UpdateDruidMana(self)
+local function UpdateDruidPower(self)
 	ptype = UnitPowerType('player')
 	if(ptype ~= 0) then
 		manamin = UnitPower('player', 0)
@@ -45,6 +45,7 @@ local function UpdateDruidMana(self)
 
 		self:SetMinMaxValues(0, manamax)
 		self:SetValue(manamin)
+		self:SetStatusBarColor(unpack(self.colors.power['MANA']))
 
 		if(manamin ~= manamax) then
 			self.Text:SetFormattedText('%d - %d%%', manamin, math.floor(manamin / manamax * 100))
@@ -54,7 +55,18 @@ local function UpdateDruidMana(self)
 
 		self:SetAlpha(1)
 	else
-		self:SetAlpha(0)
+		manamin = UnitPower('player', 3)
+		manamax = UnitPowerMax('player', 3)
+
+		self:SetStatusBarColor(unpack(self.colors.power['ENERGY']))
+		self.Text:SetText()
+
+		if(manamin ~= manamax) then
+			self:SetMinMaxValues(0, manamax)
+			self:SetValue(manamin)
+		else
+			self:SetAlpha(0)
+		end
 	end
 end
 
@@ -62,11 +74,12 @@ local function OverrideUpdateName(self, event, unit)
 	if(self.unit ~= unit or not self.Name) then return end
 
 	if(unit == 'target') then
-		local level = UnitClassification(unit):find('boss') and 'Boss' or (UnitLevel(unit) > 0 and UnitLevel(unit) or '??')
+		local level = UnitLevel(unit) > 0 and UnitLevel(unit) or '??'
+		local elite = UnitIsPlusMob(unit) and '+' or ''
 		local rare = UnitClassification(unit):find('rare') and 'Rare' or ''
-		local plus = UnitIsPlusMob(unit) and '+' or ''
+		local line = UnitClassification(unit):find('boss') and 'Boss' or level..elite
 
-		self.Name:SetFormattedText('%s |cff0090ff%s%s %s|r', UnitName(unit), level, plus, rare)
+		self.Name:SetFormattedText('%s |cff0090ff%s %s|r', UnitName(unit), line, rare)
 	else
 		self.Name:SetText(UnitName(unit))
 	end
@@ -236,17 +249,20 @@ local function CreateStyle(self, unit)
 		end
 
 		if(class == 'DRUID') then
-			self.DruidMana = CreateFrame('StatusBar', nil, self)
-			self.DruidMana:SetPoint('BOTTOM', self.Power, 'TOP')
-			self.DruidMana:SetStatusBarTexture(texture)
-			self.DruidMana:SetStatusBarColor(unpack(self.colors.power['MANA']))
-			self.DruidMana:SetHeight(1)
-			self.DruidMana:SetWidth(230)
-			self.DruidMana:SetScript('OnUpdate', UpdateDruidMana)
+			self.DruidPower = CreateFrame('StatusBar', nil, self)
+			self.DruidPower:SetPoint('BOTTOM', self.Power, 'TOP')
+			self.DruidPower:SetStatusBarTexture(texture)
+			self.DruidPower:SetHeight(1)
+			self.DruidPower:SetWidth(230)
+			self.DruidPower.colors = self.colors
+			self.DruidPower:SetScript('OnEvent', UpdateDruidPower)
+			self.DruidPower:RegisterEvent('UNIT_MANA')
+			self.DruidPower:RegisterEvent('UNIT_ENERGY')
+			self.DruidPower:RegisterEvent('PLAYER_LOGIN')
 
-			self.DruidMana.Text = self.DruidMana:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
-			self.DruidMana.Text:SetPoint('CENTER', self.DruidMana)
-			self.DruidMana.Text:SetTextColor(unpack(self.colors.power['MANA']))
+			self.DruidPower.Text = self.DruidPower:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
+			self.DruidPower.Text:SetPoint('CENTER', self.DruidPower)
+			self.DruidPower.Text:SetTextColor(unpack(self.colors.power['MANA']))
 		end
 	end
 
