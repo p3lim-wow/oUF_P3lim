@@ -301,8 +301,9 @@ local function CreateStyle(self, unit)
 			self.Debuffs:SetPoint('TOPRIGHT', self, 'TOPLEFT', -2, 1)
 			self.Debuffs.initialAnchor = 'TOPRIGHT'
 			self.Debuffs['growth-x'] = 'LEFT'
---		else -- 1.3
---			self.Debuffs.onlyShowPlayer = true
+		else
+			self.BarFade = true
+			self.Debuffs.onlyShowPlayer = true
 		end
 
 		self:SetAttribute('initial-height', 21)
@@ -372,6 +373,9 @@ local function CreateStyle(self, unit)
 
 	return self
 end
+
+oUF:RegisterSubTypeMapping('UNIT_PET')
+oUF:RegisterSubTypeMapping('UNIT_ENTERED_VEHICLE')
 
 oUF:RegisterStyle('P3lim', CreateStyle)
 oUF:SetActiveStyle('P3lim')
