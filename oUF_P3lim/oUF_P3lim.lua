@@ -280,6 +280,16 @@ local function CreateStyle(self, unit)
 		self.Auras.initialAnchor = 'TOPRIGHT'
 		self.Auras['growth-x'] = 'LEFT'
 
+		self.CPoints = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlight')
+		self.CPoints:SetPoint('LEFT', self.Health, 2, 0)
+		self.CPoints:SetJustifyH('LEFT')
+		self.CPoints.unit = 'pet'
+
+		self.CPoints.Text = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
+		self.CPoints.Text:SetPoint('LEFT', self.CPoints, 'RIGHT', 1, 0)
+		self.CPoints.Text:SetJustifyH('LEFT')
+		self.CPoints.Text:SetText('|cff0090ffCP|r')
+
 		self:SetAttribute('initial-height', 27)
 		self:SetAttribute('initial-width', 130)
 	end
