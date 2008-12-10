@@ -1,10 +1,19 @@
 local _, class = UnitClass('player')
 local texture = [=[Interface\AddOns\oUF_P3lim\minimalist]=]
+local backdrop = {
+	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
+	insets = {top = -1, left = -1, bottom = -1, right = -1},
+}
 
 local colors = setmetatable({
 	power = setmetatable({
 		['MANA'] = {0, 144/255, 1},
 	}, {__index = oUF.colors.power}),
+	runes = setmetatable({
+		[1] = {1, 0, 0.4},
+		[2] = {0, 1, 0.4},
+		[3] = {0, 0.4, 1},
+	}, {__index = oUF.colors.runes}),
 }, {__index = oUF.colors})
 
 local function menu(self)
@@ -36,34 +45,44 @@ local function UpdateInfoColor(self, unit, func)
 	end
 end
 
-local manamin, manamax, ptype
-local function UpdateDruidPower(self)
-	ptype = UnitPowerType('player')
-	if(ptype ~= 0) then
-		manamin = UnitPower('player', 0)
-		manamax = UnitPowerMax('player', 0)
+local function UpdateRuneBar(self, elapsed)
+	local start, duration, ready = GetRuneCooldown(self:GetID())
 
-		self:SetMinMaxValues(0, manamax)
-		self:SetValue(manamin)
+	if(ready) then
+		self:SetValue(1)
+		self:SetScript('OnUpdate', nil)
+	else
+		self:SetValue((GetTime() - start) / duration)
+	end
+end
+
+local function UpdateDruidPower(self)
+	local ptype = UnitPowerType('player')
+	if(ptype ~= 0) then
+		local min = UnitPower('player', 0)
+		local max = UnitPowerMax('player', 0)
+
+		self:SetMinMaxValues(0, max)
+		self:SetValue(min)
 		self:SetStatusBarColor(unpack(self.colors.power['MANA']))
 
-		if(manamin ~= manamax) then
-			self.Text:SetFormattedText('%d - %d%%', manamin, math.floor(manamin / manamax * 100))
+		if(min ~= max) then
+			self.Text:SetFormattedText('%d - %d%%', min, math.floor(min / max * 100))
 		else
 			self.Text:SetText()
 		end
 
 		self:SetAlpha(1)
 	else
-		manamin = UnitPower('player', 3)
-		manamax = UnitPowerMax('player', 3)
+		local min = UnitPower('player', 3)
+		local max = UnitPowerMax('player', 3)
 
 		self:SetStatusBarColor(unpack(self.colors.power['ENERGY']))
 		self.Text:SetText()
 
-		if(manamin ~= manamax) then
-			self:SetMinMaxValues(0, manamax)
-			self:SetValue(manamin)
+		if(min ~= max) then
+			self:SetMinMaxValues(0, max)
+			self:SetValue(min)
 		else
 			self:SetAlpha(0)
 		end
@@ -152,7 +171,7 @@ local function CreateStyle(self, unit)
 	self:SetScript('OnEnter', UnitFrame_OnEnter)
 	self:SetScript('OnLeave', UnitFrame_OnLeave)
 
-	self:SetBackdrop({bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=], insets = {top = -1, left = -1, bottom = -1, right = -1}})
+	self:SetBackdrop(backdrop)
 	self:SetBackdropColor(0, 0, 0)
 
 	self.Health = CreateFrame('StatusBar', nil, self)
@@ -210,7 +229,7 @@ local function CreateStyle(self, unit)
 			self.Experience:SetStatusBarTexture(texture)
 			self.Experience:SetHeight(11)
 			self.Experience:SetWidth((unit == 'pet') and 130 or 230)
-			self.Experience:SetBackdrop({bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=], insets = {top = -1, left = -1, bottom = -1, right = -1}})
+			self.Experience:SetBackdrop(backdrop)
 			self.Experience:SetBackdropColor(0, 0, 0)
 
 			self.Experience.Tooltip = true
@@ -237,7 +256,7 @@ local function CreateStyle(self, unit)
 			self.AutoShot:SetStatusBarColor(1, 0.7, 0)
 			self.AutoShot:SetHeight(6)
 			self.AutoShot:SetWidth(230)
-			self.AutoShot:SetBackdrop({bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=], insets = {top = -1, left = -1, bottom = -1, right = -1}})
+			self.AutoShot:SetBackdrop(backdrop)
 			self.AutoShot:SetBackdropColor(0, 0, 0)
 
 			self.AutoShot.Time = self.AutoShot:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
@@ -264,6 +283,42 @@ local function CreateStyle(self, unit)
 			self.DruidPower.Text:SetPoint('CENTER', self.DruidPower)
 			self.DruidPower.Text:SetTextColor(unpack(self.colors.power['MANA']))
 		end
+
+		if(class == 'DEATHKNIGHT') then
+			self.RuneBar = {}
+			for i = 1, 6 do
+				self.RuneBar[i] = CreateFrame('StatusBar', nil, self)
+				if(i == 1) then
+					self.RuneBar[i]:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -1)
+				else
+					self.RuneBar[i]:SetPoint('TOPLEFT', self.RuneBar[i-1], 'TOPRIGHT', 1, 0)
+				end
+				self.RuneBar[i]:SetPoint('TOP', self, 'BOTTOM', 0, -1)
+				self.RuneBar[i]:SetStatusBarTexture(texture)
+				self.RuneBar[i]:SetStatusBarColor(unpack(self.colors.runes[GetRuneType(i)]))
+				self.RuneBar[i]:SetHeight(4)
+				self.RuneBar[i]:SetWidth(230/6 - 0.85)
+				self.RuneBar[i]:SetBackdrop(backdrop)
+				self.RuneBar[i]:SetBackdropColor(0, 0, 0)
+				self.RuneBar[i]:SetMinMaxValues(0, 1)
+				self.RuneBar[i]:SetID(i)
+
+				self.RuneBar[i].bg = self.RuneBar[i]:CreateTexture(nil, 'BORDER')
+				self.RuneBar[i].bg:SetAllPoints(self.RuneBar[i])
+				self.RuneBar[i].bg:SetTexture(0.3, 0.3, 0.3)			
+			end
+
+			RuneFrame:Hide()
+
+			self:RegisterEvent('RUNE_POWER_UPDATE')
+			self.RUNE_POWER_UPDATE = function(self, event, rune, usable)
+				for i = 1, 6 do
+					if(rune == i and not usable and GetRuneType(rune)) then
+						self.RuneBar[i]:SetScript('OnUpdate', UpdateRuneBar)
+					end
+				end
+			end
+		end
 	end
 
 	if(unit == 'pet') then
@@ -284,11 +339,6 @@ local function CreateStyle(self, unit)
 		self.CPoints:SetPoint('LEFT', self.Health, 2, 0)
 		self.CPoints:SetJustifyH('LEFT')
 		self.CPoints.unit = 'pet'
-
-		self.CPoints.Text = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
-		self.CPoints.Text:SetPoint('LEFT', self.CPoints, 'RIGHT', 1, 0)
-		self.CPoints.Text:SetJustifyH('LEFT')
-		self.CPoints.Text:SetText('|cff0090ffCP|r')
 
 		self:SetAttribute('initial-height', 27)
 		self:SetAttribute('initial-width', 130)
@@ -329,7 +379,7 @@ local function CreateStyle(self, unit)
 		self.Castbar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -100)
 		self.Castbar:SetStatusBarTexture(texture)
 		self.Castbar:SetStatusBarColor(0.25, 0.25, 0.35)
-		self.Castbar:SetBackdrop({bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=], insets = {top = -1, left = -1, bottom = -1, right = -1}})
+		self.Castbar:SetBackdrop(backdrop)
 		self.Castbar:SetBackdropColor(0, 0, 0)
 		self.Castbar:SetHeight(22)
 
