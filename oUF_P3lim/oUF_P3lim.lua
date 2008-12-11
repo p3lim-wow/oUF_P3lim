@@ -11,8 +11,11 @@ local colors = setmetatable({
 	}, {__index = oUF.colors.power}),
 	runes = setmetatable({
 		[1] = {1, 0, 0.4},
-		[2] = {0, 1, 0.4},
-		[3] = {0, 0.4, 1},
+		[2] = {1, 0, 0.4},
+		[3] = {0, 1, 0.4},
+		[4] = {0, 1, 0.4},
+		[5] = {0, 0.4, 1},
+		[6] = {0, 0.4, 1},
 	}, {__index = oUF.colors.runes}),
 }, {__index = oUF.colors})
 
@@ -295,7 +298,7 @@ local function CreateStyle(self, unit)
 				end
 				self.RuneBar[i]:SetPoint('TOP', self, 'BOTTOM', 0, -1)
 				self.RuneBar[i]:SetStatusBarTexture(texture)
-				self.RuneBar[i]:SetStatusBarColor(unpack(self.colors.runes[GetRuneType(i)]))
+				self.RuneBar[i]:SetStatusBarColor(unpack(self.colors.runes[i]))
 				self.RuneBar[i]:SetHeight(4)
 				self.RuneBar[i]:SetWidth(230/6 - 0.85)
 				self.RuneBar[i]:SetBackdrop(backdrop)
