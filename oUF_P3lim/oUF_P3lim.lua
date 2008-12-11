@@ -5,17 +5,24 @@ local backdrop = {
 	insets = {top = -1, left = -1, bottom = -1, right = -1},
 }
 
+local runeloadcolors = {
+	[1] = {1, 0, 0.4},
+	[2] = {1, 0, 0.4},
+	[3] = {0, 1, 0.4},
+	[4] = {0, 1, 0.4},
+	[5] = {0, 0.4, 1},
+	[6] = {0, 0.4, 1},
+}
+
 local colors = setmetatable({
 	power = setmetatable({
 		['MANA'] = {0, 144/255, 1},
 	}, {__index = oUF.colors.power}),
 	runes = setmetatable({
 		[1] = {1, 0, 0.4},
-		[2] = {1, 0, 0.4},
-		[3] = {0, 1, 0.4},
-		[4] = {0, 1, 0.4},
-		[5] = {0, 0.4, 1},
-		[6] = {0, 0.4, 1},
+		[2] = {0, 1, 0.4},
+		[3] = {0, 0.4, 1},
+		[4] = {0.8, 0.8, 0.8},
 	}, {__index = oUF.colors.runes}),
 }, {__index = oUF.colors})
 
@@ -298,7 +305,7 @@ local function CreateStyle(self, unit)
 				end
 				self.RuneBar[i]:SetPoint('TOP', self, 'BOTTOM', 0, -1)
 				self.RuneBar[i]:SetStatusBarTexture(texture)
-				self.RuneBar[i]:SetStatusBarColor(unpack(self.colors.runes[i]))
+				self.RuneBar[i]:SetStatusBarColor(unpack(runeloadcolors[i]))
 				self.RuneBar[i]:SetHeight(4)
 				self.RuneBar[i]:SetWidth(230/6 - 0.85)
 				self.RuneBar[i]:SetBackdrop(backdrop)
@@ -312,6 +319,25 @@ local function CreateStyle(self, unit)
 			end
 
 			RuneFrame:Hide()
+
+			self:RegisterEvent('RUNE_TYPE_UPDATE')
+			self:RegisterEvent('RUNE_REGEN_UPDATE')
+			self.RUNE_REGEN_UPDATE = self.RUNE_TYPE_UPDATE
+			self.RUNE_TYPE_UPDATE = function(self, event, rune)
+				if(rune) then
+					local runetype = GetRuneType(rune)
+					if(runetype) then
+						self.RuneBar[rune]:SetStatusBarColor(unpack(self.colors.runes[runetype]))
+					end
+				else
+					for i = 1, 6 do
+						local runetype = GetRuneType(i)
+						if(runetype) then
+							self.RuneBar[i]:SetStatusBarColor(unpack(self.colors.runes[runetype]))
+						end
+					end
+				end
+			end
 
 			self:RegisterEvent('RUNE_POWER_UPDATE')
 			self.RUNE_POWER_UPDATE = function(self, event, rune, usable)
