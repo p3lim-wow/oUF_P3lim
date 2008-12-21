@@ -276,8 +276,8 @@ local function CreateStyle(self, unit)
 			self.AutoShot:SetBackdrop(backdrop)
 			self.AutoShot:SetBackdropColor(0, 0, 0)
 
-			self.AutoShot.Time = self.AutoShot:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
-			self.AutoShot.Time:SetPoint('CENTER', self.AutoShot)
+			self.AutoShot.Text = self.AutoShot:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
+			self.AutoShot.Text:SetPoint('CENTER', self.AutoShot)
 
 			self.AutoShot.bg = self.AutoShot:CreateTexture(nil, 'BORDER')
 			self.AutoShot.bg:SetAllPoints(self.AutoShot)
