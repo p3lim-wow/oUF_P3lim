@@ -6,12 +6,12 @@ local backdrop = {
 }
 
 local runeloadcolors = {
-	[1] = {1, 0, 0.4},
-	[2] = {1, 0, 0.4},
-	[3] = {0, 1, 0.4},
-	[4] = {0, 1, 0.4},
-	[5] = {0, 0.4, 1},
-	[6] = {0, 0.4, 1},
+	[1] = {0.77, 0.12, 0.23},
+	[2] = {0.77, 0.12, 0.23},
+	[3] = {0.4, 0.8, 0.1},
+	[4] = {0.4, 0.8, 0.1},
+	[5] = {0, 0.4, 0.7},
+	[6] = {0, 0.4, 0.7},
 }
 
 local colors = setmetatable({
@@ -19,9 +19,9 @@ local colors = setmetatable({
 		['MANA'] = {0, 144/255, 1},
 	}, {__index = oUF.colors.power}),
 	runes = setmetatable({
-		[1] = {1, 0, 0.4},
-		[2] = {0, 1, 0.4},
-		[3] = {0, 0.4, 1},
+		[1] = {0.77, 0.12, 0.23},
+		[2] = {0.3, 0.8, 0.1},
+		[3] = {0, 0.4, 0.7},
 		[4] = {0.8, 0.8, 0.8},
 	}, {__index = oUF.colors.runes}),
 }, {__index = oUF.colors})
@@ -43,15 +43,15 @@ local function truncate(value)
 	end
 end
 
-local function UpdateInfoColor(self, unit, func)
+local function UpdateInfoColor(self, unit)
 	if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) then
-		return self[func](self, unpack(oUF.colors.tapped))
+		return self['SetTextColor'](self, unpack(oUF.colors.tapped))
 	elseif(UnitIsDead(unit) or UnitIsGhost(unit) or not UnitIsConnected(unit)) then
-		return self[func](self, unpack(oUF.colors.disconnected))
+		return self['SetTextColor'](self, unpack(oUF.colors.disconnected))
 	elseif(not UnitIsPlayer(unit)) then
-		return self[func](self, unpack({UnitSelectionColor(unit)} or oUF.colors.health))
+		return self['SetTextColor'](self, unpack({UnitSelectionColor(unit)} or oUF.colors.health))
 	else
-		return self[func](self, 1, 1, 1)
+		return self['SetTextColor'](self, 1, 1, 1)
 	end
 end
 
@@ -66,54 +66,61 @@ local function UpdateRuneBar(self, elapsed)
 	end
 end
 
+local function UpdateRunePower(self, event, rune, usable)
+	for i = 1, 6 do
+		if(rune == i and not usable and GetRuneType(rune)) then
+			self.RuneBar[i]:SetScript('OnUpdate', UpdateRuneBar)
+		end
+	end
+end
+
+local function UpdateRuneType(self, event, rune)
+	if(rune) then
+		local runetype = GetRuneType(rune)
+		if(runetype) then
+			self.RuneBar[rune]:SetStatusBarColor(unpack(self.colors.runes[runetype]))
+		end
+	else
+		for i = 1, 6 do
+			local runetype = GetRuneType(i)
+			if(runetype) then
+				self.RuneBar[i]:SetStatusBarColor(unpack(self.colors.runes[runetype]))
+			end
+		end
+	end
+end
+
 local function UpdateDruidPower(self)
 	local ptype = UnitPowerType('player')
 	if(ptype ~= 0) then
 		local min = UnitPower('player', 0)
 		local max = UnitPowerMax('player', 0)
 
-		self:SetMinMaxValues(0, max)
-		self:SetValue(min)
-		self:SetStatusBarColor(unpack(self.colors.power['MANA']))
+		self.DruidPower:SetMinMaxValues(0, max)
+		self.DruidPower:SetValue(min)
+		self.DruidPower:SetStatusBarColor(unpack(self.colors.power['MANA']))
 
 		if(min ~= max) then
-			self.Text:SetFormattedText('%d - %d%%', min, math.floor(min / max * 100))
+			self.DruidPower.Text:SetFormattedText('%d - %d%%', min, math.floor(min / max * 100))
 		else
-			self.Text:SetText()
+			self.DruidPower.Text:SetText()
 		end
 
-		self:SetAlpha(1)
+		self.DruidPower:SetAlpha(1)
 	else
 		local min = UnitPower('player', 3)
 		local max = UnitPowerMax('player', 3)
 
-		self:SetStatusBarColor(unpack(self.colors.power['ENERGY']))
-		self.Text:SetText()
+		self.DruidPower:SetStatusBarColor(unpack(self.colors.power['ENERGY']))
+		self.DruidPower.Text:SetText()
 
 		if(min ~= max) then
-			self:SetMinMaxValues(0, max)
-			self:SetValue(min)
+			self.DruidPower:SetMinMaxValues(0, max)
+			self.DruidPower:SetValue(min)
 		else
-			self:SetAlpha(0)
+			self.DruidPower:SetAlpha(0)
 		end
 	end
-end
-
-local function OverrideUpdateName(self, event, unit)
-	if(self.unit ~= unit or not self.Name) then return end
-
-	if(unit == 'target') then
-		local level = UnitLevel(unit) > 0 and UnitLevel(unit) or '??'
-		local elite = UnitIsPlusMob(unit) and '+' or ''
-		local rare = UnitClassification(unit):find('rare') and 'Rare' or ''
-		local line = UnitClassification(unit):find('boss') and 'Boss' or level..elite
-
-		self.Name:SetFormattedText('%s |cff0090ff%s %s|r', UnitName(unit), line, rare)
-	else
-		self.Name:SetText(UnitName(unit))
-	end
-
-	UpdateInfoColor(self.Name, unit, 'SetTextColor')
 end
 
 local function PostUpdateHealth(self, event, unit, bar, min, max)
@@ -140,7 +147,7 @@ local function PostUpdateHealth(self, event, unit, bar, min, max)
 		end
 	end
 
-	if(self.Name) then UpdateInfoColor(self.Name, unit, 'SetTextColor') end
+	if(self.Info) then UpdateInfoColor(self.Info, unit) end
 end
 
 local function PostUpdatePower(self, event, unit, bar, min, max)
@@ -162,7 +169,7 @@ local function PostUpdatePower(self, event, unit, bar, min, max)
 		if(color) then bar.Text:SetTextColor(color[1], color[2], color[3]) end
 	end
 
-	if(self.Name) then UpdateInfoColor(self.Name, unit, 'SetTextColor') end
+	if(self.Info) then UpdateInfoColor(self.Info, unit) end
 end
 
 local function PostCreateAuraIcon(self, button, icons)
@@ -252,10 +259,10 @@ local function CreateStyle(self, unit)
 			self.Experience.bg:SetTexture(0.3, 0.3, 0.3)
 		end
 	else
-		self.Name = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
-		self.Name:SetPoint('LEFT', self.Health, 2, -1)
-		self.Name:SetPoint('RIGHT', self.Health.Text, 'LEFT')
-		self.UNIT_NAME_UPDATE = OverrideUpdateName
+		self.Info = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
+		self.Info:SetPoint('LEFT', self.Health, 2, -1)
+		self.Info:SetPoint('RIGHT', self.Health.Text, 'LEFT')
+		self:Tag(self.Info, unit == 'target' and '[name] |cff0090ff[smartlevel] [rare]|r' or '[name]')
 	end
 
 	if(unit == 'player') then
@@ -283,15 +290,14 @@ local function CreateStyle(self, unit)
 			self.DruidPower:SetStatusBarTexture(texture)
 			self.DruidPower:SetHeight(1)
 			self.DruidPower:SetWidth(230)
-			self.DruidPower.colors = self.colors
-			self.DruidPower:SetScript('OnEvent', UpdateDruidPower)
-			self.DruidPower:RegisterEvent('UNIT_MANA')
-			self.DruidPower:RegisterEvent('UNIT_ENERGY')
-			self.DruidPower:RegisterEvent('PLAYER_LOGIN')
 
 			self.DruidPower.Text = self.DruidPower:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
 			self.DruidPower.Text:SetPoint('CENTER', self.DruidPower)
 			self.DruidPower.Text:SetTextColor(unpack(self.colors.power['MANA']))
+
+			self:RegisterEvent('UNIT_MANA', UpdateDruidPower)
+			self:RegisterEvent('UNIT_ENERGY', UpdateDruidPower)
+			self:RegisterEvent('PLAYER_LOGIN', UpdateDruidPower)
 		end
 
 		if(class == 'DEATHKNIGHT') then
@@ -303,7 +309,6 @@ local function CreateStyle(self, unit)
 				else
 					self.RuneBar[i]:SetPoint('TOPLEFT', self.RuneBar[i-1], 'TOPRIGHT', 1, 0)
 				end
-				self.RuneBar[i]:SetPoint('TOP', self, 'BOTTOM', 0, -1)
 				self.RuneBar[i]:SetStatusBarTexture(texture)
 				self.RuneBar[i]:SetStatusBarColor(unpack(runeloadcolors[i]))
 				self.RuneBar[i]:SetHeight(4)
@@ -320,33 +325,9 @@ local function CreateStyle(self, unit)
 
 			RuneFrame:Hide()
 
-			self:RegisterEvent('RUNE_TYPE_UPDATE')
-			self:RegisterEvent('RUNE_REGEN_UPDATE')
-			self.RUNE_REGEN_UPDATE = self.RUNE_TYPE_UPDATE
-			self.RUNE_TYPE_UPDATE = function(self, event, rune)
-				if(rune) then
-					local runetype = GetRuneType(rune)
-					if(runetype) then
-						self.RuneBar[rune]:SetStatusBarColor(unpack(self.colors.runes[runetype]))
-					end
-				else
-					for i = 1, 6 do
-						local runetype = GetRuneType(i)
-						if(runetype) then
-							self.RuneBar[i]:SetStatusBarColor(unpack(self.colors.runes[runetype]))
-						end
-					end
-				end
-			end
-
-			self:RegisterEvent('RUNE_POWER_UPDATE')
-			self.RUNE_POWER_UPDATE = function(self, event, rune, usable)
-				for i = 1, 6 do
-					if(rune == i and not usable and GetRuneType(rune)) then
-						self.RuneBar[i]:SetScript('OnUpdate', UpdateRuneBar)
-					end
-				end
-			end
+			self:RegisterEvent('RUNE_TYPE_UPDATE', UpdateRuneType)
+			self:RegisterEvent('RUNE_REGEN_UPDATE', UpdateRuneType)
+			self:RegisterEvent('RUNE_POWER_UPDATE', UpdateRunePower)
 		end
 	end
 
@@ -462,9 +443,6 @@ local function CreateStyle(self, unit)
 
 	return self
 end
-
-oUF:RegisterSubTypeMapping('UNIT_PET')
-oUF:RegisterSubTypeMapping('UNIT_ENTERED_VEHICLE')
 
 oUF:RegisterStyle('P3lim', CreateStyle)
 oUF:SetActiveStyle('P3lim')
