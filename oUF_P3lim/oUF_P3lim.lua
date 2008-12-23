@@ -434,6 +434,8 @@ local function CreateStyle(self, unit)
 		self.Debuffs['growth-y'] = 'DOWN'
 	end
 
+	self.disallowVehicleSwap = true
+
 	self.DebuffHighlightBackdrop = true
 	self.DebuffHighlightFilter = true
 
