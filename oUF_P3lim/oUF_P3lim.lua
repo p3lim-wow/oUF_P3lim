@@ -123,6 +123,11 @@ local function UpdateDruidPower(self)
 	end
 end
 
+local function PostUpdateReputation(self, event, unit, bar)
+	local _, id = GetWatchedFactionInfo()
+	bar:SetStatusBarColor(FACTION_BAR_COLORS[id].r, FACTION_BAR_COLORS[id].g, FACTION_BAR_COLORS[id].b)
+end
+
 local function PostUpdateHealth(self, event, unit, bar, min, max)
 	bar:SetStatusBarColor(0.25, 0.25, 0.35)
 	if(not UnitIsConnected(unit)) then
@@ -197,7 +202,6 @@ local function CreateStyle(self, unit)
 	self.Health:SetStatusBarTexture(texture)
 	self.Health:SetHeight(22)
 	self.Health.frequentUpdates = true
-	self.Health.Smooth = true
 
 	self.Health.Text = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallRight')
 	self.Health.Text:SetPoint('RIGHT', self.Health, -2, -1)
@@ -212,7 +216,6 @@ local function CreateStyle(self, unit)
 	self.Power:SetStatusBarTexture(texture)
 	self.Power:SetHeight(4)
 	self.Power.frequentUpdates = true
-	self.Power.Smooth = true
 
 	self.Power.colorTapping = true
 	self.Power.colorDisconnected = true
@@ -244,6 +247,7 @@ local function CreateStyle(self, unit)
 			self.Experience = CreateFrame('StatusBar', nil, self)
 			self.Experience:SetPoint('TOP', self, 'BOTTOM', 0, -10)
 			self.Experience:SetStatusBarTexture(texture)
+			self.Experience:SetStatusBarColor(unpack(self.colors.health))
 			self.Experience:SetHeight(11)
 			self.Experience:SetWidth((unit == 'pet') and 130 or 230)
 			self.Experience:SetBackdrop(backdrop)
@@ -284,12 +288,33 @@ local function CreateStyle(self, unit)
 			self.AutoShot.bg:SetTexture(0.3, 0.3, 0.3)				
 		end
 
+		if(IsAddOnLoaded'oUF_Reputation' and UnitLevel(unit) == MAX_PLAYER_LEVEL) then
+			self.Reputation = CreateFrame('StatusBar', nil, self)
+			self.Reputation:SetPoint('TOP', self, 'BOTTOM', 0, -10)
+			self.Reputation:SetStatusBarTexture(texture)
+			self.Reputation:SetHeight(11)
+			self.Reputation:SetWidth(230)
+			self.Reputation:SetBackdrop(backdrop)
+			self.Reputation:SetBackdropColor(0, 0, 0)
+
+			self.Reputation.PostUpdate = PostUpdateReputation
+			self.Reputation.Tooltip = true
+
+			self.Reputation.Text = self.Reputation:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
+			self.Reputation.Text:SetPoint('CENTER', self.Reputation)
+
+			self.Reputation.bg = self.Reputation:CreateTexture(nil, 'BORDER')
+			self.Reputation.bg:SetAllPoints(self.Reputation)
+			self.Reputation.bg:SetTexture(0.3, 0.3, 0.3)
+		end
+
 		if(class == 'DRUID') then
 			self.DruidPower = CreateFrame('StatusBar', nil, self)
 			self.DruidPower:SetPoint('BOTTOM', self.Power, 'TOP')
 			self.DruidPower:SetStatusBarTexture(texture)
 			self.DruidPower:SetHeight(1)
 			self.DruidPower:SetWidth(230)
+			self.DruidPower:SetAlpha(0)
 
 			self.DruidPower.Text = self.DruidPower:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
 			self.DruidPower.Text:SetPoint('CENTER', self.DruidPower)
