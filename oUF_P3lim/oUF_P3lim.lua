@@ -177,6 +177,14 @@ local function PostUpdatePower(self, event, unit, bar, min, max)
 	if(self.Info) then UpdateInfoColor(self.Info, unit) end
 end
 
+local function OverrideCastbarTime(self, duration)
+	if(self.channeling) then
+		self.Time:SetFormattedText('%.1f ', duration)
+	elseif(self.casting) then
+		self.Time:SetFormattedText('%.1f ', self.max - duration)
+	end
+end
+
 local function PostCreateAuraIcon(self, button, icons)
 	icons.showDebuffType = true
 	button.cd:SetReverse()
@@ -423,6 +431,7 @@ local function CreateStyle(self, unit)
 
 		self.Castbar.Time = self.Castbar:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallRight')
 		self.Castbar.Time:SetPoint('RIGHT', self.Castbar, -2, -1)
+		self.Castbar.CustomTimeText = OverrideCastbarTime
 
 		self.Castbar.bg = self.Castbar:CreateTexture(nil, 'BORDER')
 		self.Castbar.bg:SetAllPoints(self.Castbar)
