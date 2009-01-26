@@ -45,13 +45,13 @@ end
 
 local function UpdateInfoColor(self, unit)
 	if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) then
-		return self['SetTextColor'](self, unpack(oUF.colors.tapped))
+		self:SetTextColor(unpack(colors.tapped))
 	elseif(UnitIsDead(unit) or UnitIsGhost(unit) or not UnitIsConnected(unit)) then
-		return self['SetTextColor'](self, unpack(oUF.colors.disconnected))
+		self:SetTextColor(unpack(colors.disconnected))
 	elseif(not UnitIsPlayer(unit)) then
-		return self['SetTextColor'](self, unpack({UnitSelectionColor(unit)} or oUF.colors.health))
+		self:SetTextColor(unpack({UnitSelectionColor(unit)} or colors.health))
 	else
-		return self['SetTextColor'](self, 1, 1, 1)
+		self:SetTextColor(1, 1, 1)
 	end
 end
 
@@ -78,53 +78,45 @@ local function UpdateRuneType(self, event, rune)
 	if(rune) then
 		local runetype = GetRuneType(rune)
 		if(runetype) then
-			self.RuneBar[rune]:SetStatusBarColor(unpack(self.colors.runes[runetype]))
+			self.RuneBar[rune]:SetStatusBarColor(unpack(colors.runes[runetype]))
 		end
 	else
 		for i = 1, 6 do
 			local runetype = GetRuneType(i)
 			if(runetype) then
-				self.RuneBar[i]:SetStatusBarColor(unpack(self.colors.runes[runetype]))
+				self.RuneBar[i]:SetStatusBarColor(unpack(colors.runes[runetype]))
 			end
 		end
 	end
 end
 
 local function UpdateDruidPower(self)
-	local ptype = UnitPowerType('player')
-	if(ptype ~= 0) then
-		local min = UnitPower('player', 0)
-		local max = UnitPowerMax('player', 0)
+	local bar = self.DruidPower
+	local num, str = UnitPowerType('player')
+	local min = UnitPower('player', (num ~= 0) and 0 or 3)
+	local max = UnitPowerMax('player', (num ~= 0) and 0 or 3)
 
-		self.DruidPower:SetMinMaxValues(0, max)
-		self.DruidPower:SetValue(min)
-		self.DruidPower:SetStatusBarColor(unpack(self.colors.power['MANA']))
+	bar:SetMinMaxValues(0, max)
 
-		if(min ~= max) then
-			self.DruidPower.Text:SetFormattedText('%d - %d%%', min, math.floor(min / max * 100))
+	if(min ~= max) then
+		bar:SetValue(min)
+		bar:SetAlpha(1)
+
+		if(num ~= 0) then
+			bar:SetStatusBarColor(unpack(colors.power['MANA']))
+			bar.Text:SetFormattedText('%d - %d%%', min, math.floor(min / max * 100))
 		else
-			self.DruidPower.Text:SetText()
+			bar:SetStatusBarColor(unpack(colors.power['ENERGY']))
+			bar.Text:SetText()
 		end
-
-		self.DruidPower:SetAlpha(1)
 	else
-		local min = UnitPower('player', 3)
-		local max = UnitPowerMax('player', 3)
-
-		self.DruidPower:SetStatusBarColor(unpack(self.colors.power['ENERGY']))
-		self.DruidPower.Text:SetText()
-
-		if(min ~= max) then
-			self.DruidPower:SetMinMaxValues(0, max)
-			self.DruidPower:SetValue(min)
-		else
-			self.DruidPower:SetAlpha(0)
-		end
+		bar:SetAlpha(0)
+		bar.Text:SetText()
 	end
 end
 
 local function PostUpdateReputation(self, event, unit, bar)
-	local _, id = GetWatchedFactionInfo()
+	local name, id = GetWatchedFactionInfo()
 	bar:SetStatusBarColor(FACTION_BAR_COLORS[id].r, FACTION_BAR_COLORS[id].g, FACTION_BAR_COLORS[id].b)
 end
 
@@ -157,9 +149,7 @@ end
 
 local function PostUpdatePower(self, event, unit, bar, min, max)
 	if(bar.Text) then
-		if(min == 0) then
-			bar.Text:SetText()
-		elseif(not UnitIsPlayer(unit) or not UnitIsConnected(unit)) then
+		if(min == 0 or not UnitIsPlayer(unit) or not UnitIsConnected(unit)) then
 			bar.Text:SetText()
 		else
 			if(min ~= max) then
@@ -169,8 +159,8 @@ local function PostUpdatePower(self, event, unit, bar, min, max)
 			end
 		end
 
-		local _, ptype = UnitPowerType(unit)
-		local color = self.colors.power[ptype] or self.colors.health
+		local num, str = UnitPowerType(unit)
+		local color = colors.power[str] or colors.health
 		if(color) then bar.Text:SetTextColor(color[1], color[2], color[3]) end
 	end
 
@@ -245,6 +235,11 @@ local function CreateStyle(self, unit)
 	self.RaidIcon:SetHeight(16)
 	self.RaidIcon:SetWidth(16)
 
+	self.MasterLooter = self.Health:CreateTexture(nil, 'OVERLAY')
+	self.MasterLooter:SetPoint('LEFT', self.Leader, 'RIGHT')
+	self.MasterLooter:SetHeight(16)
+	self.MasterLooter:SetWidth(16)
+
 	if(unit == 'player' or unit == 'pet') then
 		self.Power.Text = self.Power:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
 		self.Power.Text:SetPoint('LEFT', self.Health, 2, -1)
@@ -255,7 +250,7 @@ local function CreateStyle(self, unit)
 			self.Experience = CreateFrame('StatusBar', nil, self)
 			self.Experience:SetPoint('TOP', self, 'BOTTOM', 0, -10)
 			self.Experience:SetStatusBarTexture(texture)
-			self.Experience:SetStatusBarColor(unpack(self.colors.health))
+			self.Experience:SetStatusBarColor(unpack(colors.health))
 			self.Experience:SetHeight(11)
 			self.Experience:SetWidth((unit == 'pet') and 130 or 230)
 			self.Experience:SetBackdrop(backdrop)
@@ -326,7 +321,7 @@ local function CreateStyle(self, unit)
 
 			self.DruidPower.Text = self.DruidPower:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
 			self.DruidPower.Text:SetPoint('CENTER', self.DruidPower)
-			self.DruidPower.Text:SetTextColor(unpack(self.colors.power['MANA']))
+			self.DruidPower.Text:SetTextColor(unpack(colors.power['MANA']))
 
 			self:RegisterEvent('UNIT_MANA', UpdateDruidPower)
 			self:RegisterEvent('UNIT_ENERGY', UpdateDruidPower)
@@ -378,10 +373,10 @@ local function CreateStyle(self, unit)
 		self.Auras.initialAnchor = 'TOPRIGHT'
 		self.Auras['growth-x'] = 'LEFT'
 
-		self.CPoints = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlight')
-		self.CPoints:SetPoint('LEFT', self.Health, 2, 0)
-		self.CPoints:SetJustifyH('LEFT')
-		self.CPoints.unit = 'pet'
+		local cpoints = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlight')
+		cpoints:SetPoint('LEFT', self.Health, 2, 0)
+		cpoints:SetJustifyH('LEFT')
+		self:Tag(cpoints, '[cpoints( CP)]')
 
 		self:SetAttribute('initial-height', 27)
 		self:SetAttribute('initial-width', 130)
