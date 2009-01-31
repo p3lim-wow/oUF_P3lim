@@ -46,12 +46,21 @@ end
 local function UpdateInfoColor(self, unit)
 	if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) then
 		self:SetTextColor(unpack(colors.tapped))
-	elseif(UnitIsDead(unit) or UnitIsGhost(unit) or not UnitIsConnected(unit)) then
+	elseif(not UnitIsConnected(unit)) then
 		self:SetTextColor(unpack(colors.disconnected))
 	elseif(not UnitIsPlayer(unit)) then
 		self:SetTextColor(unpack({UnitSelectionColor(unit)} or colors.health))
 	else
 		self:SetTextColor(1, 1, 1)
+	end
+end
+
+local function UpdateMasterLooter(self)
+	self.MasterLooter:ClearAllPoints()
+	if((UnitInParty(self.unit) or UnitInRaid(self.unit)) and UnitIsPartyLeader(self.unit)) then
+		self.MasterLooter:SetPoint('LEFT', self.Leader, 'RIGHT')
+	else
+		self.MasterLooter:SetPoint('TOPLEFT', self, 0, 8)
 	end
 end
 
@@ -183,6 +192,15 @@ local function PostCreateAuraIcon(self, button, icons)
 	button.overlay.Hide = function(self) self:SetVertexColor(0.25, 0.25, 0.25) end
 end
 
+local function PostUpdateAuraIcon(self, icons, unit, icon, index, offset, filter, debuff)
+	if(debuff and UnitIsEnemy('player', unit)) then
+		local _, _, _, _, _, duration, _, isPlayer = UnitAura(unit, index, filter)
+		if(duration and duration > 0 and not isPlayer) then
+			icon.cd:Hide()
+		end
+	end
+end
+
 local function CreateStyle(self, unit)
 	self.colors = colors
 	self.menu = menu
@@ -239,6 +257,11 @@ local function CreateStyle(self, unit)
 	self.MasterLooter:SetPoint('LEFT', self.Leader, 'RIGHT')
 	self.MasterLooter:SetHeight(16)
 	self.MasterLooter:SetWidth(16)
+
+	table.insert(self.__elements, UpdateMasterLooter)
+	self:RegisterEvent('PARTY_LOOT_METHOD_CHANGED', UpdateMasterLooter)
+	self:RegisterEvent('PARTY_MEMBERS_CHANGED', UpdateMasterLooter)
+	self:RegisterEvent('PARTY_LEADER_CHANGED', UpdateMasterLooter)
 
 	if(unit == 'player' or unit == 'pet') then
 		self.Power.Text = self.Power:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
@@ -468,6 +491,7 @@ local function CreateStyle(self, unit)
 	self.DebuffHighlightBackdrop = true
 	self.DebuffHighlightFilter = true
 
+	self.PostUpdateAuraIcon = PostUpdateAuraIcon
 	self.PostCreateAuraIcon = PostCreateAuraIcon
 	self.PostUpdateHealth = PostUpdateHealth
 	self.PostUpdatePower = PostUpdatePower
