@@ -52,11 +52,11 @@ end
 
 oUF.Tags['[colorpp]'] = function(u) local n,s = UnitPowerType(u) return Hex(colors.power[s]) end
 oUF.Tags['[colorinfo]'] = function(u)
-	if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) then
+	if(UnitIsTapped(u) and not UnitIsTappedByPlayer(u)) then
 		return Hex(colors.tapped)
-	elseif(not UnitIsConnected(unit)) then
+	elseif(not UnitIsConnected(u)) then
 		return Hex(colors.disconnected)
-	elseif(not UnitIsPlayer(unit)) then
+	elseif(not UnitIsPlayer(u)) then
 		return Hex(UnitSelectionColor(u))
 	else
 		return Hex(1, 1, 1)
@@ -251,64 +251,26 @@ local function CreateStyle(self, unit)
 
 	self.BarFade = true
 
-	if(IsAddOnLoaded('oUF_Swing')) then
-		self.Swing = CreateFrame('StatusBar', nil, self)
-		self.Swing:SetPoint('TOP', self, 'BOTTOM', 0, -80)
-		self.Swing:SetStatusBarTexture(texture)
-		self.Swing:SetStatusBarColor(1, 0.7, 0)
-		self.Swing:SetHeight(6)
-		self.Swing:SetWidth(230)
-		self.Swing:SetBackdrop(backdrop)
-		self.Swing:SetBackdropColor(0, 0, 0)
-		self.Swing.disableMelee = true
-
-		self.Swing.Text = self.Swing:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
-		self.Swing.Text:SetPoint('CENTER', self.Swing)
-
-		self.Swing.bg = self.Swing:CreateTexture(nil, 'BORDER')
-		self.Swing.bg:SetAllPoints(self.Swing)
-		self.Swing.bg:SetTexture(0.3, 0.3, 0.3)
-	end
-
-	if(IsAddOnLoaded('oUF_Experience')) then
-		self.Experience = CreateFrame('StatusBar', nil, self)
-		self.Experience:SetPoint('TOP', self, 'BOTTOM', 0, -10)
-		self.Experience:SetStatusBarTexture(texture)
-		self.Experience:SetStatusBarColor(unpack(colors.health))
-		self.Experience:SetHeight(11)
-		self.Experience:SetWidth((unit == 'pet') and 130 or 230)
-		self.Experience:SetBackdrop(backdrop)
-		self.Experience:SetBackdropColor(0, 0, 0)
-		self.Experience.Tooltip = true
-
-		self.Experience.Text = self.Experience:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
-		self.Experience.Text:SetPoint('CENTER', self.Experience)
-
-		self.Experience.bg = self.Experience:CreateTexture(nil, 'BORDER')
-		self.Experience.bg:SetAllPoints(self.Experience)
-		self.Experience.bg:SetTexture(0.3, 0.3, 0.3)
-	end
-
-	if(IsAddOnLoaded'oUF_Reputation' and UnitLevel('player') == MAX_PLAYER_LEVEL) then
-		self.Reputation = CreateFrame('StatusBar', nil, self)
-		self.Reputation:SetPoint('TOP', self, 'BOTTOM', 0, -10)
-		self.Reputation:SetStatusBarTexture(texture)
-		self.Reputation:SetHeight(11)
-		self.Reputation:SetWidth(230)
-		self.Reputation:SetBackdrop(backdrop)
-		self.Reputation:SetBackdropColor(0, 0, 0)
-		self.Reputation.Tooltip = true
-		self.Reputation.PostUpdate = PostUpdateReputation
-
-		self.Reputation.Text = self.Reputation:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
-		self.Reputation.Text:SetPoint('CENTER', self.Reputation)
-
-		self.Reputation.bg = self.Reputation:CreateTexture(nil, 'BORDER')
-		self.Reputation.bg:SetAllPoints(self.Reputation)
-		self.Reputation.bg:SetTexture(0.3, 0.3, 0.3)
-	end
-
 	if(unit == 'player' or unit == 'pet') then
+		if(IsAddOnLoaded('oUF_Experience')) then
+			self.Experience = CreateFrame('StatusBar', nil, self)
+			self.Experience:SetPoint('TOP', self, 'BOTTOM', 0, -10)
+			self.Experience:SetStatusBarTexture(texture)
+			self.Experience:SetStatusBarColor(unpack(colors.health))
+			self.Experience:SetHeight(11)
+			self.Experience:SetWidth((unit == 'pet') and 130 or 230)
+			self.Experience:SetBackdrop(backdrop)
+			self.Experience:SetBackdropColor(0, 0, 0)
+			self.Experience.Tooltip = true
+
+			self.Experience.Text = self.Experience:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
+			self.Experience.Text:SetPoint('CENTER', self.Experience)
+
+			self.Experience.bg = self.Experience:CreateTexture(nil, 'BORDER')
+			self.Experience.bg:SetAllPoints(self.Experience)
+			self.Experience.bg:SetTexture(0.3, 0.3, 0.3)
+		end
+
 		local power = self.Power:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
 		power:SetPoint('LEFT', self.Health, 2, -1)
 
@@ -318,9 +280,9 @@ local function CreateStyle(self, unit)
 			self:Tag(power, '[colorpp][curpp]|r [cpoints( CP)]')
 		end
 	else
-		self.Info = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
-		self.Info:SetPoint('LEFT', self.Health, 2, -1)
-		self.Info:SetPoint('RIGHT', self.Health.Text, 'LEFT')
+		local info = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
+		info:SetPoint('LEFT', self.Health, 2, -1)
+		info:SetPoint('RIGHT', self.Health.Text, 'LEFT')
 
 		if(unit == 'target') then
 			self:Tag(info, '[colorinfo][name]|r |cff0090ff[smartlevel] [rare]|r')
@@ -330,6 +292,44 @@ local function CreateStyle(self, unit)
 	end
 
 	if(unit == 'player') then
+		if(IsAddOnLoaded'oUF_Reputation' and UnitLevel('player') == MAX_PLAYER_LEVEL) then
+			self.Reputation = CreateFrame('StatusBar', nil, self)
+			self.Reputation:SetPoint('TOP', self, 'BOTTOM', 0, -10)
+			self.Reputation:SetStatusBarTexture(texture)
+			self.Reputation:SetHeight(11)
+			self.Reputation:SetWidth(230)
+			self.Reputation:SetBackdrop(backdrop)
+			self.Reputation:SetBackdropColor(0, 0, 0)
+			self.Reputation.Tooltip = true
+			self.Reputation.PostUpdate = PostUpdateReputation
+
+			self.Reputation.Text = self.Reputation:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
+			self.Reputation.Text:SetPoint('CENTER', self.Reputation)
+
+			self.Reputation.bg = self.Reputation:CreateTexture(nil, 'BORDER')
+			self.Reputation.bg:SetAllPoints(self.Reputation)
+			self.Reputation.bg:SetTexture(0.3, 0.3, 0.3)
+		end
+
+		if(IsAddOnLoaded('oUF_Swing')) then
+			self.Swing = CreateFrame('StatusBar', nil, self)
+			self.Swing:SetPoint('TOP', self, 'BOTTOM', 0, -80)
+			self.Swing:SetStatusBarTexture(texture)
+			self.Swing:SetStatusBarColor(1, 0.7, 0)
+			self.Swing:SetHeight(6)
+			self.Swing:SetWidth(230)
+			self.Swing:SetBackdrop(backdrop)
+			self.Swing:SetBackdropColor(0, 0, 0)
+			self.Swing.disableMelee = true
+
+			self.Swing.Text = self.Swing:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
+			self.Swing.Text:SetPoint('CENTER', self.Swing)
+
+			self.Swing.bg = self.Swing:CreateTexture(nil, 'BORDER')
+			self.Swing.bg:SetAllPoints(self.Swing)
+			self.Swing.bg:SetTexture(0.3, 0.3, 0.3)
+		end
+
 		if(class == 'DRUID') then
 			self.DruidPower = CreateFrame('StatusBar', nil, self)
 			self.DruidPower:SetPoint('BOTTOM', self.Power, 'TOP')
