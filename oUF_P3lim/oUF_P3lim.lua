@@ -43,15 +43,23 @@ local function truncate(value)
 	end
 end
 
-local function UpdateInfoColor(self, unit)
+local function Hex(r, g, b)
+	if(type(r) == 'table') then
+		if(r.r) then r, g, b = r.r, r.g, r.b else r, g, b = unpack(r) end
+	end
+	return string.format('|cff%02x%02x%02x', r*255, g*255, b*255)
+end
+
+oUF.Tags['[colorpp]'] = function(u) local n,s = UnitPowerType(u) return Hex(colors.power[s]) end
+oUF.Tags['[colorinfo]'] = function(u)
 	if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) then
-		self:SetTextColor(unpack(colors.tapped))
+		return Hex(colors.tapped)
 	elseif(not UnitIsConnected(unit)) then
-		self:SetTextColor(unpack(colors.disconnected))
+		return Hex(colors.disconnected)
 	elseif(not UnitIsPlayer(unit)) then
-		self:SetTextColor(unpack({UnitSelectionColor(unit)} or colors.health))
+		return Hex(UnitSelectionColor(u))
 	else
-		self:SetTextColor(1, 1, 1)
+		return Hex(1, 1, 1)
 	end
 end
 
@@ -152,28 +160,6 @@ local function PostUpdateHealth(self, event, unit, bar, min, max)
 			end
 		end
 	end
-
-	if(self.Info) then UpdateInfoColor(self.Info, unit) end
-end
-
-local function PostUpdatePower(self, event, unit, bar, min, max)
-	if(bar.Text) then
-		if(min == 0 or not UnitIsPlayer(unit) or not UnitIsConnected(unit)) then
-			bar.Text:SetText()
-		else
-			if(min ~= max) then
-				bar.Text:SetText(max-(max-min))
-			else
-				bar.Text:SetText(min)
-			end
-		end
-
-		local num, str = UnitPowerType(unit)
-		local color = colors.power[str] or colors.health
-		if(color) then bar.Text:SetTextColor(color[1], color[2], color[3]) end
-	end
-
-	if(self.Info) then UpdateInfoColor(self.Info, unit) end
 end
 
 local function OverrideCastbarTime(self, duration)
@@ -263,77 +249,87 @@ local function CreateStyle(self, unit)
 	self:RegisterEvent('PARTY_MEMBERS_CHANGED', UpdateMasterLooter)
 	self:RegisterEvent('PARTY_LEADER_CHANGED', UpdateMasterLooter)
 
+	self.BarFade = true
+
+	if(IsAddOnLoaded('oUF_Swing')) then
+		self.Swing = CreateFrame('StatusBar', nil, self)
+		self.Swing:SetPoint('TOP', self, 'BOTTOM', 0, -80)
+		self.Swing:SetStatusBarTexture(texture)
+		self.Swing:SetStatusBarColor(1, 0.7, 0)
+		self.Swing:SetHeight(6)
+		self.Swing:SetWidth(230)
+		self.Swing:SetBackdrop(backdrop)
+		self.Swing:SetBackdropColor(0, 0, 0)
+		self.Swing.disableMelee = true
+
+		self.Swing.Text = self.Swing:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
+		self.Swing.Text:SetPoint('CENTER', self.Swing)
+
+		self.Swing.bg = self.Swing:CreateTexture(nil, 'BORDER')
+		self.Swing.bg:SetAllPoints(self.Swing)
+		self.Swing.bg:SetTexture(0.3, 0.3, 0.3)
+	end
+
+	if(IsAddOnLoaded('oUF_Experience')) then
+		self.Experience = CreateFrame('StatusBar', nil, self)
+		self.Experience:SetPoint('TOP', self, 'BOTTOM', 0, -10)
+		self.Experience:SetStatusBarTexture(texture)
+		self.Experience:SetStatusBarColor(unpack(colors.health))
+		self.Experience:SetHeight(11)
+		self.Experience:SetWidth((unit == 'pet') and 130 or 230)
+		self.Experience:SetBackdrop(backdrop)
+		self.Experience:SetBackdropColor(0, 0, 0)
+		self.Experience.Tooltip = true
+
+		self.Experience.Text = self.Experience:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
+		self.Experience.Text:SetPoint('CENTER', self.Experience)
+
+		self.Experience.bg = self.Experience:CreateTexture(nil, 'BORDER')
+		self.Experience.bg:SetAllPoints(self.Experience)
+		self.Experience.bg:SetTexture(0.3, 0.3, 0.3)
+	end
+
+	if(IsAddOnLoaded'oUF_Reputation' and UnitLevel('player') == MAX_PLAYER_LEVEL) then
+		self.Reputation = CreateFrame('StatusBar', nil, self)
+		self.Reputation:SetPoint('TOP', self, 'BOTTOM', 0, -10)
+		self.Reputation:SetStatusBarTexture(texture)
+		self.Reputation:SetHeight(11)
+		self.Reputation:SetWidth(230)
+		self.Reputation:SetBackdrop(backdrop)
+		self.Reputation:SetBackdropColor(0, 0, 0)
+		self.Reputation.Tooltip = true
+		self.Reputation.PostUpdate = PostUpdateReputation
+
+		self.Reputation.Text = self.Reputation:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
+		self.Reputation.Text:SetPoint('CENTER', self.Reputation)
+
+		self.Reputation.bg = self.Reputation:CreateTexture(nil, 'BORDER')
+		self.Reputation.bg:SetAllPoints(self.Reputation)
+		self.Reputation.bg:SetTexture(0.3, 0.3, 0.3)
+	end
+
 	if(unit == 'player' or unit == 'pet') then
-		self.Power.Text = self.Power:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
-		self.Power.Text:SetPoint('LEFT', self.Health, 2, -1)
+		local power = self.Power:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
+		power:SetPoint('LEFT', self.Health, 2, -1)
 
-		self.BarFade = true
-
-		if(IsAddOnLoaded('oUF_Experience')) then
-			self.Experience = CreateFrame('StatusBar', nil, self)
-			self.Experience:SetPoint('TOP', self, 'BOTTOM', 0, -10)
-			self.Experience:SetStatusBarTexture(texture)
-			self.Experience:SetStatusBarColor(unpack(colors.health))
-			self.Experience:SetHeight(11)
-			self.Experience:SetWidth((unit == 'pet') and 130 or 230)
-			self.Experience:SetBackdrop(backdrop)
-			self.Experience:SetBackdropColor(0, 0, 0)
-
-			self.Experience.Tooltip = true
-
-			self.Experience.Text = self.Experience:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
-			self.Experience.Text:SetPoint('CENTER', self.Experience)
-
-			self.Experience.bg = self.Experience:CreateTexture(nil, 'BORDER')
-			self.Experience.bg:SetAllPoints(self.Experience)
-			self.Experience.bg:SetTexture(0.3, 0.3, 0.3)
+		if(unit == 'player') then
+			self:Tag(power, '[colorpp][curpp]|r')
+		else
+			self:Tag(power, '[colorpp][curpp]|r [cpoints( CP)]')
 		end
 	else
 		self.Info = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
 		self.Info:SetPoint('LEFT', self.Health, 2, -1)
 		self.Info:SetPoint('RIGHT', self.Health.Text, 'LEFT')
-		self:Tag(self.Info, unit == 'target' and '[name] |cff0090ff[smartlevel] [rare]|r' or '[name]')
+
+		if(unit == 'target') then
+			self:Tag(info, '[colorinfo][name]|r |cff0090ff[smartlevel] [rare]|r')
+		else
+			self:Tag(info, '[colorinfo][name]|r')
+		end
 	end
 
 	if(unit == 'player') then
-		if(IsAddOnLoaded('oUF_AutoShot') and class == 'HUNTER') then
-			self.AutoShot = CreateFrame('StatusBar', nil, self)
-			self.AutoShot:SetPoint('TOP', self, 'BOTTOM', 0, -80)
-			self.AutoShot:SetStatusBarTexture(texture)
-			self.AutoShot:SetStatusBarColor(1, 0.7, 0)
-			self.AutoShot:SetHeight(6)
-			self.AutoShot:SetWidth(230)
-			self.AutoShot:SetBackdrop(backdrop)
-			self.AutoShot:SetBackdropColor(0, 0, 0)
-
-			self.AutoShot.Text = self.AutoShot:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
-			self.AutoShot.Text:SetPoint('CENTER', self.AutoShot)
-
-			self.AutoShot.bg = self.AutoShot:CreateTexture(nil, 'BORDER')
-			self.AutoShot.bg:SetAllPoints(self.AutoShot)
-			self.AutoShot.bg:SetTexture(0.3, 0.3, 0.3)				
-		end
-
-		if(IsAddOnLoaded'oUF_Reputation' and UnitLevel(unit) == MAX_PLAYER_LEVEL) then
-			self.Reputation = CreateFrame('StatusBar', nil, self)
-			self.Reputation:SetPoint('TOP', self, 'BOTTOM', 0, -10)
-			self.Reputation:SetStatusBarTexture(texture)
-			self.Reputation:SetHeight(11)
-			self.Reputation:SetWidth(230)
-			self.Reputation:SetBackdrop(backdrop)
-			self.Reputation:SetBackdropColor(0, 0, 0)
-
-			self.Reputation.PostUpdate = PostUpdateReputation
-			self.Reputation.Tooltip = true
-
-			self.Reputation.Text = self.Reputation:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
-			self.Reputation.Text:SetPoint('CENTER', self.Reputation)
-
-			self.Reputation.bg = self.Reputation:CreateTexture(nil, 'BORDER')
-			self.Reputation.bg:SetAllPoints(self.Reputation)
-			self.Reputation.bg:SetTexture(0.3, 0.3, 0.3)
-		end
-
 		if(class == 'DRUID') then
 			self.DruidPower = CreateFrame('StatusBar', nil, self)
 			self.DruidPower:SetPoint('BOTTOM', self.Power, 'TOP')
@@ -396,11 +392,6 @@ local function CreateStyle(self, unit)
 		self.Auras.initialAnchor = 'TOPRIGHT'
 		self.Auras['growth-x'] = 'LEFT'
 
-		local cpoints = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlight')
-		cpoints:SetPoint('LEFT', self.Health, 2, 0)
-		cpoints:SetJustifyH('LEFT')
-		self:Tag(cpoints, '[cpoints( CP)]')
-
 		self:SetAttribute('initial-height', 27)
 		self:SetAttribute('initial-width', 130)
 	end
@@ -423,7 +414,6 @@ local function CreateStyle(self, unit)
 			self.Debuffs.initialAnchor = 'TOPRIGHT'
 			self.Debuffs['growth-x'] = 'LEFT'
 		else
-			self.BarFade = true
 			self.Debuffs.onlyShowPlayer = true
 		end
 
@@ -494,7 +484,6 @@ local function CreateStyle(self, unit)
 	self.PostUpdateAuraIcon = PostUpdateAuraIcon
 	self.PostCreateAuraIcon = PostCreateAuraIcon
 	self.PostUpdateHealth = PostUpdateHealth
-	self.PostUpdatePower = PostUpdatePower
 
 	return self
 end
