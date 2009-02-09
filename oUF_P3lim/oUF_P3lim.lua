@@ -152,8 +152,10 @@ local function PostUpdateHealth(self, event, unit, bar, min, max)
 			if(min ~= max) then
 				if(unit == 'player') then
 					bar.Text:SetFormattedText('|cffff8080%d|r %d|cff0090ff%%|r', min-max, floor(min/max*100))
+				elseif(unit == 'pet') then
+					bar.Text:SetFormattedText('%s |cff0090ff/|r %s', truncate(min), truncate(max))
 				else
-					bar.Text:SetFormattedText('%d |cff0090ff/|r %d', min, max)
+					bar.Text:SetFormattedText('%s |cff0090ff/|r %s', min, max)
 				end
 			else
 				bar.Text:SetText(max)
@@ -249,8 +251,6 @@ local function CreateStyle(self, unit)
 	self:RegisterEvent('PARTY_MEMBERS_CHANGED', UpdateMasterLooter)
 	self:RegisterEvent('PARTY_LEADER_CHANGED', UpdateMasterLooter)
 
-	self.BarFade = true
-
 	if(unit == 'player' or unit == 'pet') then
 		if(IsAddOnLoaded('oUF_Experience')) then
 			self.Experience = CreateFrame('StatusBar', nil, self)
@@ -277,7 +277,7 @@ local function CreateStyle(self, unit)
 		if(unit == 'player') then
 			self:Tag(power, '[colorpp][curpp]|r')
 		else
-			self:Tag(power, '[colorpp][curpp]|r [cpoints( CP)]')
+			self:Tag(power, '[colorpp][curpp]|r [(- )cpoints( CP)]')
 		end
 	else
 		local info = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
@@ -474,6 +474,8 @@ local function CreateStyle(self, unit)
 		self.Debuffs.spacing = 2
 		self.Debuffs.initialAnchor = 'TOPLEFT'
 		self.Debuffs['growth-y'] = 'DOWN'
+	else
+		self.BarFade = true
 	end
 
 	self.disallowVehicleSwap = true
