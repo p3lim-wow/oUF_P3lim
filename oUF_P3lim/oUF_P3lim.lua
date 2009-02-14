@@ -132,6 +132,15 @@ local function UpdateDruidPower(self)
 	end
 end
 
+local function UpdatePortrait(self, min, max)
+	if(UnitIsDeadOrGhost(self.unit)) then
+		self.Portrait:Hide()
+	else
+		self.Portrait:Show()
+		self.Portrait:SetWidth(230 * min/max)
+	end
+end
+
 local function PostUpdateReputation(self, event, unit, bar)
 	local name, id = GetWatchedFactionInfo()
 	bar:SetStatusBarColor(FACTION_BAR_COLORS[id].r, FACTION_BAR_COLORS[id].g, FACTION_BAR_COLORS[id].b)
@@ -161,6 +170,10 @@ local function PostUpdateHealth(self, event, unit, bar, min, max)
 				bar.Text:SetText(max)
 			end
 		end
+	end
+
+	if(self.Portrait) then
+		UpdatePortrait(self, min, max)
 	end
 end
 
@@ -273,6 +286,7 @@ local function CreateStyle(self, unit)
 
 		local power = self.Power:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
 		power:SetPoint('LEFT', self.Health, 2, -1)
+		power.frequentUpdates = true
 
 		if(unit == 'player') then
 			self:Tag(power, '[colorpp][curpp]|r')
@@ -342,9 +356,9 @@ local function CreateStyle(self, unit)
 			self.DruidPower.Text:SetPoint('CENTER', self.DruidPower)
 			self.DruidPower.Text:SetTextColor(unpack(colors.power['MANA']))
 
+			table.insert(self.__elements, UpdateDruidPower)
 			self:RegisterEvent('UNIT_MANA', UpdateDruidPower)
 			self:RegisterEvent('UNIT_ENERGY', UpdateDruidPower)
-			self:RegisterEvent('PLAYER_LOGIN', UpdateDruidPower)
 		end
 
 		if(class == 'DEATHKNIGHT') then
@@ -421,7 +435,7 @@ local function CreateStyle(self, unit)
 		self:SetAttribute('initial-width', 181)
 	end
 
-	if(unit == 'player' or unit == 'target') then
+	if(unit == 'player' or unit == 'target' or unit == 'pet') then
 		self.CombatFeedbackText = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
 		self.CombatFeedbackText:SetPoint('CENTER', self)
 
@@ -444,6 +458,15 @@ local function CreateStyle(self, unit)
 		self.Castbar.bg = self.Castbar:CreateTexture(nil, 'BORDER')
 		self.Castbar.bg:SetAllPoints(self.Castbar)
 		self.Castbar.bg:SetTexture(0.3, 0.3, 0.3)
+	end
+
+	if(unit == 'target' or unit == 'player') then
+		self.Portrait = CreateFrame('PlayerModel', nil, self)
+		self.Portrait:SetPoint('TOPLEFT', self.Health)
+		self.Portrait:SetPoint('BOTTOMLEFT', self.Health)
+		self.Portrait:SetAlpha(0.1)
+		self.Portrait:SetWidth(230)
+		self:RegisterEvent('PLAYER_DEAD', UpdatePortrait)
 
 		self:SetAttribute('initial-height', 27)
 		self:SetAttribute('initial-width', 230)
