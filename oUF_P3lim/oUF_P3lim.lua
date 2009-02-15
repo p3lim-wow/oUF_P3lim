@@ -132,12 +132,12 @@ local function UpdateDruidPower(self)
 	end
 end
 
-local function UpdatePortrait(self, min, max)
+local function UpdatePortrait(self)
 	if(UnitIsDeadOrGhost(self.unit)) then
 		self.Portrait:Hide()
 	else
 		self.Portrait:Show()
-		self.Portrait:SetWidth(230 * min/max)
+		self.Portrait:SetWidth(230 * UnitHealth(self.unit) / UnitHealthMax(self.unit))
 	end
 end
 
@@ -173,7 +173,7 @@ local function PostUpdateHealth(self, event, unit, bar, min, max)
 	end
 
 	if(self.Portrait) then
-		UpdatePortrait(self, min, max)
+		UpdatePortrait(self)
 	end
 end
 
