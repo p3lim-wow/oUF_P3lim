@@ -47,6 +47,11 @@ local function Hex(r, g, b)
 	if(type(r) == 'table') then
 		if(r.r) then r, g, b = r.r, r.g, r.b else r, g, b = unpack(r) end
 	end
+
+	if(not r or not g or not b) then
+		r, g, b = 1, 1, 1
+	end
+
 	return string.format('|cff%02x%02x%02x', r*255, g*255, b*255)
 end
 
@@ -133,11 +138,15 @@ local function UpdateDruidPower(self)
 end
 
 local function UpdatePortrait(self)
+	local min, max = UnitHealth(self.unit), UnitHealthMax(self.unit)
 	if(UnitIsDeadOrGhost(self.unit)) then
 		self.Portrait:Hide()
+	elseif(min <= max) then
+		self.Portrait:Show()
+		self.Portrait:SetWidth(230 * min / max)
 	else
 		self.Portrait:Show()
-		self.Portrait:SetWidth(230 * UnitHealth(self.unit) / UnitHealthMax(self.unit))
+		self.Portrait:SetWidth(230)
 	end
 end
 
