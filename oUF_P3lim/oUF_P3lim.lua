@@ -18,12 +18,6 @@ local colors = setmetatable({
 	power = setmetatable({
 		['MANA'] = {0, 144/255, 1},
 	}, {__index = oUF.colors.power}),
-	runes = setmetatable({
-		[1] = {0.77, 0.12, 0.23},
-		[2] = {0.3, 0.8, 0.1},
-		[3] = {0, 0.4, 0.7},
-		[4] = {0.8, 0.8, 0.8},
-	}, {__index = oUF.colors.runes}),
 }, {__index = oUF.colors})
 
 local function menu(self)
@@ -77,41 +71,6 @@ local function UpdateMasterLooter(self)
 	end
 end
 
-local function UpdateRuneBar(self, elapsed)
-	local start, duration, ready = GetRuneCooldown(self:GetID())
-
-	if(ready) then
-		self:SetValue(1)
-		self:SetScript('OnUpdate', nil)
-	else
-		self:SetValue((GetTime() - start) / duration)
-	end
-end
-
-local function UpdateRunePower(self, event, rune, usable)
-	for i = 1, 6 do
-		if(rune == i and not usable and GetRuneType(rune)) then
-			self.RuneBar[i]:SetScript('OnUpdate', UpdateRuneBar)
-		end
-	end
-end
-
-local function UpdateRuneType(self, event, rune)
-	if(rune) then
-		local runetype = GetRuneType(rune)
-		if(runetype) then
-			self.RuneBar[rune]:SetStatusBarColor(unpack(colors.runes[runetype]))
-		end
-	else
-		for i = 1, 6 do
-			local runetype = GetRuneType(i)
-			if(runetype) then
-				self.RuneBar[i]:SetStatusBarColor(unpack(colors.runes[runetype]))
-			end
-		end
-	end
-end
-
 local function UpdateDruidPower(self)
 	local bar = self.DruidPower
 	local num, str = UnitPowerType('player')
@@ -137,22 +96,18 @@ local function UpdateDruidPower(self)
 	end
 end
 
-local function UpdatePortrait(self)
-	local min, max = UnitHealth(self.unit), UnitHealthMax(self.unit)
-	if(UnitIsDeadOrGhost(self.unit)) then
-		self.Portrait:Hide()
-	elseif(min <= max) then
-		self.Portrait:Show()
-		self.Portrait:SetWidth(230 * min / max)
-	else
-		self.Portrait:Show()
-		self.Portrait:SetWidth(230)
-	end
-end
-
 local function PostUpdateReputation(self, event, unit, bar)
 	local name, id = GetWatchedFactionInfo()
 	bar:SetStatusBarColor(FACTION_BAR_COLORS[id].r, FACTION_BAR_COLORS[id].g, FACTION_BAR_COLORS[id].b)
+end
+
+local function SetSecureWidth(self, value)
+	if(UnitIsDeadOrGhost(self.unit) or value and value > 230) then
+		self.Portrait:SetAlpha(0)
+	else
+		self.Portrait:SetWidth(value)
+		self.Portrait:SetAlpha(0.1)
+	end
 end
 
 local function PostUpdateHealth(self, event, unit, bar, min, max)
@@ -160,9 +115,13 @@ local function PostUpdateHealth(self, event, unit, bar, min, max)
 	if(not UnitIsConnected(unit)) then
 		bar.Text:SetText('Offline')
 	elseif(UnitIsDead(unit)) then
+		bar:SetValue(0)
 		bar.Text:SetText('Dead')
 	elseif(UnitIsGhost(unit)) then
+		bar:SetValue(0)
 		bar.Text:SetText('Ghost')
+	elseif(self.Portrait and UnitIsDeadOrGhost(unit)) then
+		self.Portrait:Hide()
 	else
 		if(unit == 'target' and UnitCanAttack('player', 'target')) then
 			bar.Text:SetFormattedText('%s (%d|cff0090ff%%|r)', truncate(min), floor(min/max*100))
@@ -179,10 +138,14 @@ local function PostUpdateHealth(self, event, unit, bar, min, max)
 				bar.Text:SetText(max)
 			end
 		end
-	end
 
-	if(self.Portrait) then
-		UpdatePortrait(self)
+		if(self.Portrait) then
+			if(min <= max) then
+				SetSecureWidth(self, 230 * min / max)
+			else
+				SetSecureWidth(self, 230)
+			end
+		end
 	end
 end
 
@@ -295,7 +258,6 @@ local function CreateStyle(self, unit)
 
 		local power = self.Power:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
 		power:SetPoint('LEFT', self.Health, 2, -1)
-		power.frequentUpdates = true
 
 		if(unit == 'player') then
 			self:Tag(power, '[colorpp][curpp]|r')
@@ -353,24 +315,7 @@ local function CreateStyle(self, unit)
 			self.Swing.bg:SetTexture(0.3, 0.3, 0.3)
 		end
 
-		if(class == 'DRUID') then
-			self.DruidPower = CreateFrame('StatusBar', nil, self)
-			self.DruidPower:SetPoint('BOTTOM', self.Power, 'TOP')
-			self.DruidPower:SetStatusBarTexture(texture)
-			self.DruidPower:SetHeight(1)
-			self.DruidPower:SetWidth(230)
-			self.DruidPower:SetAlpha(0)
-
-			self.DruidPower.Text = self.DruidPower:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
-			self.DruidPower.Text:SetPoint('CENTER', self.DruidPower)
-			self.DruidPower.Text:SetTextColor(unpack(colors.power['MANA']))
-
-			table.insert(self.__elements, UpdateDruidPower)
-			self:RegisterEvent('UNIT_MANA', UpdateDruidPower)
-			self:RegisterEvent('UNIT_ENERGY', UpdateDruidPower)
-		end
-
-		if(class == 'DEATHKNIGHT') then
+		if(IsAddOnLoaded('oUF_RuneBar') and class == 'DEATHKNIGHT') then
 			self.RuneBar = {}
 			for i = 1, 6 do
 				self.RuneBar[i] = CreateFrame('StatusBar', nil, self)
@@ -386,18 +331,28 @@ local function CreateStyle(self, unit)
 				self.RuneBar[i]:SetBackdrop(backdrop)
 				self.RuneBar[i]:SetBackdropColor(0, 0, 0)
 				self.RuneBar[i]:SetMinMaxValues(0, 1)
-				self.RuneBar[i]:SetID(i)
 
 				self.RuneBar[i].bg = self.RuneBar[i]:CreateTexture(nil, 'BORDER')
 				self.RuneBar[i].bg:SetAllPoints(self.RuneBar[i])
 				self.RuneBar[i].bg:SetTexture(0.3, 0.3, 0.3)			
 			end
+		end
 
-			RuneFrame:Hide()
+		if(class == 'DRUID') then
+			self.DruidPower = CreateFrame('StatusBar', nil, self)
+			self.DruidPower:SetPoint('BOTTOM', self.Power, 'TOP')
+			self.DruidPower:SetStatusBarTexture(texture)
+			self.DruidPower:SetHeight(1)
+			self.DruidPower:SetWidth(230)
+			self.DruidPower:SetAlpha(0)
 
-			self:RegisterEvent('RUNE_TYPE_UPDATE', UpdateRuneType)
-			self:RegisterEvent('RUNE_REGEN_UPDATE', UpdateRuneType)
-			self:RegisterEvent('RUNE_POWER_UPDATE', UpdateRunePower)
+			self.DruidPower.Text = self.DruidPower:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
+			self.DruidPower.Text:SetPoint('CENTER', self.DruidPower)
+			self.DruidPower.Text:SetTextColor(unpack(colors.power['MANA']))
+
+			table.insert(self.__elements, UpdateDruidPower)
+			self:RegisterEvent('UNIT_MANA', UpdateDruidPower)
+			self:RegisterEvent('UNIT_ENERGY', UpdateDruidPower)
 		end
 	end
 
@@ -475,7 +430,7 @@ local function CreateStyle(self, unit)
 		self.Portrait:SetPoint('BOTTOMLEFT', self.Health)
 		self.Portrait:SetAlpha(0.1)
 		self.Portrait:SetWidth(230)
-		self:RegisterEvent('PLAYER_DEAD', UpdatePortrait)
+		self:RegisterEvent('PLAYER_DEAD', SetSecureWidth)
 
 		self:SetAttribute('initial-height', 27)
 		self:SetAttribute('initial-width', 230)
@@ -518,8 +473,6 @@ local function CreateStyle(self, unit)
 	self.PostUpdateAuraIcon = PostUpdateAuraIcon
 	self.PostCreateAuraIcon = PostCreateAuraIcon
 	self.PostUpdateHealth = PostUpdateHealth
-
-	return self
 end
 
 oUF:RegisterStyle('P3lim', CreateStyle)
