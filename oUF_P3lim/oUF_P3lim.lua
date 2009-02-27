@@ -1,3 +1,4 @@
+local string_format = string.format
 local _, class = UnitClass('player')
 local texture = [=[Interface\AddOns\oUF_P3lim\minimalist]=]
 local backdrop = {
@@ -29,36 +30,32 @@ end
 
 local function truncate(value)
 	if(value >= 1e6) then
-		return string.format('%dm', value / 1e6)
+		return string_format('%dm', value / 1e6)
 	elseif(value >= 1e4) then
-		return string.format('%dk', value / 1e3)
+		return string_format('%dk', value / 1e3)
 	else
 		return value
 	end
 end
 
-local function Hex(r, g, b)
-	if(type(r) == 'table') then
-		if(r.r) then r, g, b = r.r, r.g, r.b else r, g, b = unpack(r) end
-	end
-
-	if(not r or not g or not b) then
-		r, g, b = 1, 1, 1
-	end
-
-	return string.format('|cff%02x%02x%02x', r*255, g*255, b*255)
+oUF.Tags['[colorpp]'] = function(unit)
+	local num, str = UnitPowerType(unit)
+	local c = colors.power[str]
+	return string_format('|cff%02x%02x%02x', c[1] * 255, c[2] * 255, c[3] * 255)
 end
 
-oUF.Tags['[colorpp]'] = function(u) local n,s = UnitPowerType(u) return Hex(colors.power[s]) end
-oUF.Tags['[colorinfo]'] = function(u)
-	if(UnitIsTapped(u) and not UnitIsTappedByPlayer(u)) then
-		return Hex(colors.tapped)
-	elseif(not UnitIsConnected(u)) then
-		return Hex(colors.disconnected)
-	elseif(not UnitIsPlayer(u)) then
-		return Hex(UnitSelectionColor(u))
+oUF.Tags['[colorinfo]'] = function(unit)
+	if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) then
+		local c = colors.tapped
+		return string_format('|cff%02x%02x%02x', c[1] * 255, c[2] * 255, c[3] * 255)
+	elseif(not UnitIsConnected(unit)) then
+		local c = colors.disconnected
+		return string_format('|cff%02x%02x%02x', c[1] * 255, c[2] * 255, c[3] * 255)
+	elseif(not UnitIsPlayer(unit)) then
+		local r, g, b = UnitSelectionColor(unit)
+		return string_format('|cff%02x%02x%02x', r * 255, g * 255, b * 255)
 	else
-		return Hex(1, 1, 1)
+		return '|cffffffff'
 	end
 end
 
@@ -102,7 +99,7 @@ local function PostUpdateReputation(self, event, unit, bar)
 end
 
 local function SetSecureWidth(self, value)
-	if(UnitIsDeadOrGhost(self.unit) or value and value > 230) then
+	if(value > 230) then
 		self.Portrait:SetAlpha(0)
 	else
 		self.Portrait:SetWidth(value)
@@ -120,8 +117,6 @@ local function PostUpdateHealth(self, event, unit, bar, min, max)
 	elseif(UnitIsGhost(unit)) then
 		bar:SetValue(0)
 		bar.Text:SetText('Ghost')
-	elseif(self.Portrait and UnitIsDeadOrGhost(unit)) then
-		self.Portrait:Hide()
 	else
 		if(unit == 'target' and UnitCanAttack('player', 'target')) then
 			bar.Text:SetFormattedText('%s (%d|cff0090ff%%|r)', truncate(min), floor(min/max*100))
@@ -140,7 +135,9 @@ local function PostUpdateHealth(self, event, unit, bar, min, max)
 		end
 
 		if(self.Portrait) then
-			if(min <= max) then
+			if(UnitIsDeadOrGhost(unit)) then
+				SetSecureWidth(self, 231)
+			elseif(min <= max) then
 				SetSecureWidth(self, 230 * min / max)
 			else
 				SetSecureWidth(self, 230)
@@ -430,7 +427,7 @@ local function CreateStyle(self, unit)
 		self.Portrait:SetPoint('BOTTOMLEFT', self.Health)
 		self.Portrait:SetAlpha(0.1)
 		self.Portrait:SetWidth(230)
-		self:RegisterEvent('PLAYER_DEAD', SetSecureWidth)
+		self:RegisterEvent('PLAYER_DEAD', function() SetSecureWidth(self, 231) end)
 
 		self:SetAttribute('initial-height', 27)
 		self:SetAttribute('initial-width', 230)
