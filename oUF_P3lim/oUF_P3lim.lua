@@ -17,8 +17,13 @@ local runeloadcolors = {
 
 local colors = setmetatable({
 	power = setmetatable({
-		['MANA'] = {0, 144/255, 1},
+		['MANA'] = {0, 144/255, 1}
 	}, {__index = oUF.colors.power}),
+	reaction = setmetatable({
+		[2] = {1, 0, 0},
+		[4] = {1, 1, 0},
+		[5] = {0, 1, 0}
+	}, {__index = oUF.colors.reaction}),
 }, {__index = oUF.colors})
 
 local function menu(self)
@@ -45,19 +50,18 @@ oUF.Tags['[colorpp]'] = function(unit)
 end
 
 oUF.Tags['[colorinfo]'] = function(unit)
-	if(UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) then
-		local c = colors.tapped
+	local c = (UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) and colors.tapped or
+		(not UnitIsConnected(unit)) and colors.disconnected or
+		(not UnitIsPlayer(unit)) and colors.reaction[UnitReaction(unit, 'player')]
+	
+	if(c) then
 		return string_format('|cff%02x%02x%02x', c[1] * 255, c[2] * 255, c[3] * 255)
-	elseif(not UnitIsConnected(unit)) then
-		local c = colors.disconnected
-		return string_format('|cff%02x%02x%02x', c[1] * 255, c[2] * 255, c[3] * 255)
-	elseif(not UnitIsPlayer(unit)) then
-		local r, g, b = UnitSelectionColor(unit)
-		return string_format('|cff%02x%02x%02x', r * 255, g * 255, b * 255)
 	else
 		return '|cffffffff'
 	end
 end
+
+oUF.TagEvents['[colorinfo]'] = 'UNIT_REACTION'
 
 local function UpdateMasterLooter(self)
 	self.MasterLooter:ClearAllPoints()
@@ -255,6 +259,7 @@ local function CreateStyle(self, unit)
 
 		local power = self.Power:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
 		power:SetPoint('LEFT', self.Health, 2, -1)
+		power.frequentUpdates = 0.1
 
 		if(unit == 'player') then
 			self:Tag(power, '[colorpp][curpp]|r')
