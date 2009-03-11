@@ -24,6 +24,7 @@ local colors = setmetatable({
 		[4] = {1, 1, 0},
 		[5] = {0, 1, 0}
 	}, {__index = oUF.colors.reaction}),
+	white = {1, 1, 1},
 }, {__index = oUF.colors})
 
 local function menu(self)
@@ -46,19 +47,15 @@ end
 oUF.Tags['[colorpp]'] = function(unit)
 	local num, str = UnitPowerType(unit)
 	local c = colors.power[str]
-	return string_format('|cff%02x%02x%02x', c[1] * 255, c[2] * 255, c[3] * 255)
+	return c and string_format('|cff%02x%02x%02x', c[1] * 255, c[2] * 255, c[3] * 255)
 end
 
 oUF.Tags['[colorinfo]'] = function(unit)
 	local c = (UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) and colors.tapped or
 		(not UnitIsConnected(unit)) and colors.disconnected or
-		(not UnitIsPlayer(unit)) and colors.reaction[UnitReaction(unit, 'player')]
-	
-	if(c) then
-		return string_format('|cff%02x%02x%02x', c[1] * 255, c[2] * 255, c[3] * 255)
-	else
-		return '|cffffffff'
-	end
+		(not UnitIsPlayer(unit)) and colors.reaction[UnitReaction(unit, 'player')] or colors.white
+
+	return c and string_format('|cff%02x%02x%02x', c[1] * 255, c[2] * 255, c[3] * 255)
 end
 
 oUF.TagEvents['[colorinfo]'] = 'UNIT_REACTION'
