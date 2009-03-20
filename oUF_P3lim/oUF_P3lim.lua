@@ -69,7 +69,9 @@ local function UpdateMasterLooter(self)
 	end
 end
 
-local function UpdateDruidPower(self)
+local function UpdateDruidPower(self, event, unit)
+	if(unit and unit ~= self.unit) then return end
+
 	local bar = self.DruidPower
 	local num, str = UnitPowerType('player')
 	local min = UnitPower('player', (num ~= 0) and 0 or 3)
@@ -352,6 +354,7 @@ local function CreateStyle(self, unit)
 			table.insert(self.__elements, UpdateDruidPower)
 			self:RegisterEvent('UNIT_MANA', UpdateDruidPower)
 			self:RegisterEvent('UNIT_ENERGY', UpdateDruidPower)
+			self:RegisterEvent('UPDATE_SHAPESHIFT_FORM', UpdateDruidPower)
 		end
 	end
 
@@ -477,8 +480,8 @@ end
 oUF:RegisterStyle('P3lim', CreateStyle)
 oUF:SetActiveStyle('P3lim')
 
-oUF:Spawn('player'):SetPoint('CENTER', UIParent, -220, -250)
-oUF:Spawn('target'):SetPoint('CENTER', UIParent, 220, -250)
-oUF:Spawn('targettarget'):SetPoint('BOTTOMRIGHT', oUF.units.target, 'TOPRIGHT', 0, 5)
-oUF:Spawn('focus'):SetPoint('BOTTOMLEFT', oUF.units.player, 'TOPLEFT', 0, 5)
-oUF:Spawn('pet'):SetPoint('RIGHT', oUF.units.player, 'LEFT', -25, 0)
+oUF:Spawn('player', 'oUF_P3lim_player'):SetPoint('CENTER', UIParent, -220, -250)
+oUF:Spawn('target', 'oUF_P3lim_target'):SetPoint('CENTER', UIParent, 220, -250)
+oUF:Spawn('targettarget', 'oUF_P3lim_targettarget'):SetPoint('BOTTOMRIGHT', oUF.units.target, 'TOPRIGHT', 0, 5)
+oUF:Spawn('focus', 'oUF_P3lim_focus'):SetPoint('BOTTOMLEFT', oUF.units.player, 'TOPLEFT', 0, 5)
+oUF:Spawn('pet', 'oUF_P3lim_pet'):SetPoint('RIGHT', oUF.units.player, 'LEFT', -25, 0)
