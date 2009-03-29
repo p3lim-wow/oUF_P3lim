@@ -185,7 +185,7 @@ local function CreateStyle(self, unit)
 	self:SetBackdrop(backdrop)
 	self:SetBackdropColor(0, 0, 0)
 
-	self.Health = CreateFrame('StatusBar', nil, self)
+	self.Health = CreateFrame('StatusBar', self:GetName()..'_health', self)
 	self.Health:SetPoint('TOPRIGHT', self)
 	self.Health:SetPoint('TOPLEFT', self)
 	self.Health:SetStatusBarTexture(texture)
@@ -199,7 +199,7 @@ local function CreateStyle(self, unit)
 	self.Health.bg:SetAllPoints(self.Health)
 	self.Health.bg:SetTexture(0.3, 0.3, 0.3)
 
-	self.Power = CreateFrame('StatusBar', nil, self)
+	self.Power = CreateFrame('StatusBar', self:GetName()..'_power', self)
 	self.Power:SetPoint('TOPRIGHT', self.Health, 'BOTTOMRIGHT', 0, -1)
 	self.Power:SetPoint('TOPLEFT', self.Health, 'BOTTOMLEFT', 0, -1)
 	self.Power:SetStatusBarTexture(texture)
@@ -238,7 +238,7 @@ local function CreateStyle(self, unit)
 
 	if(unit == 'player' or unit == 'pet') then
 		if(IsAddOnLoaded('oUF_Experience')) then
-			self.Experience = CreateFrame('StatusBar', nil, self)
+			self.Experience = CreateFrame('StatusBar', self:GetName()..'_experience', self)
 			self.Experience:SetPoint('TOP', self, 'BOTTOM', 0, -10)
 			self.Experience:SetStatusBarTexture(texture)
 			self.Experience:SetStatusBarColor(unpack(colors.health))
@@ -279,7 +279,7 @@ local function CreateStyle(self, unit)
 
 	if(unit == 'player') then
 		if(IsAddOnLoaded'oUF_Reputation' and UnitLevel('player') == MAX_PLAYER_LEVEL) then
-			self.Reputation = CreateFrame('StatusBar', nil, self)
+			self.Reputation = CreateFrame('StatusBar', self:GetName()..'_reputation', self)
 			self.Reputation:SetPoint('TOP', self, 'BOTTOM', 0, -10)
 			self.Reputation:SetStatusBarTexture(texture)
 			self.Reputation:SetHeight(11)
@@ -298,7 +298,7 @@ local function CreateStyle(self, unit)
 		end
 
 		if(IsAddOnLoaded('oUF_Swing')) then
-			self.Swing = CreateFrame('StatusBar', nil, self)
+			self.Swing = CreateFrame('StatusBar', self:GetName()..'_swing', self)
 			self.Swing:SetPoint('TOP', self, 'BOTTOM', 0, -80)
 			self.Swing:SetStatusBarTexture(texture)
 			self.Swing:SetStatusBarColor(1, 0.7, 0)
@@ -319,7 +319,7 @@ local function CreateStyle(self, unit)
 		if(IsAddOnLoaded('oUF_RuneBar') and class == 'DEATHKNIGHT') then
 			self.RuneBar = {}
 			for i = 1, 6 do
-				self.RuneBar[i] = CreateFrame('StatusBar', nil, self)
+				self.RuneBar[i] = CreateFrame('StatusBar', self:GetName()..'_runebar'..i, self)
 				if(i == 1) then
 					self.RuneBar[i]:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -1)
 				else
@@ -340,7 +340,7 @@ local function CreateStyle(self, unit)
 		end
 
 		if(class == 'DRUID') then
-			self.DruidPower = CreateFrame('StatusBar', nil, self)
+			self.DruidPower = CreateFrame('StatusBar', self:GetName()..'_druidpower', self)
 			self.DruidPower:SetPoint('BOTTOM', self.Power, 'TOP')
 			self.DruidPower:SetStatusBarTexture(texture)
 			self.DruidPower:SetHeight(1)
@@ -405,7 +405,7 @@ local function CreateStyle(self, unit)
 		self.CombatFeedbackText = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
 		self.CombatFeedbackText:SetPoint('CENTER', self)
 
-		self.Castbar = CreateFrame('StatusBar', nil, self)
+		self.Castbar = CreateFrame('StatusBar', self:GetName()..'_castbar', self)
 		self.Castbar:SetPoint('TOPRIGHT', self, 'BOTTOMRIGHT', 0, -100)
 		self.Castbar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -100)
 		self.Castbar:SetStatusBarTexture(texture)
@@ -482,6 +482,6 @@ oUF:SetActiveStyle('P3lim')
 
 oUF:Spawn('player', 'oUF_P3lim_player'):SetPoint('CENTER', UIParent, -220, -250)
 oUF:Spawn('target', 'oUF_P3lim_target'):SetPoint('CENTER', UIParent, 220, -250)
-oUF:Spawn('targettarget', 'oUF_P3lim_targettarget'):SetPoint('BOTTOMRIGHT', oUF.units.target, 'TOPRIGHT', 0, 5)
-oUF:Spawn('focus', 'oUF_P3lim_focus'):SetPoint('BOTTOMLEFT', oUF.units.player, 'TOPLEFT', 0, 5)
-oUF:Spawn('pet', 'oUF_P3lim_pet'):SetPoint('RIGHT', oUF.units.player, 'LEFT', -25, 0)
+oUF:Spawn('targettarget', 'oUF_P3lim_targettarget'):SetPoint('BOTTOMRIGHT', oUF_P3lim_target, 'TOPRIGHT', 0, 5)
+oUF:Spawn('focus', 'oUF_P3lim_focus'):SetPoint('BOTTOMLEFT', oUF_P3lim_player, 'TOPLEFT', 0, 5)
+oUF:Spawn('pet', 'oUF_P3lim_pet'):SetPoint('RIGHT', oUF_P3lim_player, 'LEFT', -25, 0)
