@@ -70,7 +70,7 @@ oUF.TagEvents['[custompp]'] = oUF.TagEvents['[curpp]']
 oUF.Tags['[custompp]'] = function(unit)
 	local num, str = UnitPowerType(unit)
 	local c = colors.power[str]
-	return format('|cff%02x%02x%02x%s|r', c[1] * 255, c[2] * 255, c[3] * 255, oUF.Tags['[curpp]'](unit))
+	return c and format('|cff%02x%02x%02x%s|r', c[1] * 255, c[2] * 255, c[3] * 255, oUF.Tags['[curpp]'](unit))
 end
 
 oUF.TagEvents['[customname]'] = 'UNIT_NAME_UPDATE UNIT_REACTION UNIT_FACTION'
