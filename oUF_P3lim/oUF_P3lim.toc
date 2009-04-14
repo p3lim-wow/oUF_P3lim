@@ -1,6 +1,6 @@
 ## Interface: 30100
 ## Author: p3lim
-## Version: 30000.wowi:revision
+## Version: 30100.wowi:revision
 ## Title: oUF P3lim
 ## Notes: Just another oUF layout
 ## RequiredDeps: oUF
