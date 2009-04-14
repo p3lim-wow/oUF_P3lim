@@ -7,8 +7,6 @@ local backdrop = {
 	insets = {top = -1, left = -1, bottom = -1, right = -1},
 }
 
-local ptr = select(4, GetBuildInfo()) > 3e4
-
 local runeloadcolors = {
 	[1] = {0.77, 0.12, 0.23},
 	[2] = {0.77, 0.12, 0.23},
@@ -31,7 +29,6 @@ local colors = setmetatable({
 	white = {1, 1, 1},
 }, {__index = oUF.colors})
 
--- find a possible fix for 'Set Focus' (if ever)
 local function menu(self)
 	local unit = string.gsub(self.unit, '(.)', string.upper, 1)
 	if(_G[unit..'FrameDropDown']) then
@@ -116,29 +113,6 @@ local function updateReputationColor(self, event, unit, bar)
 	bar:SetStatusBarColor(FACTION_BAR_COLORS[id].r, FACTION_BAR_COLORS[id].g, FACTION_BAR_COLORS[id].b)
 end
 
--- find a better way to do this, preferably cutting the portrait model
-local function setPortraitWidth(self, value)
-	if(value > 230) then
-		self.Portrait:SetAlpha(0)
-	else
-		self.Portrait:SetWidth(value)
-		self.Portrait:SetAlpha(0.1)
-	end
-end
-
--- need to do something else than this
-local function updatePortrait(self, event, unit, bar, min, max)
-	if(self.Portrait) then
-		if(UnitIsDeadOrGhost(unit)) then
-			setPortraitWidth(self, 231)
-		elseif(min <= max) then
-			setPortraitWidth(self, 230 * min / max)
-		else
-			setPortraitWidth(self, 230)
-		end
-	end
-end
-
 local function castbarTime(self, duration)
 	if(self.channeling) then
 		self.Time:SetFormattedText('%.1f ', duration)
@@ -155,21 +129,14 @@ local function createAura(icons, button)
 	button.overlay.Hide = function(self) self:SetVertexColor(0.25, 0.25, 0.25) end
 end
 
--- clean up in 3.1
 local function updateAura(icons, unit, icon, index)
 	if(icon.debuff and UnitIsEnemy('player', unit)) then
 		local _, _, _, _, _, duration, _, caster = UnitAura(unit, index, icon.filter)
-		if(ptr) then
-			if(caster ~= 'player' and caster ~= 'vehicle') then
-				icon.icon:SetDesaturated(true)
-				icon.overlay:SetVertexColor(0.25, 0.25, 0.25)
-			else
-				icon.icon:SetDesaturated(false)
-			end
+		if(caster ~= 'player' and caster ~= 'vehicle') then
+			icon.icon:SetDesaturated(true)
+			icon.overlay:SetVertexColor(0.25, 0.25, 0.25)
 		else
-			if(duration and duration > 0 and not caster) then
-				icon.cd:Hide()
-			end
+			icon.icon:SetDesaturated(false)
 		end
 	end
 end
@@ -275,7 +242,8 @@ local function styleFunction(self, unit)
 		self.Debuffs.onlyShowPlayer = f and true
 		self.Debuffs.initialAnchor = f and 'TOPLEFT' or 'TOPRIGHT'
 		self.Debuffs['growth-x'] = f and 'RIGHT' or 'LEFT'
-		self.Debuffs.PostCreateIcon = createAura
+--		self.Debuffs.PostCreateIcon = createAura -- waiting for consistency branch to be merged
+		self.PostCreateAuraIcon = createAura
 
 		self:SetAttribute('initial-height', 21)
 		self:SetAttribute('initial-width', 181)
@@ -304,21 +272,14 @@ local function styleFunction(self, unit)
 		self.Auras.spacing = 2
 		self.Auras.initialAnchor = 'TOPRIGHT'
 		self.Auras['growth-x'] = 'LEFT'
-		self.Auras.PostCreateIcon = createAura
+--		self.Auras.PostCreateIcon = createAura -- waiting for consistency branch to be merged
+		self.PostCreateAuraIcon = createAura
 
 		self:SetAttribute('initial-height', 27)
 		self:SetAttribute('initial-width', 130)
 	end
 
 	if(unit == 'target' or unit == 'player') then
-		self.Portrait = CreateFrame('PlayerModel', nil, self)
-		self.Portrait:SetPoint('TOPLEFT', self.Health)
-		self.Portrait:SetPoint('BOTTOMLEFT', self.Health)
-		self.Portrait:SetAlpha(0.1)
-		self.Portrait:SetWidth(230)
-		self:RegisterEvent('PLAYER_DEAD', function() setPortraitWidth(self, 231) end)
-		self.OverrideUpdateHealth = updatePortrait
-
 		self:SetAttribute('initial-height', 27)
 		self:SetAttribute('initial-width', 230)
 	end
@@ -349,8 +310,10 @@ local function styleFunction(self, unit)
 		self.Debuffs.spacing = 2
 		self.Debuffs.initialAnchor = 'TOPLEFT'
 		self.Debuffs['growth-y'] = 'DOWN'
-		self.Debuffs.PostCreateIcon = createAura
-		self.Debuffs.PostUpdateIcon = updateAura
+--		self.Debuffs.PostCreateIcon = createAura -- waiting for consistency branch to be merged
+--		self.Debuffs.PostUpdateIcon = updateAura -- waiting for consistency branch to be merged
+		self.PostCreateAuraIcon = createAura
+		self.PostUpdateAuraIcon = updateAura
 	end
 
 	if(unit == 'player' and class == 'DRUID') then
