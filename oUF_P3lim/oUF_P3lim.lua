@@ -36,6 +36,12 @@ local function menu(self)
 	end
 end
 
+local function onMouseUp(self, button)
+	if(button == 'RightButton') then
+		CancelUnitBuff(self.frame.unit, self:GetID(), self.filter)
+	end
+end
+
 local function truncate(value)
 	if(value >= 1e6) then
 		return format('%dm', value / 1e6)
@@ -95,6 +101,14 @@ local function updateMasterLooter(self)
 	end
 end
 
+local function updateCPoints(self)
+	if(UnitHasVehicleUI('player')) then
+		self.CPoints.unit = 'vehicle'
+	else
+		self.CPoints.unit = 'player'
+	end
+end
+
 local function updateDruidPower(self, event, unit)
 	if(unit and unit ~= self.unit) then return end
 	local bar = self.DruidPower
@@ -121,15 +135,16 @@ local function castbarTime(self, duration)
 	end
 end
 
-local function createAura(icons, button)
+local function createAura(self, button, icons)
 	icons.showDebuffType = true
 	button.cd:SetReverse()
 	button.overlay:SetTexture([=[Interface\AddOns\oUF_P3lim\border]=])
 	button.overlay:SetTexCoord(0, 1, 0, 1)
 	button.overlay.Hide = function(self) self:SetVertexColor(0.25, 0.25, 0.25) end
+	button:SetScript('OnMouseUp', onMouseUp)
 end
 
-local function updateAura(icons, unit, icon, index)
+local function updateAura(self, icons, unit, icon, index)
 	if(icon.debuff and UnitIsEnemy('player', unit)) then
 		local _, _, _, _, _, duration, _, caster = UnitAura(unit, index, icon.filter)
 		if(caster ~= 'player' and caster ~= 'vehicle') then
@@ -242,7 +257,6 @@ local function styleFunction(self, unit)
 		self.Debuffs.onlyShowPlayer = f and true
 		self.Debuffs.initialAnchor = f and 'TOPLEFT' or 'TOPRIGHT'
 		self.Debuffs['growth-x'] = f and 'RIGHT' or 'LEFT'
---		self.Debuffs.PostCreateIcon = createAura -- waiting for consistency branch to be merged
 		self.PostCreateAuraIcon = createAura
 
 		self:SetAttribute('initial-height', 21)
@@ -253,7 +267,7 @@ local function styleFunction(self, unit)
 		local power = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
 		power:SetPoint('LEFT', self.Health, 2, -1)
 		power.frequentUpdates = 0.1
-		self:Tag(power, unit == 'pet' and '[custompp] [(- )cpoints( CP)]' or '[custompp]')
+		self:Tag(power, '[custompp]')
 
 		self.BarFade = true
 	else
@@ -272,7 +286,6 @@ local function styleFunction(self, unit)
 		self.Auras.spacing = 2
 		self.Auras.initialAnchor = 'TOPRIGHT'
 		self.Auras['growth-x'] = 'LEFT'
---		self.Auras.PostCreateIcon = createAura -- waiting for consistency branch to be merged
 		self.PostCreateAuraIcon = createAura
 
 		self:SetAttribute('initial-height', 27)
@@ -290,6 +303,8 @@ local function styleFunction(self, unit)
 		self.CPoints:SetTextColor(1, 1, 1)
 		self.CPoints:SetJustifyH('RIGHT')
 		self.CPoints.unit = 'player'
+		self:RegisterEvent('UNIT_ENTERING_VEHICLE', updateCPoints)
+		self:RegisterEvent('UNIT_EXITING_VEHICLE', updateCPoints)
 
 		self.Buffs = CreateFrame('Frame', nil, self)
 		self.Buffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 2, 1)
@@ -310,8 +325,6 @@ local function styleFunction(self, unit)
 		self.Debuffs.spacing = 2
 		self.Debuffs.initialAnchor = 'TOPLEFT'
 		self.Debuffs['growth-y'] = 'DOWN'
---		self.Debuffs.PostCreateIcon = createAura -- waiting for consistency branch to be merged
---		self.Debuffs.PostUpdateIcon = updateAura -- waiting for consistency branch to be merged
 		self.PostCreateAuraIcon = createAura
 		self.PostUpdateAuraIcon = updateAura
 	end
@@ -394,8 +407,6 @@ local function styleFunction(self, unit)
 		self.Experience.bg:SetAllPoints(self.Experience)
 		self.Experience.bg:SetTexture(0.3, 0.3, 0.3)
 	end
-
-	self.disallowVehicleSwap = true
 
 	self.DebuffHighlightBackdrop = true
 	self.DebuffHighlightFilter = true
