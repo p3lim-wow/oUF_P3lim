@@ -164,7 +164,7 @@ end
 
 local function updateBuff(self, icons, unit, icon, index)
 	local _, _, _, _, _, duration, expiration = UnitAura(unit, index, icon.filter)
-	if(duration < 60 expiration and expiration > 0) then
+	if(duration < 60 and expiration and expiration > 0) then
 		icon.expiration = expiration
 		icon:SetScript('OnUpdate', updateTime)
 		icon:Show()
