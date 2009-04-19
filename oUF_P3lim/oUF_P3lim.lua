@@ -7,6 +7,8 @@ local backdrop = {
 	insets = {top = -1, left = -1, bottom = -1, right = -1},
 }
 
+LibStub('LibSharedMedia-3.0', true):Register('statusbar', 'Minimalist', texture)
+
 local runeloadcolors = {
 	[1] = {0.77, 0.12, 0.23},
 	[2] = {0.77, 0.12, 0.23},
@@ -65,8 +67,7 @@ oUF.Tags['[customhp]'] = function(unit)
 	return status and status or 
 		(unit == 'target' and UnitCanAttack('player', unit)) and format('%s (%d|cff0090ff%%|r)', truncate(min), floor(min/max*100)) or
 		(unit == 'player' and min~=max) and format('|cffff8080%d|r %d|cff0090ff%%|r', min-max, floor(min/max*100)) or
-		(unit == 'pet' and min~=max) and format('%s |cff0090ff/|r %s', truncate(min), truncate(max)) or
-		(min~=max) and format('%s |cff0090ff/|r %s', min, max) or max
+		(min~=max) and format('%s |cff0090ff/|r %s', truncate(min), truncate(max)) or max
 end
 
 oUF.TagEvents['[custompp]'] = oUF.TagEvents['[curpp]']
@@ -101,8 +102,10 @@ local function updateMasterLooter(self)
 	end
 end
 
-local function updateCPoints(self)
-	if(UnitHasVehicleUI('player')) then
+local function updateCPoints(self, event, unit)
+	if(unit ~= 'player') then return end
+
+	if(UnitHasVehicleUI(unit)) then
 		self.CPoints.unit = 'vehicle'
 	else
 		self.CPoints.unit = 'player'
@@ -142,17 +145,43 @@ local function createAura(self, button, icons)
 	button.overlay:SetTexCoord(0, 1, 0, 1)
 	button.overlay.Hide = function(self) self:SetVertexColor(0.25, 0.25, 0.25) end
 	button:SetScript('OnMouseUp', onMouseUp)
+
+	if(self.unit == 'player') then
+		icons.disableCooldown = true
+		button.time = button:CreateFontString(nil, 'OVERLAY', 'NumberFontNormal')
+		button.time:SetPoint('TOPLEFT', button)
+	end
 end
 
-local function updateAura(self, icons, unit, icon, index)
-	if(icon.debuff and UnitIsEnemy('player', unit)) then
-		local _, _, _, _, _, duration, _, caster = UnitAura(unit, index, icon.filter)
-		if(caster ~= 'player' and caster ~= 'vehicle') then
-			icon.icon:SetDesaturated(true)
-			icon.overlay:SetVertexColor(0.25, 0.25, 0.25)
-		else
-			icon.icon:SetDesaturated(false)
-		end
+local function updateTime(self)
+	if(self.expiration) then
+		local timeleft = floor(self.expiration - GetTime() + 0.5)
+		self.time:SetText(timeleft > 0 and timeleft or '')
+	else
+		self:SetScript('OnUpdate', nil)
+	end
+end
+
+local function updateBuff(self, icons, unit, icon, index)
+	local _, _, _, _, _, duration, expiration = UnitAura(unit, index, icon.filter)
+	if(duration < 60 expiration and expiration > 0) then
+		icon.expiration = expiration
+		icon:SetScript('OnUpdate', updateTime)
+		icon:Show()
+	else
+		icon:Hide()
+	end
+end
+
+local function updateDebuff(self, icons, unit, icon, index)
+	if(not UnitIsEnemy('player', unit)) then return end
+
+	local _, _, _, _, _, _, _, caster = UnitAura(unit, index, icon.filter)
+	if(caster ~= 'player' and caster ~= 'vehicle') then
+		icon.icon:SetDesaturated(true)
+		icon.overlay:SetVertexColor(0.25, 0.25, 0.25)
+	else
+		icon.icon:SetDesaturated(false)
 	end
 end
 
@@ -254,7 +283,7 @@ local function styleFunction(self, unit)
 		self.Debuffs.num = 2
 		self.Debuffs.size = 23
 		self.Debuffs.spacing = 2
-		self.Debuffs.onlyShowPlayer = f and true
+		self.Debuffs.onlyShowPlayer = f
 		self.Debuffs.initialAnchor = f and 'TOPLEFT' or 'TOPRIGHT'
 		self.Debuffs['growth-x'] = f and 'RIGHT' or 'LEFT'
 		self.PostCreateAuraIcon = createAura
@@ -293,6 +322,19 @@ local function styleFunction(self, unit)
 	end
 
 	if(unit == 'target' or unit == 'player') then
+		self.Buffs = CreateFrame('Frame', nil, self)
+		self.Buffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 2, 1)
+		self.Buffs:SetHeight(24 * 2)
+		self.Buffs:SetWidth(270)
+		self.Buffs.num = 20
+		self.Buffs.size = 24
+		self.Buffs.spacing = 2
+		self.Buffs.initialAnchor = 'TOPLEFT'
+		self.Buffs['growth-y'] = 'DOWN'
+		self.Buffs.onlyShowPlayer = unit == 'player'
+		self.PostUpdateAuraIcon = unit == 'player' and updateBuff
+		self.PostCreateAuraIcon = createAura
+
 		self:SetAttribute('initial-height', 27)
 		self:SetAttribute('initial-width', 230)
 	end
@@ -306,17 +348,6 @@ local function styleFunction(self, unit)
 		self:RegisterEvent('UNIT_ENTERING_VEHICLE', updateCPoints)
 		self:RegisterEvent('UNIT_EXITING_VEHICLE', updateCPoints)
 
-		self.Buffs = CreateFrame('Frame', nil, self)
-		self.Buffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 2, 1)
-		self.Buffs:SetHeight(24 * 2)
-		self.Buffs:SetWidth(270)
-		self.Buffs.num = 20
-		self.Buffs.size = 24
-		self.Buffs.spacing = 2
-		self.Buffs.initialAnchor = 'TOPLEFT'
-		self.Buffs['growth-y'] = 'DOWN'
-		self.Buffs.PostCreateIcon = createAura
-
 		self.Debuffs = CreateFrame('Frame', nil, self)
 		self.Debuffs:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', -1, -2)
 		self.Debuffs:SetHeight(22 * 0.97)
@@ -326,7 +357,7 @@ local function styleFunction(self, unit)
 		self.Debuffs.initialAnchor = 'TOPLEFT'
 		self.Debuffs['growth-y'] = 'DOWN'
 		self.PostCreateAuraIcon = createAura
-		self.PostUpdateAuraIcon = updateAura
+		self.PostUpdateAuraIcon = updateDebuff
 	end
 
 	if(unit == 'player' and class == 'DRUID') then
