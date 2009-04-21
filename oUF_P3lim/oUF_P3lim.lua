@@ -7,7 +7,7 @@ local backdrop = {
 	insets = {top = -1, left = -1, bottom = -1, right = -1},
 }
 
-LibStub('LibSharedMedia-3.0', true):Register('statusbar', 'Minimalist', texture)
+if(LibStub) then LibStub('LibSharedMedia-3.0', true):Register('statusbar', 'Minimalist', texture) end
 
 local runeloadcolors = {
 	[1] = {0.77, 0.12, 0.23},
@@ -46,9 +46,9 @@ end
 
 local function truncate(value)
 	if(value >= 1e6) then
-		return format('%dm', value / 1e6)
+		return format('%.02fm', value / 1e6)
 	elseif(value >= 1e4) then
-		return format('%dk', value / 1e3)
+		return format('%.01fk', value / 1e3)
 	else
 		return value
 	end
@@ -103,12 +103,8 @@ local function updateMasterLooter(self)
 end
 
 local function updateCPoints(self, event, unit)
-	if(unit ~= 'player') then return end
-
-	if(UnitHasVehicleUI(unit)) then
-		self.CPoints.unit = 'vehicle'
-	else
-		self.CPoints.unit = 'player'
+	if(unit == PlayerFrame.unit) then
+		self.CPoints.unit = unit
 	end
 end
 
@@ -163,8 +159,8 @@ local function updateTime(self)
 end
 
 local function updateBuff(self, icons, unit, icon, index)
-	local _, _, _, _, _, duration, expiration = UnitAura(unit, index, icon.filter)
-	if(duration < 60 and expiration and expiration > 0) then
+	local _, _, _, _, _, _, expiration = UnitAura(unit, index, icon.filter)
+	if(expiration and expiration > 0) then
 		icon.expiration = expiration
 		icon:SetScript('OnUpdate', updateTime)
 		icon:Show()
@@ -182,6 +178,16 @@ local function updateDebuff(self, icons, unit, icon, index)
 		icon.overlay:SetVertexColor(0.25, 0.25, 0.25)
 	else
 		icon.icon:SetDesaturated(false)
+	end
+end
+
+
+-- this filter will only work for me, as the table it tries to call is
+-- a global table that I have in a seperate add-on, which makes the buff
+-- frame only appear on my screen, not for the public.
+local function customFilter(icons, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster)
+	if(Inomena_BuffFilter and Inomena_BuffFilter[name] and caster == 'player') then
+		return true
 	end
 end
 
@@ -331,9 +337,9 @@ local function styleFunction(self, unit)
 		self.Buffs.spacing = 2
 		self.Buffs.initialAnchor = 'TOPLEFT'
 		self.Buffs['growth-y'] = 'DOWN'
-		self.Buffs.onlyShowPlayer = unit == 'player'
-		self.PostUpdateAuraIcon = unit == 'player' and updateBuff
 		self.PostCreateAuraIcon = createAura
+		self.PostUpdateAuraIcon = unit == 'player' and updateBuff
+		self.CustomAuraFilter = unit == 'player' and customFilter
 
 		self:SetAttribute('initial-height', 27)
 		self:SetAttribute('initial-width', 230)
@@ -344,9 +350,8 @@ local function styleFunction(self, unit)
 		self.CPoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
 		self.CPoints:SetTextColor(1, 1, 1)
 		self.CPoints:SetJustifyH('RIGHT')
-		self.CPoints.unit = 'player'
-		self:RegisterEvent('UNIT_ENTERING_VEHICLE', updateCPoints)
-		self:RegisterEvent('UNIT_EXITING_VEHICLE', updateCPoints)
+		self.CPoints.unit = PlayerFrame.unit
+		self:RegisterEvent('UNIT_COMBO_POINTS', updateCPoints)
 
 		self.Debuffs = CreateFrame('Frame', nil, self)
 		self.Debuffs:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', -1, -2)
