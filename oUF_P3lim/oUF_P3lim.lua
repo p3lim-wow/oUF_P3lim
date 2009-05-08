@@ -1,3 +1,14 @@
+--[[
+
+ Copyright (c) 2009, Adrian L Lange
+ All rights reserved.
+
+ You're allowed to use this addon, free of monetary charge,
+ but you are not allowed to modify, alter, or redistribute
+ this addon without express, written permission of the author.
+
+--]]
+
 local format = string.format
 local floor = math.floor
 local localized, class = UnitClass('player')
@@ -31,6 +42,7 @@ local colors = setmetatable({
 	white = {1, 1, 1},
 }, {__index = oUF.colors})
 
+
 local function menu(self)
 	local unit = string.gsub(self.unit, '(.)', string.upper, 1)
 	if(_G[unit..'FrameDropDown']) then
@@ -46,9 +58,9 @@ end
 
 local function truncate(value)
 	if(value >= 1e6) then
-		return format('%.02fm', value / 1e6)
+		return gsub(format('%.2fm', value / 1e6), '%.?0+([km])$', '%1')
 	elseif(value >= 1e4) then
-		return format('%.01fk', value / 1e3)
+		return gsub(format('%.1fk', value / 1e3), '%.?0+([km])$', '%1')
 	else
 		return value
 	end
@@ -82,7 +94,7 @@ oUF.Tags['[customname]'] = function(unit)
 	local c = (UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) and colors.tapped or
 		(not UnitIsConnected(unit)) and colors.disconnected or
 		(not UnitIsPlayer(unit)) and colors.reaction[UnitReaction(unit, 'player')] or
-		(UnitFactionGroup(unit) and UnitIsPVP(unit)) and colors.red or colors.white
+		(UnitFactionGroup(unit) and UnitIsEnemy(unit, 'player') and UnitIsPVP(unit)) and colors.red or colors.white
 
 	return format('|cff%02x%02x%02x%s|r', c[1] * 255, c[2] * 255, c[3] * 255, UnitName(unit))
 end
@@ -170,7 +182,7 @@ local function updateBuff(self, icons, unit, icon, index)
 end
 
 local function updateDebuff(self, icons, unit, icon, index)
-	if(not UnitIsEnemy('player', unit)) then return end
+	if(not icon.debuff or not UnitIsEnemy('player', unit)) then return end
 
 	local _, _, _, _, _, _, _, caster = UnitAura(unit, index, icon.filter)
 	if(caster ~= 'player' and caster ~= 'vehicle') then
@@ -182,11 +194,11 @@ local function updateDebuff(self, icons, unit, icon, index)
 end
 
 
--- this filter will only work for me, as the table it tries to call is
--- a global table that I have in a seperate add-on, which makes the buff
--- frame only appear on my screen, not for the public.
 local function customFilter(icons, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster)
-	if(Inomena_BuffFilter and Inomena_BuffFilter[name] and caster == 'player') then
+	-- This filter is made for me specifically, but you can create
+	-- your own table with spells that this filter can match to.
+	if(oUF_P3lim_buffFilter and oUF_P3lim_buffFilter[name] and caster == 'player') then
+		-- todo: set the buffs.visibleBuffs so it works with buffs.num		
 		return true
 	end
 end
