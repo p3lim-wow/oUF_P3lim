@@ -1,13 +1,10 @@
 --[[
 
- Copyright (c) 2009, Adrian L Lange
- All rights reserved.
-
- You're allowed to use this addon, free of monetary charge,
- but you are not allowed to modify, alter, or redistribute
- this addon without express, written permission of the author.
+  Adrian L Lange grants anyone the right to use this work for any purpose,
+  without any conditions, unless such conditions are required by law.
 
 --]]
+
 
 local gsub = string.gsub
 local format = string.format
