@@ -9,8 +9,10 @@
 
 --]]
 
+local gsub = string.gsub
 local format = string.format
 local floor = math.floor
+
 local localized, class = UnitClass('player')
 local texture = [=[Interface\AddOns\oUF_P3lim\minimalist]=]
 local backdrop = {
@@ -44,7 +46,7 @@ local colors = setmetatable({
 
 
 local function menu(self)
-	local unit = string.gsub(self.unit, '(.)', string.upper, 1)
+	local unit = gsub(self.unit, '(.)', string.upper, 1)
 	if(_G[unit..'FrameDropDown']) then
 		ToggleDropDownMenu(1, nil, _G[unit..'FrameDropDown'], 'cursor')
 	end
@@ -68,7 +70,7 @@ end
 
 oUF.TagEvents['[customstatus]'] = 'UNIT_HEALTH'
 oUF.Tags['[customstatus]'] = function(unit)
-	return not UnitIsConnected(unit) and 'Offline' or UnitIsGhost(unit) and 'Ghost' or UnitIsDead(unit) and 'Dead'
+	return not UnitIsConnected(unit) and PLAYER_OFFLINE or UnitIsGhost(unit) and 'Ghost' or UnitIsDead(unit) and DEAD
 end
 
 oUF.TagEvents['[customhp]'] = 'UNIT_HEALTH UNIT_MAXHEALTH'
@@ -131,6 +133,16 @@ local function updateDruidPower(self, event, unit)
 	bar:SetMinMaxValues(0, max)
 	bar:SetValue(min)
 	bar:SetAlpha(min ~= max and 1 or 0)
+end
+
+local function updatePower(self, event, unit, bar, min, max)
+	if(max ~= 0) then
+		self.Health:SetHeight(22)
+		bar:Show()
+	else
+		self.Health:SetHeight(27)
+		bar:Hide()
+	end
 end
 
 local function updateReputationColor(self, event, unit, bar)
@@ -240,12 +252,13 @@ local function styleFunction(self, unit)
 
 	if(unit ~= 'targettarget' and unit ~= 'focus') then
 		self.Power = CreateFrame('StatusBar', self:GetName()..'_power', self)
-		self.Power:SetPoint('TOPRIGHT', self.Health, 'BOTTOMRIGHT', 0, -1)
-		self.Power:SetPoint('TOPLEFT', self.Health, 'BOTTOMLEFT', 0, -1)
+		self.Power:SetPoint('BOTTOMRIGHT', self)
+		self.Power:SetPoint('BOTTOMLEFT', self)
 		self.Power:SetStatusBarTexture(texture)
 		self.Power:SetHeight(4)
 		self.Power.frequentUpdates = true
 
+		local pet = unit == 'pet'
 		self.Power.bg = self.Power:CreateTexture(nil, 'BORDER')
 		self.Power.bg:SetAllPoints(self.Power)
 		self.Power.bg:SetTexture([=[Interface\ChatFrame\ChatFrameBackground]=])
@@ -254,9 +267,10 @@ local function styleFunction(self, unit)
 		self.Power.colorTapping = true
 		self.Power.colorDisconnected = true
 		self.Power.colorClass = true
-		self.Power.colorPower = unit == 'pet' and true
-		self.Power.colorHappiness = unit == 'pet' and true
-		self.Power.colorReaction = unit ~= 'pet' and true
+		self.Power.colorPower = pet
+		self.Power.colorHappiness = pet
+		self.Power.colorReaction = not pet
+		self.PostUpdatePower = updatePower
 
 		self.Castbar = CreateFrame('StatusBar', self:GetName()..'_castbar', self)
 		self.Castbar:SetPoint('TOPRIGHT', self, 'BOTTOMRIGHT', 0, -100)
@@ -293,7 +307,7 @@ local function styleFunction(self, unit)
 		self:RegisterEvent('PARTY_MEMBERS_CHANGED', updateMasterLooter)
 		self:RegisterEvent('PARTY_LEADER_CHANGED', updateMasterLooter)
 	else
-		local f = unit == 'focus'
+		local focus = unit == 'focus'
 		self.Debuffs = CreateFrame('Frame', nil, self)
 		self.Debuffs:SetPoint(f and 'TOPLEFT' or 'TOPRIGHT', self, f and 'TOPRIGHT' or 'TOPLEFT', f and 2 or -2, 1)
 		self.Debuffs:SetHeight(23)
@@ -301,9 +315,9 @@ local function styleFunction(self, unit)
 		self.Debuffs.num = 2
 		self.Debuffs.size = 23
 		self.Debuffs.spacing = 2
-		self.Debuffs.onlyShowPlayer = f
-		self.Debuffs.initialAnchor = f and 'TOPLEFT' or 'TOPRIGHT'
-		self.Debuffs['growth-x'] = f and 'RIGHT' or 'LEFT'
+		self.Debuffs.onlyShowPlayer = focus
+		self.Debuffs.initialAnchor = focus and 'TOPLEFT' or 'TOPRIGHT'
+		self.Debuffs['growth-x'] = focus and 'RIGHT' or 'LEFT'
 		self.PostCreateAuraIcon = createAura
 
 		self:SetAttribute('initial-height', 21)
@@ -443,15 +457,21 @@ local function styleFunction(self, unit)
 		self.Experience:SetStatusBarTexture(texture)
 		self.Experience:SetStatusBarColor(unpack(colors.health))
 		self.Experience:SetHeight(11)
-		self.Experience:SetWidth((unit == 'pet') and 130 or 230)
-		self.Experience:SetBackdrop(backdrop)
-		self.Experience:SetBackdropColor(0, 0, 0)
+		self.Experience:SetWidth(self:GetAttribute('initial-width'))
 		self.Experience.Tooltip = true
+
+		self.Experience.Rested = CreateFrame('StatusBar', nil, self)
+		self.Experience.Rested:SetAllPoints(self.Experience)
+		self.Experience.Rested:SetStatusBarTexture(texture)
+		self.Experience.Rested:SetStatusBarColor(0, 0.4, 1, 0.6)
+		self.Experience.Rested:SetBackdrop(backdrop)
+		self.Experience.Rested:SetBackdropColor(0, 0, 0)
+		self.Experience.Rested:SetFrameLevel(1)
 
 		self.Experience.Text = self.Experience:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
 		self.Experience.Text:SetPoint('CENTER', self.Experience)
 
-		self.Experience.bg = self.Experience:CreateTexture(nil, 'BORDER')
+		self.Experience.bg = self.Experience.Rested:CreateTexture(nil, 'BORDER')
 		self.Experience.bg:SetAllPoints(self.Experience)
 		self.Experience.bg:SetTexture(0.3, 0.3, 0.3)
 	end
