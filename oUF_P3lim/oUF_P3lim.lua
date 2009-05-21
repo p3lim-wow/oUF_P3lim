@@ -65,6 +65,32 @@ local function truncate(value)
 	end
 end
 
+do
+	local pvptag = CreateFrame('Frame')
+	local pvptime = 0
+
+	local function pvpscript(self, elapsed)
+		pvptime = pvptime - elapsed * 1000 -- check if the multiplier is needed
+		if(pvptime < 0) then
+			oUF.units.player.PvP:SetText()
+			self:SetScript('OnUpdate', nil)
+		else
+			oUF.units.player.PvP:SetFormattedText('[%d:%02d]', floor((pvptime / 1000) / 60), (pvptime / 1000) % 60)
+		end
+	end
+
+	oUF.TagEvents['[custompvp]'] = 'PLAYER_FLAGS_CHANGED'
+	oUF.Tags['[custompvp]'] = function(unit)
+		if(UnitIsPVP(unit)) then
+			pvptime = 0
+			return '[PvP]'
+		else
+			pvptime = GetPVPTimer()
+			pvptag:SetScript('OnUpdate', pvpscript)
+		end
+	end
+end
+
 oUF.TagEvents['[customstatus]'] = 'UNIT_HEALTH'
 oUF.Tags['[customstatus]'] = function(unit)
 	return not UnitIsConnected(unit) and PLAYER_OFFLINE or UnitIsGhost(unit) and 'Ghost' or UnitIsDead(unit) and DEAD
@@ -388,22 +414,28 @@ local function styleFunction(self, unit)
 		self.PostUpdateAuraIcon = updateDebuff
 	end
 
-	if(unit == 'player' and class == 'DRUID') then
-		self.DruidPower = CreateFrame('StatusBar', self:GetName()..'_druidpower', self)
-		self.DruidPower:SetPoint('TOP', self.Health, 'BOTTOM')
-		self.DruidPower:SetStatusBarTexture(texture)
-		self.DruidPower:SetHeight(1)
-		self.DruidPower:SetWidth(230)
-		self.DruidPower:SetAlpha(0)
+	if(unit == 'player') then
+		self.PvP = self.Health:CreateFontString(nil, 'OVERLAY', GameFontHighlightSmall)
+		self.PvP:SetPoint('BOTTOMLEFT', self.Power)
+		self:Tag(self.PvP, '[custompvp]')
 
-		local value = self.DruidPower:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
-		value:SetPoint('CENTER', self.DruidPower)
-		self:Tag(value, '[druidpower]')
+		if(class == 'DRUID') then
+			self.DruidPower = CreateFrame('StatusBar', self:GetName()..'_druidpower', self)
+			self.DruidPower:SetPoint('TOP', self.Health, 'BOTTOM')
+			self.DruidPower:SetStatusBarTexture(texture)
+			self.DruidPower:SetHeight(1)
+			self.DruidPower:SetWidth(230)
+			self.DruidPower:SetAlpha(0)
 
-		table.insert(self.__elements, updateDruidPower)
-		self:RegisterEvent('UNIT_MANA', updateDruidPower)
-		self:RegisterEvent('UNIT_ENERGY', updateDruidPower)
-		self:RegisterEvent('UPDATE_SHAPESHIFT_FORM', updateDruidPower)
+			local value = self.DruidPower:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
+			value:SetPoint('CENTER', self.DruidPower)
+			self:Tag(value, '[druidpower]')
+
+			table.insert(self.__elements, updateDruidPower)
+			self:RegisterEvent('UNIT_MANA', updateDruidPower)
+			self:RegisterEvent('UNIT_ENERGY', updateDruidPower)
+			self:RegisterEvent('UPDATE_SHAPESHIFT_FORM', updateDruidPower)
+		end
 	end
 
 	if(IsAddOnLoaded'oUF_Reputation' and unit == 'player' and UnitLevel('player') == MAX_PLAYER_LEVEL) then
