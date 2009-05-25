@@ -20,12 +20,9 @@ local backdrop = {
 if(LibStub) then LibStub('LibSharedMedia-3.0', true):Register('statusbar', 'Minimalist', texture) end
 
 local runeloadcolors = {
-	[1] = {0.77, 0.12, 0.23},
-	[2] = {0.77, 0.12, 0.23},
-	[3] = {0.4, 0.8, 0.1},
-	[4] = {0.4, 0.8, 0.1},
-	[5] = {0, 0.4, 0.7},
-	[6] = {0, 0.4, 0.7},
+	{0.77, 0.12, 0.23}, {0.77, 0.12, 0.23},
+	{0.4, 0.8, 0.1}, {0.4, 0.8, 0.1},
+	{0, 0.4, 0.7}, {0, 0.4, 0.7},
 }
 
 local colors = setmetatable({
@@ -49,12 +46,6 @@ local function menu(self)
 	end
 end
 
-local function onMouseUp(self, button)
-	if(button == 'RightButton') then
-		CancelUnitBuff(self.frame.unit, self:GetID(), self.filter)
-	end
-end
-
 local function truncate(value)
 	if(value >= 1e6) then
 		return gsub(format('%.2fm', value / 1e6), '%.?0+([km])$', '%1')
@@ -65,30 +56,15 @@ local function truncate(value)
 	end
 end
 
-do
-	local pvptag = CreateFrame('Frame')
-	local pvptime = 0
+oUF.TagEvents['[custompvp]'] = 'PLAYER_FLAGS_CHANGED'
+oUF.Tags['[custompvp]'] = function(unit)
+	return UnitIsPVP(unit) and not IsPVPTimerRunning() and '*' or IsPVPTimerRunning() and format('%d:%02d', floor((GetPVPTimer() / 1000) / 60), (GetPVPTimer() / 1000) % 60)
+end
 
-	local function pvpscript(self, elapsed)
-		pvptime = pvptime - elapsed * 1000 -- check if the multiplier is needed
-		if(pvptime < 0) then
-			oUF.units.player.PvP:SetText()
-			self:SetScript('OnUpdate', nil)
-		else
-			oUF.units.player.PvP:SetFormattedText('[%d:%02d]', floor((pvptime / 1000) / 60), (pvptime / 1000) % 60)
-		end
-	end
-
-	oUF.TagEvents['[custompvp]'] = 'PLAYER_FLAGS_CHANGED'
-	oUF.Tags['[custompvp]'] = function(unit)
-		if(UnitIsPVP(unit)) then
-			pvptime = 0
-			return '[PvP]'
-		else
-			pvptime = GetPVPTimer()
-			pvptag:SetScript('OnUpdate', pvpscript)
-		end
-	end
+oUF.TagEvents['[customthreat]'] = 'UNIT_THREAT_LIST_UPDATE'
+oUF.Tags['[customthreat]'] = function()
+	local tanking, _, perc = UnitDetailedThreatSituation('player', 'target')
+	return not tanking and perc and floor(perc)
 end
 
 oUF.TagEvents['[customstatus]'] = 'UNIT_HEALTH'
@@ -187,7 +163,6 @@ local function createAura(self, button, icons)
 	button.overlay:SetTexture([=[Interface\AddOns\oUF_P3lim\border]=])
 	button.overlay:SetTexCoord(0, 1, 0, 1)
 	button.overlay.Hide = function(self) self:SetVertexColor(0.25, 0.25, 0.25) end
-	button:SetScript('OnMouseUp', onMouseUp)
 
 	if(self.unit == 'player') then
 		icons.disableCooldown = true
@@ -266,7 +241,7 @@ local function styleFunction(self, unit)
 	local hpvalue = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallRight')
 	hpvalue:SetPoint('RIGHT', self.Health, -2, -1)
 	hpvalue.frequentUpdates = 0.1
-	self:Tag(hpvalue, '[customhp]')
+	self:Tag(hpvalue, unit == 'player' and '|cffff0000[custompvp]|r [customhp]' or '[customhp]')
 
 	self.RaidIcon = self.Health:CreateTexture(nil, 'OVERLAY')
 	self.RaidIcon:SetPoint('TOP', self, 0, 8)
@@ -332,7 +307,7 @@ local function styleFunction(self, unit)
 	else
 		local focus = unit == 'focus'
 		self.Debuffs = CreateFrame('Frame', nil, self)
-		self.Debuffs:SetPoint(f and 'TOPLEFT' or 'TOPRIGHT', self, f and 'TOPRIGHT' or 'TOPLEFT', f and 2 or -2, 1)
+		self.Debuffs:SetPoint(focus and 'TOPLEFT' or 'TOPRIGHT', self, focus and 'TOPRIGHT' or 'TOPLEFT', focus and 2 or -2, 1)
 		self.Debuffs:SetHeight(23)
 		self.Debuffs:SetWidth(180)
 		self.Debuffs.num = 2
@@ -402,6 +377,10 @@ local function styleFunction(self, unit)
 		self.CPoints.unit = PlayerFrame.unit
 		self:RegisterEvent('UNIT_COMBO_POINTS', updateCPoints)
 
+		local threat = self:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
+		threat:SetPoint('TOPLEFT', self, 'BOTTOMRIGHT')
+		self:Tag(threat, '[threatcolor][customthreat(%)]')
+
 		self.Debuffs = CreateFrame('Frame', nil, self)
 		self.Debuffs:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', -1, -2)
 		self.Debuffs:SetHeight(22 * 0.97)
@@ -414,28 +393,22 @@ local function styleFunction(self, unit)
 		self.PostUpdateAuraIcon = updateDebuff
 	end
 
-	if(unit == 'player') then
-		self.PvP = self.Health:CreateFontString(nil, 'OVERLAY', GameFontHighlightSmall)
-		self.PvP:SetPoint('BOTTOMLEFT', self.Power)
-		self:Tag(self.PvP, '[custompvp]')
+	if(unit == 'player' and class == 'DRUID') then
+		self.DruidPower = CreateFrame('StatusBar', self:GetName()..'_druidpower', self)
+		self.DruidPower:SetPoint('TOP', self.Health, 'BOTTOM')
+		self.DruidPower:SetStatusBarTexture(texture)
+		self.DruidPower:SetHeight(1)
+		self.DruidPower:SetWidth(230)
+		self.DruidPower:SetAlpha(0)
 
-		if(class == 'DRUID') then
-			self.DruidPower = CreateFrame('StatusBar', self:GetName()..'_druidpower', self)
-			self.DruidPower:SetPoint('TOP', self.Health, 'BOTTOM')
-			self.DruidPower:SetStatusBarTexture(texture)
-			self.DruidPower:SetHeight(1)
-			self.DruidPower:SetWidth(230)
-			self.DruidPower:SetAlpha(0)
+		local value = self.DruidPower:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
+		value:SetPoint('CENTER', self.DruidPower)
+		self:Tag(value, '[druidpower]')
 
-			local value = self.DruidPower:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
-			value:SetPoint('CENTER', self.DruidPower)
-			self:Tag(value, '[druidpower]')
-
-			table.insert(self.__elements, updateDruidPower)
-			self:RegisterEvent('UNIT_MANA', updateDruidPower)
-			self:RegisterEvent('UNIT_ENERGY', updateDruidPower)
-			self:RegisterEvent('UPDATE_SHAPESHIFT_FORM', updateDruidPower)
-		end
+		table.insert(self.__elements, updateDruidPower)
+		self:RegisterEvent('UNIT_MANA', updateDruidPower)
+		self:RegisterEvent('UNIT_ENERGY', updateDruidPower)
+		self:RegisterEvent('UPDATE_SHAPESHIFT_FORM', updateDruidPower)
 	end
 
 	if(IsAddOnLoaded'oUF_Reputation' and unit == 'player' and UnitLevel('player') == MAX_PLAYER_LEVEL) then
