@@ -241,7 +241,7 @@ local function styleFunction(self, unit)
 	local hpvalue = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallRight')
 	hpvalue:SetPoint('RIGHT', self.Health, -2, -1)
 	hpvalue.frequentUpdates = 0.1
-	self:Tag(hpvalue, unit == 'player' and '|cffff0000[custompvp]|r [customhp]' or '[customhp]')
+	self:Tag(hpvalue, unit == 'player' and '[threatcolor][customthreat(%)]|r|cffff0000[custompvp]|r [customhp]' or '[customhp]')
 
 	self.RaidIcon = self.Health:CreateTexture(nil, 'OVERLAY')
 	self.RaidIcon:SetPoint('TOP', self, 0, 8)
@@ -376,10 +376,6 @@ local function styleFunction(self, unit)
 		self.CPoints:SetJustifyH('RIGHT')
 		self.CPoints.unit = PlayerFrame.unit
 		self:RegisterEvent('UNIT_COMBO_POINTS', updateCPoints)
-
-		local threat = self:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
-		threat:SetPoint('TOPLEFT', self, 'BOTTOMRIGHT')
-		self:Tag(threat, '[threatcolor][customthreat(%)]')
 
 		self.Debuffs = CreateFrame('Frame', nil, self)
 		self.Debuffs:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', -1, -2)
