@@ -56,25 +56,37 @@ local function truncate(value)
 	end
 end
 
-oUF.TagEvents['[custompvp]'] = 'PLAYER_FLAGS_CHANGED'
-oUF.Tags['[custompvp]'] = function(unit)
+local function hex(r, g, b)
+	if(type(r) == 'table') then
+		if(r.r) then r, g, b = r.r, r.g, r.b else r, g, b = unpack(r) end
+	end
+	return string.format('|cff%02x%02x%02x', r * 255, g * 255, b * 255)
+end
+
+oUF.TagEvents['[p3limpvp]'] = 'PLAYER_FLAGS_CHANGED'
+oUF.Tags['[p3limpvp]'] = function(unit)
 	return UnitIsPVP(unit) and not IsPVPTimerRunning() and '*' or IsPVPTimerRunning() and format('%d:%02d', floor((GetPVPTimer() / 1000) / 60), (GetPVPTimer() / 1000) % 60)
 end
 
-oUF.TagEvents['[customthreat]'] = 'UNIT_THREAT_LIST_UPDATE'
-oUF.Tags['[customthreat]'] = function()
-	local tanking, _, perc = UnitDetailedThreatSituation('player', 'target')
-	return not tanking and perc and floor(perc)
+oUF.Tags['[p3limdifficulty]'] = function(unit)
+	local level = UnitLevel(unit)
+	return UnitCanAttack('player', unit) and hex(GetDifficultyColor((level > 0) and level or 99)) or '|cff0090ff'
 end
 
-oUF.TagEvents['[customstatus]'] = 'UNIT_HEALTH'
-oUF.Tags['[customstatus]'] = function(unit)
+oUF.TagEvents['[p3limthreat]'] = 'UNIT_THREAT_LIST_UPDATE'
+oUF.Tags['[p3limthreat]'] = function()
+	local tanking, _, perc = UnitDetailedThreatSituation('player', 'target')
+	return not tanking and perc and hex(GetThreatStatusColor(UnitThreatSituation('player', 'target')))..floor(perc)
+end
+
+oUF.TagEvents['[p3limstatus]'] = 'UNIT_HEALTH'
+oUF.Tags['[p3limstatus]'] = function(unit)
 	return not UnitIsConnected(unit) and PLAYER_OFFLINE or UnitIsGhost(unit) and 'Ghost' or UnitIsDead(unit) and DEAD
 end
 
-oUF.TagEvents['[customhp]'] = 'UNIT_HEALTH UNIT_MAXHEALTH'
-oUF.Tags['[customhp]'] = function(unit)
-	local status = oUF.Tags['[customstatus]'](unit)
+oUF.TagEvents['[p3limhp]'] = 'UNIT_HEALTH UNIT_MAXHEALTH'
+oUF.Tags['[p3limhp]'] = function(unit)
+	local status = oUF.Tags['[p3limstatus]'](unit)
 	local min, max = UnitHealth(unit), UnitHealthMax(unit)
 
 	return status and status or 
@@ -83,15 +95,17 @@ oUF.Tags['[customhp]'] = function(unit)
 		(min~=max) and format('%s |cff0090ff/|r %s', truncate(min), truncate(max)) or max
 end
 
-oUF.TagEvents['[custompp]'] = oUF.TagEvents['[curpp]']
-oUF.Tags['[custompp]'] = function(unit)
+oUF.TagEvents['[p3limpp]'] = oUF.TagEvents['[curpp]']
+oUF.Tags['[p3limpp]'] = function(unit)
+	local power = oUF.Tags['[curpp]'](unit)
 	local num, str = UnitPowerType(unit)
 	local c = colors.power[str]
-	return c and format('|cff%02x%02x%02x%s|r', c[1] * 255, c[2] * 255, c[3] * 255, oUF.Tags['[curpp]'](unit))
+
+	return c and power ~= 0 and format('|cff%02x%02x%02x%s|r', c[1] * 255, c[2] * 255, c[3] * 255, power)
 end
 
-oUF.TagEvents['[customname]'] = 'UNIT_NAME_UPDATE UNIT_REACTION UNIT_FACTION'
-oUF.Tags['[customname]'] = function(unit)
+oUF.TagEvents['[p3limname]'] = 'UNIT_NAME_UPDATE UNIT_REACTION UNIT_FACTION'
+oUF.Tags['[p3limname]'] = function(unit)
 	local c = (UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) and colors.tapped or
 		(not UnitIsConnected(unit)) and colors.disconnected or
 		(not UnitIsPlayer(unit)) and colors.reaction[UnitReaction(unit, 'player')] or
@@ -115,8 +129,8 @@ local function updateMasterLooter(self)
 	end
 end
 
-local function updateCPoints(self, event, unit)
-	if(unit == PlayerFrame.unit) then
+local function updateCombo(self, event, unit)
+	if(unit == PlayerFrame.unit and unit ~= self.CPoints.unit) then
 		self.CPoints.unit = unit
 	end
 end
@@ -157,12 +171,22 @@ local function castbarTime(self, duration)
 	end
 end
 
+local function createAuraTooltip(self)
+	if(not self:IsVisible()) then return end
+
+	GameTooltip:SetOwner(self, 'ANCHOR_BOTTOMRIGHT')
+	GameTooltip:SetUnitAura(self.frame.unit, self:GetID(), self.filter)
+	GameTooltip:AddLine(format('Casted by %s', self.owner and UnitName(self.owner) or UNKNOWN))
+	GameTooltip:Show()
+end
+
 local function createAura(self, button, icons)
 	icons.showDebuffType = true
 	button.cd:SetReverse()
 	button.overlay:SetTexture([=[Interface\AddOns\oUF_P3lim\border]=])
 	button.overlay:SetTexCoord(0, 1, 0, 1)
 	button.overlay.Hide = function(self) self:SetVertexColor(0.25, 0.25, 0.25) end
+	button:SetScript('OnEnter', createAuraTooltip)
 
 	if(self.unit == 'player') then
 		icons.disableCooldown = true
@@ -241,7 +265,7 @@ local function styleFunction(self, unit)
 	local hpvalue = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallRight')
 	hpvalue:SetPoint('RIGHT', self.Health, -2, -1)
 	hpvalue.frequentUpdates = 0.1
-	self:Tag(hpvalue, unit == 'player' and '[threatcolor][customthreat(%)]|r|cffff0000[custompvp]|r [customhp]' or '[customhp]')
+	self:Tag(hpvalue, unit == 'player' and '[p3limthreat(%|r)]|cffff0000[p3limpvp]|r [p3limhp]' or '[p3limhp]')
 
 	self.RaidIcon = self.Health:CreateTexture(nil, 'OVERLAY')
 	self.RaidIcon:SetPoint('TOP', self, 0, 8)
@@ -326,14 +350,14 @@ local function styleFunction(self, unit)
 		local power = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
 		power:SetPoint('LEFT', self.Health, 2, -1)
 		power.frequentUpdates = 0.1
-		self:Tag(power, '[custompp]')
+		self:Tag(power, '[p3limpp]')
 
 		self.BarFade = true
 	else
 		local info = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
 		info:SetPoint('LEFT', self.Health, 2, -1)
 		info:SetPoint('RIGHT', hpvalue, 'LEFT')
-		self:Tag(info, unit == 'target' and '[customname] |cff0090ff[smartlevel] [rare]|r' or '[customname]')
+		self:Tag(info, unit == 'target' and '[p3limname] [p3limdifficulty][smartlevel] [rare]|r' or '[p3limname]')
 	end
 
 	if(unit == 'pet') then
@@ -375,7 +399,7 @@ local function styleFunction(self, unit)
 		self.CPoints:SetTextColor(1, 1, 1)
 		self.CPoints:SetJustifyH('RIGHT')
 		self.CPoints.unit = PlayerFrame.unit
-		self:RegisterEvent('UNIT_COMBO_POINTS', updateCPoints)
+		self:RegisterEvent('UNIT_COMBO_POINTS', updateCombo)
 
 		self.Debuffs = CreateFrame('Frame', nil, self)
 		self.Debuffs:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', -1, -2)
