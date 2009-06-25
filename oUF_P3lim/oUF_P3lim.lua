@@ -19,12 +19,6 @@ local backdrop = {
 
 if(LibStub) then LibStub('LibSharedMedia-3.0', true):Register('statusbar', 'Minimalist', texture) end
 
-local runeloadcolors = {
-	{0.77, 0.12, 0.23}, {0.77, 0.12, 0.23},
-	{0.4, 0.8, 0.1}, {0.4, 0.8, 0.1},
-	{0, 0.4, 0.7}, {0, 0.4, 0.7},
-}
-
 local colors = setmetatable({
 	power = setmetatable({
 		['MANA'] = {0, 144/255, 1}
@@ -460,7 +454,6 @@ local function styleFunction(self, unit)
 				self.RuneBar[i]:SetPoint('TOPLEFT', self.RuneBar[i-1], 'TOPRIGHT', 1, 0)
 			end
 			self.RuneBar[i]:SetStatusBarTexture(texture)
-			self.RuneBar[i]:SetStatusBarColor(unpack(runeloadcolors[i]))
 			self.RuneBar[i]:SetHeight(4)
 			self.RuneBar[i]:SetWidth(230/6 - 0.85)
 			self.RuneBar[i]:SetBackdrop(backdrop)
