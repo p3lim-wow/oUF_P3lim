@@ -17,8 +17,6 @@ local backdrop = {
 	insets = {top = -1, left = -1, bottom = -1, right = -1},
 }
 
-if(LibStub) then LibStub('LibSharedMedia-3.0', true):Register('statusbar', 'Minimalist', texture) end
-
 local colors = setmetatable({
 	power = setmetatable({
 		['MANA'] = {0, 144/255, 1}
@@ -57,28 +55,21 @@ local function hex(r, g, b)
 	return string.format('|cff%02x%02x%02x', r * 255, g * 255, b * 255)
 end
 
-oUF.TagEvents['[p3limpvp]'] = 'PLAYER_FLAGS_CHANGED'
 oUF.Tags['[p3limpvp]'] = function(unit)
 	return UnitIsPVP(unit) and not IsPVPTimerRunning() and '*' or IsPVPTimerRunning() and format('%d:%02d', floor((GetPVPTimer() / 1000) / 60), (GetPVPTimer() / 1000) % 60)
 end
 
-oUF.Tags['[p3limdifficulty]'] = function(unit)
-	local level = UnitLevel(unit)
-	return UnitCanAttack('player', unit) and hex(GetDifficultyColor((level > 0) and level or 99)) or '|cff0090ff'
-end
-
 oUF.TagEvents['[p3limthreat]'] = 'UNIT_THREAT_LIST_UPDATE'
 oUF.Tags['[p3limthreat]'] = function()
-	local tanking, _, perc = UnitDetailedThreatSituation('player', 'target')
-	return not tanking and perc and hex(GetThreatStatusColor(UnitThreatSituation('player', 'target')))..floor(perc)
+	local _, _, perc = UnitDetailedThreatSituation('player', 'target')
+	return perc and hex(GetThreatStatusColor(UnitThreatSituation('player', 'target')))..floor(perc)
 end
 
 oUF.TagEvents['[p3limstatus]'] = 'UNIT_HEALTH'
 oUF.Tags['[p3limstatus]'] = function(unit)
-	return not UnitIsConnected(unit) and PLAYER_OFFLINE or UnitIsGhost(unit) and 'Ghost' or UnitIsDead(unit) and DEAD
+	return not UnitIsConnected(unit) and 'Offline' or UnitIsGhost(unit) and 'Ghost' or UnitIsDead(unit) and 'Dead'
 end
 
-oUF.TagEvents['[p3limhp]'] = 'UNIT_HEALTH UNIT_MAXHEALTH'
 oUF.Tags['[p3limhp]'] = function(unit)
 	local status = oUF.Tags['[p3limstatus]'](unit)
 	local min, max = UnitHealth(unit), UnitHealthMax(unit)
@@ -89,7 +80,6 @@ oUF.Tags['[p3limhp]'] = function(unit)
 		(min~=max) and format('%s |cff0090ff/|r %s', truncate(min), truncate(max)) or max
 end
 
-oUF.TagEvents['[p3limpp]'] = oUF.TagEvents['[curpp]']
 oUF.Tags['[p3limpp]'] = function(unit)
 	local power = oUF.Tags['[curpp]'](unit)
 	local num, str = UnitPowerType(unit)
@@ -112,15 +102,6 @@ oUF.TagEvents['[druidpower]'] = 'UNIT_MANA UPDATE_SHAPESHIFT_FORM'
 oUF.Tags['[druidpower]'] = function(unit)
 	local min, max = UnitPower(unit, 0), UnitPowerMax(unit, 0)
 	return UnitPowerType(unit) ~= 0 and format('|cff0090ff%d - %d%%|r', min, math.floor(min / max * 100))
-end
-
-local function updateMasterLooter(self)
-	self.MasterLooter:ClearAllPoints()
-	if((UnitInParty(self.unit) or UnitInRaid(self.unit)) and UnitIsPartyLeader(self.unit)) then
-		self.MasterLooter:SetPoint('LEFT', self.Leader, 'RIGHT')
-	else
-		self.MasterLooter:SetPoint('TOPLEFT', self, 0, 8)
-	end
 end
 
 local function updateCombo(self, event, unit)
@@ -233,7 +214,6 @@ end
 
 local function styleFunction(self, unit)
 	self.colors = colors
-
 	self.menu = menu
 	self:RegisterForClicks('AnyUp')
 	self:SetAttribute('type2', 'menu')
@@ -313,15 +293,10 @@ local function styleFunction(self, unit)
 		self.Leader:SetHeight(16)
 		self.Leader:SetWidth(16)
 
-		self.MasterLooter = self.Health:CreateTexture(nil, 'OVERLAY')
-		self.MasterLooter:SetPoint('LEFT', self.Leader, 'RIGHT')
-		self.MasterLooter:SetHeight(16)
-		self.MasterLooter:SetWidth(16)
-
-		table.insert(self.__elements, updateMasterLooter)
-		self:RegisterEvent('PARTY_LOOT_METHOD_CHANGED', updateMasterLooter)
-		self:RegisterEvent('PARTY_MEMBERS_CHANGED', updateMasterLooter)
-		self:RegisterEvent('PARTY_LEADER_CHANGED', updateMasterLooter)
+		self.Assistant = self.Health:CreateTexture(nil, 'OVERLAY')
+		self.Assistant:SetPoint('TOPLEFT', self, 0, 8)
+		self.Assistant:SetHeight(16)
+		self.Assistant:SetWidth(16)
 	else
 		local focus = unit == 'focus'
 		self.Debuffs = CreateFrame('Frame', nil, self)
@@ -351,7 +326,7 @@ local function styleFunction(self, unit)
 		local info = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
 		info:SetPoint('LEFT', self.Health, 2, -1)
 		info:SetPoint('RIGHT', hpvalue, 'LEFT')
-		self:Tag(info, unit == 'target' and '[p3limname] [p3limdifficulty][smartlevel] [rare]|r' or '[p3limname]')
+		self:Tag(info, unit == 'target' and '[p3limname]|cff0090ff[( )rare]|r' or '[p3limname]')
 	end
 
 	if(unit == 'pet') then
@@ -399,6 +374,7 @@ local function styleFunction(self, unit)
 		self.Debuffs:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', -1, -2)
 		self.Debuffs:SetHeight(22 * 0.97)
 		self.Debuffs:SetWidth(230)
+		self.Debuffs.num = 20
 		self.Debuffs.size = 22 * 0.97
 		self.Debuffs.spacing = 2
 		self.Debuffs.initialAnchor = 'TOPLEFT'
@@ -458,7 +434,6 @@ local function styleFunction(self, unit)
 			self.RuneBar[i]:SetWidth(230/6 - 0.85)
 			self.RuneBar[i]:SetBackdrop(backdrop)
 			self.RuneBar[i]:SetBackdropColor(0, 0, 0)
-			self.RuneBar[i]:SetMinMaxValues(0, 1)
 
 			self.RuneBar[i].bg = self.RuneBar[i]:CreateTexture(nil, 'BORDER')
 			self.RuneBar[i].bg:SetAllPoints(self.RuneBar[i])
