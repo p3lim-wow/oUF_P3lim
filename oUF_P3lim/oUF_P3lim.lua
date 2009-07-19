@@ -6,9 +6,7 @@
 --]]
 
 
-local gsub = string.gsub
 local format = string.format
-local floor = math.floor
 
 local localized, class = UnitClass('player')
 local texture = [=[Interface\AddOns\oUF_P3lim\minimalist]=]
@@ -26,82 +24,13 @@ local colors = setmetatable({
 		[4] = {1, 1, 0},
 		[5] = {0, 1, 0}
 	}, {__index = oUF.colors.reaction}),
-	red = {1, 0, 0},
-	white = {1, 1, 1},
 }, {__index = oUF.colors})
-
 
 local function menu(self)
 	local unit = gsub(self.unit, '(.)', string.upper, 1)
 	if(_G[unit..'FrameDropDown']) then
 		ToggleDropDownMenu(1, nil, _G[unit..'FrameDropDown'], 'cursor')
 	end
-end
-
-local function truncate(value)
-	if(value >= 1e6) then
-		return gsub(format('%.2fm', value / 1e6), '%.?0+([km])$', '%1')
-	elseif(value >= 1e4) then
-		return gsub(format('%.1fk', value / 1e3), '%.?0+([km])$', '%1')
-	else
-		return value
-	end
-end
-
-local function hex(r, g, b)
-	if(type(r) == 'table') then
-		if(r.r) then r, g, b = r.r, r.g, r.b else r, g, b = unpack(r) end
-	end
-	return string.format('|cff%02x%02x%02x', r * 255, g * 255, b * 255)
-end
-
-oUF.Tags['[p3limpvp]'] = function(unit)
-	return UnitIsPVP(unit) and not IsPVPTimerRunning() and '*' or IsPVPTimerRunning() and format('%d:%02d', floor((GetPVPTimer() / 1000) / 60), (GetPVPTimer() / 1000) % 60)
-end
-
-oUF.TagEvents['[p3limthreat]'] = 'UNIT_THREAT_LIST_UPDATE'
-oUF.Tags['[p3limthreat]'] = function()
-	local _, _, perc = UnitDetailedThreatSituation('player', 'target')
-	return perc and hex(GetThreatStatusColor(UnitThreatSituation('player', 'target')))..floor(perc)
-end
-
-oUF.TagEvents['[p3limstatus]'] = 'UNIT_HEALTH'
-oUF.Tags['[p3limstatus]'] = function(unit)
-	return not UnitIsConnected(unit) and 'Offline' or UnitIsGhost(unit) and 'Ghost' or UnitIsDead(unit) and 'Dead'
-end
-
-oUF.Tags['[p3limhp]'] = function(unit)
-	local status = oUF.Tags['[p3limstatus]'](unit)
-	local min, max = UnitHealth(unit), UnitHealthMax(unit)
-
-	return status and status or 
-		(unit == 'target' and UnitCanAttack('player', unit)) and format('%s (%d|cff0090ff%%|r)', truncate(min), floor(min/max*100)) or
-		(unit == 'player' and min~=max) and format('|cffff8080%d|r %d|cff0090ff%%|r', min-max, floor(min/max*100)) or
-		(min~=max) and format('%s |cff0090ff/|r %s', truncate(min), truncate(max)) or max
-end
-
-oUF.Tags['[p3limpp]'] = function(unit)
-	local power = oUF.Tags['[curpp]'](unit)
-	local num, str = UnitPowerType(unit)
-	local c = colors.power[str]
-
-	return c and power ~= 0 and format('|cff%02x%02x%02x%s|r', c[1] * 255, c[2] * 255, c[3] * 255, power)
-end
-
-oUF.TagEvents['[p3limname]'] = 'UNIT_NAME_UPDATE UNIT_REACTION UNIT_FACTION'
-oUF.Tags['[p3limname]'] = function(unit)
-	local c = (UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) and colors.tapped or
-		(not UnitIsConnected(unit)) and colors.disconnected or
-		(not UnitIsPlayer(unit)) and colors.reaction[UnitReaction(unit, 'player')] or
-		(UnitFactionGroup(unit) and UnitIsEnemy(unit, 'player') and UnitIsPVP(unit)) and colors.red or colors.white
-
-	return format('|cff%02x%02x%02x%s|r', c[1] * 255, c[2] * 255, c[3] * 255, UnitName(unit))
-end
-
-oUF.TagEvents['[druidpower]'] = 'UNIT_MANA UPDATE_SHAPESHIFT_FORM'
-oUF.Tags['[druidpower]'] = function(unit)
-	local min, max = UnitPower(unit, 0), UnitPowerMax(unit, 0)
-	return UnitPowerType(unit) ~= 0 and format('|cff0090ff%d - %d%%|r', min, math.floor(min / max * 100))
 end
 
 local function updateCombo(self, event, unit)
@@ -124,6 +53,8 @@ local function updateDruidPower(self, event, unit)
 end
 
 local function updatePower(self, event, unit, bar, min, max)
+	if(unit ~= 'target') then return end
+
 	if(max ~= 0) then
 		self.Health:SetHeight(22)
 		bar:Show()
@@ -146,11 +77,7 @@ local function castbarTime(self, duration)
 	end
 end
 
-local function createAuraTooltip(self)
-	if(not self:IsVisible()) then return end
-
-	GameTooltip:SetOwner(self, 'ANCHOR_BOTTOMRIGHT')
-	GameTooltip:SetUnitAura(self.frame.unit, self:GetID(), self.filter)
+local function hookTooltip(self)
 	GameTooltip:AddLine(format('Casted by %s', self.owner and UnitName(self.owner) or UNKNOWN))
 	GameTooltip:Show()
 end
@@ -161,7 +88,7 @@ local function createAura(self, button, icons)
 	button.overlay:SetTexture([=[Interface\AddOns\oUF_P3lim\border]=])
 	button.overlay:SetTexCoord(0, 1, 0, 1)
 	button.overlay.Hide = function(self) self:SetVertexColor(0.25, 0.25, 0.25) end
-	button:SetScript('OnEnter', createAuraTooltip)
+	button:HookScript('OnEnter', hookTooltip)
 
 	if(self.unit == 'player') then
 		icons.disableCooldown = true
@@ -170,23 +97,26 @@ local function createAura(self, button, icons)
 	end
 end
 
-local function updateTime(self)
-	if(self.expiration) then
-		local timeleft = floor(self.expiration - GetTime() + 0.5)
-		self.time:SetText(timeleft > 0 and timeleft or '')
-	else
-		self:SetScript('OnUpdate', nil)
+local function updateTime(self, elapsed)
+	self.timeLeft = max(self.timeLeft - elapsed, 0)
+	self.time:SetText(self.timeLeft < 90 and floor(self.timeLeft) or '')
+	
+	if(GameTooltip:IsOwned(self)) then
+		GameTooltip:SetUnitAura(self.frame.unit, self:GetID(), self.filter)
+		hookTooltip(self)
 	end
 end
 
 local function updateBuff(self, icons, unit, icon, index)
-	local _, _, _, _, _, _, expiration = UnitAura(unit, index, icon.filter)
-	if(expiration and expiration > 0) then
-		icon.expiration = expiration
+	local _, _, _, _, _, duration, expiration = UnitAura(unit, index, icon.filter)
+
+	if(duration > 0 and expiration) then
+		icon.timeLeft = expiration - GetTime()
 		icon:SetScript('OnUpdate', updateTime)
-		icon:Show()
 	else
-		icon:Hide()
+		icon.timeLeft = nil
+		icon.time:SetText()
+		icon:SetScript('OnUpdate', nil)
 	end
 end
 
@@ -201,7 +131,6 @@ local function updateDebuff(self, icons, unit, icon, index)
 		icon.icon:SetDesaturated(false)
 	end
 end
-
 
 local function customFilter(icons, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster)
 	-- This filter is made for me specifically, but you can create
@@ -239,7 +168,7 @@ local function styleFunction(self, unit)
 	local hpvalue = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallRight')
 	hpvalue:SetPoint('RIGHT', self.Health, -2, -1)
 	hpvalue.frequentUpdates = 0.1
-	self:Tag(hpvalue, unit == 'player' and '[p3limthreat(%|r)]|cffff0000[p3limpvp]|r [p3limhp]' or '[p3limhp]')
+	self:Tag(hpvalue, unit == 'player' and '[pthreat(%|r)]|cffff0000[pvptime]|r [phealth]' or '[phealth]')
 
 	self.RaidIcon = self.Health:CreateTexture(nil, 'OVERLAY')
 	self.RaidIcon:SetPoint('TOP', self, 0, 8)
@@ -319,14 +248,14 @@ local function styleFunction(self, unit)
 		local power = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
 		power:SetPoint('LEFT', self.Health, 2, -1)
 		power.frequentUpdates = 0.1
-		self:Tag(power, '[p3limpp]')
+		self:Tag(power, '[ppower]')
 
 		self.BarFade = true
 	else
 		local info = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
 		info:SetPoint('LEFT', self.Health, 2, -1)
 		info:SetPoint('RIGHT', hpvalue, 'LEFT')
-		self:Tag(info, unit == 'target' and '[p3limname]|cff0090ff[( )rare]|r' or '[p3limname]')
+		self:Tag(info, unit == 'target' and '[pname]|cff0090ff[( )rare]|r' or '[pname]')
 	end
 
 	if(unit == 'pet') then
