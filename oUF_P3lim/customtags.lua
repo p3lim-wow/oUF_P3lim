@@ -36,7 +36,7 @@ end
 oUF.TagEvents['[pthreat]'] = 'UNIT_THREAT_LIST_UPDATE'
 oUF.Tags['[pthreat]'] = function()
 	local _, _, perc = UnitDetailedThreatSituation('player', 'target')
-	return perc and ('%s%d|r'):format(hex(GetThreatStatusColor(UnitThreatSituation('player', 'target'))), perc)
+	return perc and ('%s%d%%|r'):format(hex(GetThreatStatusColor(UnitThreatSituation('player', 'target'))), perc)
 end
 
 oUF.Tags['[phealth]'] = function(unit)

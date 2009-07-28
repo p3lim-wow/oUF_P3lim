@@ -26,6 +26,15 @@ local colors = setmetatable({
 	}, {__index = oUF.colors.reaction}),
 }, {__index = oUF.colors})
 
+local buffFilter = {
+	['Survival Instincts'] = true,
+	['Frenzied Regeneration'] = true,
+	['Savage Roar'] = true,
+	['Barkskin'] = true,
+	['Clearcasting'] = true,
+	['Savage Defense'] = true,
+}
+
 local function menu(self)
 	local unit = gsub(self.unit, '(.)', string.upper, 1)
 	if(_G[unit..'FrameDropDown']) then
@@ -121,10 +130,9 @@ local function updateBuff(self, icons, unit, icon, index)
 end
 
 local function updateDebuff(self, icons, unit, icon, index)
-	if(not icon.debuff or not UnitIsEnemy('player', unit)) then return end
+	if(not icon.debuff or UnitIsFriend('player', unit)) then return end
 
-	local _, _, _, _, _, _, _, caster = UnitAura(unit, index, icon.filter)
-	if(caster ~= 'player' and caster ~= 'vehicle') then
+	if(icon.owner ~= 'player' and icon.owner ~= 'vehicle') then
 		icon.icon:SetDesaturated(true)
 		icon.overlay:SetVertexColor(0.25, 0.25, 0.25)
 	else
@@ -132,10 +140,8 @@ local function updateDebuff(self, icons, unit, icon, index)
 	end
 end
 
-local function customFilter(icons, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster)
-	-- This filter is made for me specifically, but you can create
-	-- your own table with spells that this filter can match to.
-	if(oUF_P3lim_buffFilter and oUF_P3lim_buffFilter[name] and caster == 'player') then
+local function customFilter(icons, unit, icon, name)
+	if(buffFilter[name] and icon.owner == 'player') then
 		-- todo: set the buffs.visibleBuffs so it works with buffs.num		
 		return true
 	end
@@ -168,7 +174,7 @@ local function styleFunction(self, unit)
 	local hpvalue = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallRight')
 	hpvalue:SetPoint('RIGHT', self.Health, -2, -1)
 	hpvalue.frequentUpdates = 0.1
-	self:Tag(hpvalue, unit == 'player' and '[pthreat(%|r)]|cffff0000[pvptime]|r [phealth]' or '[phealth]')
+	self:Tag(hpvalue, unit == 'player' and '[pthreat]|cffff0000[pvptime]|r [phealth]' or '[phealth]')
 
 	self.RaidIcon = self.Health:CreateTexture(nil, 'OVERLAY')
 	self.RaidIcon:SetPoint('TOP', self, 0, 8)
