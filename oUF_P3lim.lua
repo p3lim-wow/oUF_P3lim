@@ -5,11 +5,10 @@
 
 --]]
 
-
 local format = string.format
 
 local localized, class = UnitClass('player')
-local texture = [=[Interface\AddOns\oUF_P3lim\minimalist]=]
+local texture = [=[Interface\AddOns\oUF_P3lim\media\minimalist]=]
 local backdrop = {
 	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
 	insets = {top = -1, left = -1, bottom = -1, right = -1},
@@ -94,7 +93,7 @@ end
 local function createAura(self, button, icons)
 	icons.showDebuffType = true
 	button.cd:SetReverse()
-	button.overlay:SetTexture([=[Interface\AddOns\oUF_P3lim\border]=])
+	button.overlay:SetTexture([=[Interface\AddOns\oUF_P3lim\media\border]=])
 	button.overlay:SetTexCoord(0, 1, 0, 1)
 	button.overlay.Hide = function(self) self:SetVertexColor(0.25, 0.25, 0.25) end
 	button:HookScript('OnEnter', hookTooltip)
