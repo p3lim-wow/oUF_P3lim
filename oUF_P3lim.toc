@@ -1,6 +1,6 @@
 ## Interface: 30200
 ## Author: p3lim
-## Version: Alpha
+## Version: 30200.1-Beta
 ## Title: oUF P3lim
 ## Notes: Just another oUF layout
 ## RequiredDeps: oUF
