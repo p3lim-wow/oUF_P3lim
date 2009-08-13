@@ -311,25 +311,6 @@ local function styleFunction(self, unit)
 		self.PostUpdateAuraIcon = updateDebuff
 	end
 
-	if(IsAddOnLoaded'oUF_Reputation' and unit == 'player' and UnitLevel('player') == MAX_PLAYER_LEVEL) then
-		self.Reputation = CreateFrame('StatusBar', self:GetName()..'_reputation', self)
-		self.Reputation:SetPoint('TOP', self, 'BOTTOM', 0, -10)
-		self.Reputation:SetStatusBarTexture(texture)
-		self.Reputation:SetHeight(11)
-		self.Reputation:SetWidth(230)
-		self.Reputation:SetBackdrop(backdrop)
-		self.Reputation:SetBackdropColor(0, 0, 0)
-		self.Reputation.Tooltip = true
-		self.Reputation.PostUpdate = updateReputationColor
-
-		self.Reputation.Text = self.Reputation:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
-		self.Reputation.Text:SetPoint('CENTER', self.Reputation)
-
-		self.Reputation.bg = self.Reputation:CreateTexture(nil, 'BORDER')
-		self.Reputation.bg:SetAllPoints(self.Reputation)
-		self.Reputation.bg:SetTexture(0.3, 0.3, 0.3)
-	end
-
 	if(IsAddOnLoaded('oUF_Experience') and (unit == 'pet' or unit == 'player')) then
 		self.Experience = CreateFrame('StatusBar', self:GetName()..'_experience', self)
 		self.Experience:SetPoint('TOP', self, 'BOTTOM', 0, -10)

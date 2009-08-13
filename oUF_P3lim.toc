@@ -4,7 +4,7 @@
 ## Title: oUF P3lim
 ## Notes: Just another oUF layout
 ## RequiredDeps: oUF
-## OptionalDeps: oUF_BarFader, oUF_DebuffHighlight, oUF_Experience, oUF_Reputation
+## OptionalDeps: oUF_BarFader, oUF_DebuffHighlight, oUF_Experience
 
 customtags.lua
 oUF_P3lim.lua
