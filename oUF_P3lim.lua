@@ -281,10 +281,10 @@ local function styleFunction(self, unit)
 
 		self.BarFade = true
 	else
-		local info = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
-		info:SetPoint('LEFT', self.Health, 2, -1)
-		info:SetPoint('RIGHT', hpvalue, 'LEFT')
-		self:Tag(info, unit == 'target' and '[pname]|cff0090ff[( )rare]|r' or '[pname]')
+		local name = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
+		name:SetPoint('LEFT', self.Health, 2, -1)
+		name:SetPoint('RIGHT', hpvalue, 'LEFT')
+		self:Tag(name, unit == 'target' and '[pname]|cff0090ff[( )rare]|r' or '[pname]')
 	end
 
 	if(unit == 'pet') then
