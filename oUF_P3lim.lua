@@ -247,7 +247,7 @@ local function styleFunction(self, unit)
 		local power = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
 		power:SetPoint('LEFT', self.Health, 2, -1)
 		power.frequentUpdates = 0.1
-		self:Tag(power, '[ppower]')
+		self:Tag(power, unit == 'player' and '[ppower][( )druidpower]' or '[ppower]')
 
 		self.BarFade = true
 	else
@@ -309,24 +309,6 @@ local function styleFunction(self, unit)
 		self.Debuffs['growth-y'] = 'DOWN'
 		self.PostCreateAuraIcon = createAura
 		self.PostUpdateAuraIcon = updateDebuff
-	end
-
-	if(unit == 'player' and class == 'DRUID') then
-		self.DruidPower = CreateFrame('StatusBar', self:GetName()..'_druidpower', self)
-		self.DruidPower:SetPoint('TOP', self.Health, 'BOTTOM')
-		self.DruidPower:SetStatusBarTexture(texture)
-		self.DruidPower:SetHeight(1)
-		self.DruidPower:SetWidth(230)
-		self.DruidPower:SetAlpha(0)
-
-		local value = self.DruidPower:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
-		value:SetPoint('CENTER', self.DruidPower)
-		self:Tag(value, '[druidpower]')
-
-		table.insert(self.__elements, updateDruidPower)
-		self:RegisterEvent('UNIT_MANA', updateDruidPower)
-		self:RegisterEvent('UNIT_ENERGY', updateDruidPower)
-		self:RegisterEvent('UPDATE_SHAPESHIFT_FORM', updateDruidPower)
 	end
 
 	if(IsAddOnLoaded'oUF_Reputation' and unit == 'player' and UnitLevel('player') == MAX_PLAYER_LEVEL) then

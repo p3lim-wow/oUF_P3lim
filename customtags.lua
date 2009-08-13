@@ -66,6 +66,5 @@ end
 
 oUF.TagEvents['[druidpower]'] = 'UNIT_MANA UPDATE_SHAPESHIFT_FORM'
 oUF.Tags['[druidpower]'] = function(unit)
-	local value = UnitPower(unit, 0)
-	return UnitPowerType(unit) ~= 0 and ('|cff0090ff%d - %d%%|r'):format(value, value / UnitPowerMax(unit, 0) * 100)
+	return UnitPowerType(unit) ~= 0 and ('|cff0090ff%d%%|r'):format(UnitPower(unit, 0) / UnitPowerMax(unit, 0) * 100)
 end
