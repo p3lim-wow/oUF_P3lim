@@ -85,31 +85,12 @@ local function castbarTime(self, duration)
 	end
 end
 
-local function hookTooltip(self)
-	if(self.owner) then
-		if(self.owner == 'vehicle' or self.owner == 'pet') then
-			GameTooltip:AddLine(format('Cast by %s <%s>', UnitName(self.owner), UnitName('player')))
-		elseif(self.owner:match('^partypet[1-4]$')) then
-			GameTooltip:AddLine(format('Cast by %s <%s>', UnitName(self.owner), UnitName(format('party%d', self.owner:gsub('^partypet(%d)$', '%1')))))
-		elseif(self.owner:match('^raidpet[1-40]$')) then
-			GameTooltip:AddLine(format('Cast by %s <%s>', UnitName(self.owner), UnitName(format('raid%d', self.owner:gsub('^raidpet(%d)$', '%1')))))
-		else
-			GameTooltip:AddLine(format('Cast by %s', UnitName(self.owner)))
-		end
-	else
-		GameTooltip:AddLine(format('Cast by %s', UNKNOWN))
-	end
-
-	GameTooltip:Show()
-end
-
 local function createAura(self, button, icons)
 	icons.showDebuffType = true
 	button.cd:SetReverse()
 	button.overlay:SetTexture([=[Interface\AddOns\oUF_P3lim\media\border]=])
 	button.overlay:SetTexCoord(0, 1, 0, 1)
 	button.overlay.Hide = function(self) self:SetVertexColor(0.25, 0.25, 0.25) end
-	button:HookScript('OnEnter', hookTooltip)
 
 	if(self.unit == 'player') then
 		icons.disableCooldown = true
