@@ -152,7 +152,7 @@ local function styleFunction(self, unit)
 	self:SetBackdrop(backdrop)
 	self:SetBackdropColor(0, 0, 0)
 
-	self.Health = CreateFrame('StatusBar', self:GetName()..'_health', self)
+	self.Health = CreateFrame('StatusBar', nil, self)
 	self.Health:SetPoint('TOPRIGHT', self)
 	self.Health:SetPoint('TOPLEFT', self)
 	self.Health:SetStatusBarTexture(texture)
@@ -180,7 +180,7 @@ local function styleFunction(self, unit)
 	self.RaidIcon:SetWidth(16)
 
 	if(unit ~= 'targettarget' and unit ~= 'focus') then
-		self.Power = CreateFrame('StatusBar', self:GetName()..'_power', self)
+		self.Power = CreateFrame('StatusBar', nil, self)
 		self.Power:SetPoint('BOTTOMRIGHT', self)
 		self.Power:SetPoint('BOTTOMLEFT', self)
 		self.Power:SetStatusBarTexture(texture)
@@ -201,7 +201,7 @@ local function styleFunction(self, unit)
 		self.Power.colorReaction = not pet
 		self.PostUpdatePower = updatePower
 
-		self.Castbar = CreateFrame('StatusBar', self:GetName()..'_castbar', self)
+		self.Castbar = CreateFrame('StatusBar', nil, self)
 		self.Castbar:SetPoint('TOPRIGHT', self, 'BOTTOMRIGHT', 0, -100)
 		self.Castbar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -100)
 		self.Castbar:SetStatusBarTexture(texture)
@@ -255,7 +255,7 @@ local function styleFunction(self, unit)
 		self:Tag(power, unit == 'player' and '[ppower][( )druidpower]' or '[ppower]')
 
 		if(IsAddOnLoaded('oUF_Experience')) then
-			self.Experience = CreateFrame('StatusBar', self:GetName()..'_experience', self)
+			self.Experience = CreateFrame('StatusBar', nil, self)
 			self.Experience:SetPoint('TOP', self, 'BOTTOM', 0, -10)
 			self.Experience:SetStatusBarTexture(texture)
 			self.Experience:SetStatusBarColor(unpack(colors.health))
@@ -348,8 +348,8 @@ end
 oUF:RegisterStyle('P3lim', styleFunction)
 oUF:SetActiveStyle('P3lim')
 
-oUF:Spawn('player', 'oUF_P3lim_player'):SetPoint('CENTER', UIParent, -220, -250)
-oUF:Spawn('target', 'oUF_P3lim_target'):SetPoint('CENTER', UIParent, 220, -250)
-oUF:Spawn('targettarget', 'oUF_P3lim_targettarget'):SetPoint('BOTTOMRIGHT', oUF_P3lim_target, 'TOPRIGHT', 0, 5)
-oUF:Spawn('focus', 'oUF_P3lim_focus'):SetPoint('BOTTOMLEFT', oUF_P3lim_player, 'TOPLEFT', 0, 5)
-oUF:Spawn('pet', 'oUF_P3lim_pet'):SetPoint('RIGHT', oUF_P3lim_player, 'LEFT', -25, 0)
+oUF:Spawn('player'):SetPoint('CENTER', UIParent, -220, -250)
+oUF:Spawn('target'):SetPoint('CENTER', UIParent, 220, -250)
+oUF:Spawn('targettarget'):SetPoint('BOTTOMRIGHT', oUF.units.target, 'TOPRIGHT', 0, 5)
+oUF:Spawn('focus'):SetPoint('BOTTOMLEFT', oUF.units.player, 'TOPLEFT', 0, 5)
+oUF:Spawn('pet'):SetPoint('RIGHT', oUF.units.player, 'LEFT', -25, 0)
