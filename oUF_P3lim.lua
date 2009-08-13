@@ -249,6 +249,31 @@ local function styleFunction(self, unit)
 		power.frequentUpdates = 0.1
 		self:Tag(power, unit == 'player' and '[ppower][( )druidpower]' or '[ppower]')
 
+		if(IsAddOnLoaded('oUF_Experience')) then
+			self.Experience = CreateFrame('StatusBar', self:GetName()..'_experience', self)
+			self.Experience:SetPoint('TOP', self, 'BOTTOM', 0, -10)
+			self.Experience:SetStatusBarTexture(texture)
+			self.Experience:SetStatusBarColor(unpack(colors.health))
+			self.Experience:SetHeight(11)
+			self.Experience:SetWidth(self:GetAttribute('initial-width'))
+			self.Experience.Tooltip = true
+
+			self.Experience.Rested = CreateFrame('StatusBar', nil, self)
+			self.Experience.Rested:SetAllPoints(self.Experience)
+			self.Experience.Rested:SetStatusBarTexture(texture)
+			self.Experience.Rested:SetStatusBarColor(0, 0.4, 1, 0.6)
+			self.Experience.Rested:SetBackdrop(backdrop)
+			self.Experience.Rested:SetBackdropColor(0, 0, 0)
+			self.Experience.Rested:SetFrameLevel(1)
+
+			self.Experience.Text = self.Experience:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
+			self.Experience.Text:SetPoint('CENTER', self.Experience)
+
+			self.Experience.bg = self.Experience.Rested:CreateTexture(nil, 'BORDER')
+			self.Experience.bg:SetAllPoints(self.Experience)
+			self.Experience.bg:SetTexture(0.3, 0.3, 0.3)
+		end
+
 		self.BarFade = true
 	else
 		local info = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
@@ -309,31 +334,6 @@ local function styleFunction(self, unit)
 		self.Debuffs['growth-y'] = 'DOWN'
 		self.PostCreateAuraIcon = createAura
 		self.PostUpdateAuraIcon = updateDebuff
-	end
-
-	if(IsAddOnLoaded('oUF_Experience') and (unit == 'pet' or unit == 'player')) then
-		self.Experience = CreateFrame('StatusBar', self:GetName()..'_experience', self)
-		self.Experience:SetPoint('TOP', self, 'BOTTOM', 0, -10)
-		self.Experience:SetStatusBarTexture(texture)
-		self.Experience:SetStatusBarColor(unpack(colors.health))
-		self.Experience:SetHeight(11)
-		self.Experience:SetWidth(self:GetAttribute('initial-width'))
-		self.Experience.Tooltip = true
-
-		self.Experience.Rested = CreateFrame('StatusBar', nil, self)
-		self.Experience.Rested:SetAllPoints(self.Experience)
-		self.Experience.Rested:SetStatusBarTexture(texture)
-		self.Experience.Rested:SetStatusBarColor(0, 0.4, 1, 0.6)
-		self.Experience.Rested:SetBackdrop(backdrop)
-		self.Experience.Rested:SetBackdropColor(0, 0, 0)
-		self.Experience.Rested:SetFrameLevel(1)
-
-		self.Experience.Text = self.Experience:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
-		self.Experience.Text:SetPoint('CENTER', self.Experience)
-
-		self.Experience.bg = self.Experience.Rested:CreateTexture(nil, 'BORDER')
-		self.Experience.bg:SetAllPoints(self.Experience)
-		self.Experience.bg:SetTexture(0.3, 0.3, 0.3)
 	end
 
 	self.DebuffHighlightBackdrop = true
