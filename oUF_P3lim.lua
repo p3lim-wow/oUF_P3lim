@@ -169,11 +169,6 @@ local function styleFunction(self, unit)
 	hpvalue.frequentUpdates = 0.1
 	self:Tag(hpvalue, '[phealth]')
 
-	local info = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
-	info:SetPoint('CENTER', self.Health, 0, -1)
-	info.frequentUpdates = 0.1
-	self:Tag(info, '[pthreat]|cffff0000[pvptime]|r')
-
 	self.RaidIcon = self.Health:CreateTexture(nil, 'OVERLAY')
 	self.RaidIcon:SetPoint('TOP', self, 0, 8)
 	self.RaidIcon:SetHeight(16)
@@ -279,12 +274,19 @@ local function styleFunction(self, unit)
 			self.Experience.bg:SetTexture(0.3, 0.3, 0.3)
 		end
 
+		if(unit == 'player') then
+			local info = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
+			info:SetPoint('CENTER', self.Health, 0, -1)
+			info.frequentUpdates = 0.1
+			self:Tag(info, '[pthreat]|cffff0000[pvptime]|r')
+		end
+
 		self.BarFade = true
 	else
-		local name = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
-		name:SetPoint('LEFT', self.Health, 2, -1)
-		name:SetPoint('RIGHT', hpvalue, 'LEFT')
-		self:Tag(name, unit == 'target' and '[pname]|cff0090ff[( )rare]|r' or '[pname]')
+		local info = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
+		info:SetPoint('LEFT', self.Health, 2, -1)
+		info:SetPoint('RIGHT', hpvalue, 'LEFT')
+		self:Tag(info, unit == 'target' and '[pname]|cff0090ff[( )rare]|r' or '[pname]')
 	end
 
 	if(unit == 'pet') then
