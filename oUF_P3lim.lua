@@ -367,27 +367,6 @@ local function styleFunction(self, unit)
 		self.Reputation.bg:SetTexture(0.3, 0.3, 0.3)
 	end
 
-	if(IsAddOnLoaded('oUF_RuneBar') and unit == 'player' and class == 'DEATHKNIGHT') then
-		self.RuneBar = {}
-		for i = 1, 6 do
-			self.RuneBar[i] = CreateFrame('StatusBar', self:GetName()..'_runebar'..i, self)
-			if(i == 1) then
-				self.RuneBar[i]:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -1)
-			else
-				self.RuneBar[i]:SetPoint('TOPLEFT', self.RuneBar[i-1], 'TOPRIGHT', 1, 0)
-			end
-			self.RuneBar[i]:SetStatusBarTexture(texture)
-			self.RuneBar[i]:SetHeight(4)
-			self.RuneBar[i]:SetWidth(230/6 - 0.85)
-			self.RuneBar[i]:SetBackdrop(backdrop)
-			self.RuneBar[i]:SetBackdropColor(0, 0, 0)
-
-			self.RuneBar[i].bg = self.RuneBar[i]:CreateTexture(nil, 'BORDER')
-			self.RuneBar[i].bg:SetAllPoints(self.RuneBar[i])
-			self.RuneBar[i].bg:SetTexture(0.3, 0.3, 0.3)			
-		end
-	end
-
 	if(IsAddOnLoaded('oUF_Experience') and (unit == 'pet' or unit == 'player')) then
 		self.Experience = CreateFrame('StatusBar', self:GetName()..'_experience', self)
 		self.Experience:SetPoint('TOP', self, 'BOTTOM', 0, -10)
