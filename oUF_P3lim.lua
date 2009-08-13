@@ -169,6 +169,11 @@ local function styleFunction(self, unit)
 	hpvalue.frequentUpdates = 0.1
 	self:Tag(hpvalue, '[phealth]')
 
+	local info = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
+	info:SetPoint('CENTER', self.Health, 0, -1)
+	info.frequentUpdates = 0.1
+	self:Tag(info, '[pthreat]|cffff0000[pvptime]|r')
+
 	self.RaidIcon = self.Health:CreateTexture(nil, 'OVERLAY')
 	self.RaidIcon:SetPoint('TOP', self, 0, 8)
 	self.RaidIcon:SetHeight(16)
