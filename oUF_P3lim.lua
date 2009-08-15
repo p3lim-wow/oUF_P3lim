@@ -346,10 +346,10 @@ local function styleFunction(self, unit)
 		self.Castbar.Icon.overlay:SetVertexColor(0.25, 0.25, 0.25)
 
 		if(unit == 'target') then
-			self.Castbar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -20)
+			self.Castbar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -50)
 			self.Castbar.Icon:SetPoint('BOTTOMLEFT', self.Castbar, 'BOTTOMRIGHT', 2, -1)
 		else
-			self.Castbar:SetPoint('TOPRIGHT', self, 'BOTTOMRIGHT', 0, -20)
+			self.Castbar:SetPoint('TOPRIGHT', self, 'BOTTOMRIGHT', 0, -50)
 			self.Castbar.Icon:SetPoint('BOTTOMRIGHT', self.Castbar, 'BOTTOMLEFT', -2, -1)
 		end
 
