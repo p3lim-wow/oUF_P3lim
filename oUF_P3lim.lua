@@ -77,6 +77,24 @@ local function updateReputationColor(self, event, unit, bar)
 	bar:SetStatusBarColor(FACTION_BAR_COLORS[id].r, FACTION_BAR_COLORS[id].g, FACTION_BAR_COLORS[id].b)
 end
 
+local function castbarIcon(self, event, unit)
+	local castbar, locked = self.Castbar
+
+	if(castbar.channeling) then
+		local _, _, _, _, _, _, _, notInterruptible = UnitChannelInfo(unit)
+		locked = notInterruptible
+	elseif(castbar.casting) then
+		local _, _, _, _, _, _, _, _, notInterruptible = UnitCastingInfo(unit)
+		locked = notInterruptible
+	end
+
+	if(locked) then
+		castbar.Icon.overlay:SetVertexColor(0, 0.9, 1)
+	else
+		castbar.Icon.overlay:SetVertexColor(0.25, 0.25, 0.25)
+	end
+end
+
 local function castbarTime(self, duration)
 	if(self.channeling) then
 		self.Time:SetFormattedText('%.1f ', duration)
@@ -304,6 +322,8 @@ local function styleFunction(self, unit)
 		self.Castbar:SetStatusBarColor(0.25, 0.25, 0.35)
 		self.Castbar:SetBackdrop(backdrop)
 		self.Castbar:SetBackdropColor(0, 0, 0)
+		self.PostCastStart = castbarIcon
+		self.PostChannelStart = castbarIcon
 
 		self.Castbar.Text = self.Castbar:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
 		self.Castbar.Text:SetPoint('LEFT', self.Castbar, 'LEFT', 2, 1)
@@ -320,10 +340,10 @@ local function styleFunction(self, unit)
 		self.Castbar.Icon:SetHeight(24)
 		self.Castbar.Icon:SetWidth(24)
 
-		local overlay = self.Castbar:CreateTexture(nil, 'OVERLAY')
-		overlay:SetAllPoints(self.Castbar.Icon)
-		overlay:SetTexture([=[Interface\AddOns\oUF_P3lim\media\border]=])
-		overlay:SetVertexColor(0.25, 0.25, 0.25)
+		self.Castbar.Icon.overlay = self.Castbar:CreateTexture(nil, 'OVERLAY')
+		self.Castbar.Icon.overlay:SetAllPoints(self.Castbar.Icon)
+		self.Castbar.Icon.overlay:SetTexture([=[Interface\AddOns\oUF_P3lim\media\border]=])
+		self.Castbar.Icon.overlay:SetVertexColor(0.25, 0.25, 0.25)
 
 		if(unit == 'target') then
 			self.Castbar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -20)
