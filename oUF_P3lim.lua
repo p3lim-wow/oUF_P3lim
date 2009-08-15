@@ -195,26 +195,6 @@ local function styleFunction(self, unit)
 		self.Power.colorReaction = not pet
 		self.PostUpdatePower = updatePower
 
-		self.Castbar = CreateFrame('StatusBar', nil, self)
-		self.Castbar:SetPoint('TOPRIGHT', self, 'BOTTOMRIGHT', 0, -100)
-		self.Castbar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -100)
-		self.Castbar:SetStatusBarTexture(texture)
-		self.Castbar:SetStatusBarColor(0.25, 0.25, 0.35)
-		self.Castbar:SetBackdrop(backdrop)
-		self.Castbar:SetBackdropColor(0, 0, 0)
-		self.Castbar:SetHeight(22)
-
-		self.Castbar.Text = self.Castbar:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
-		self.Castbar.Text:SetPoint('LEFT', self.Castbar, 2, -1)
-
-		self.Castbar.Time = self.Castbar:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallRight')
-		self.Castbar.Time:SetPoint('RIGHT', self.Castbar, -2, -1)
-		self.Castbar.CustomTimeText = castbarTime
-
-		self.Castbar.bg = self.Castbar:CreateTexture(nil, 'BORDER')
-		self.Castbar.bg:SetAllPoints(self.Castbar)
-		self.Castbar.bg:SetTexture(0.3, 0.3, 0.3)
-
 		self.Leader = self.Health:CreateTexture(nil, 'OVERLAY')
 		self.Leader:SetPoint('TOPLEFT', self, 0, 8)
 		self.Leader:SetHeight(16)
@@ -316,6 +296,26 @@ local function styleFunction(self, unit)
 		self.PostCreateAuraIcon = createAura
 		self.PostUpdateAuraIcon = unit == 'player' and updateBuff
 		self.CustomAuraFilter = unit == 'player' and customFilter
+
+		self.Castbar = CreateFrame('StatusBar', nil, self)
+		self.Castbar:SetPoint('TOPRIGHT', self, 'BOTTOMRIGHT', 0, -100)
+		self.Castbar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -100)
+		self.Castbar:SetStatusBarTexture(texture)
+		self.Castbar:SetStatusBarColor(0.25, 0.25, 0.35)
+		self.Castbar:SetBackdrop(backdrop)
+		self.Castbar:SetBackdropColor(0, 0, 0)
+		self.Castbar:SetHeight(22)
+
+		self.Castbar.Text = self.Castbar:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
+		self.Castbar.Text:SetPoint('LEFT', self.Castbar, 2, -1)
+
+		self.Castbar.Time = self.Castbar:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallRight')
+		self.Castbar.Time:SetPoint('RIGHT', self.Castbar, -2, -1)
+		self.Castbar.CustomTimeText = castbarTime
+
+		self.Castbar.bg = self.Castbar:CreateTexture(nil, 'BORDER')
+		self.Castbar.bg:SetAllPoints(self.Castbar)
+		self.Castbar.bg:SetTexture(0.3, 0.3, 0.3)
 
 		self:SetAttribute('initial-height', 27)
 		self:SetAttribute('initial-width', 230)
