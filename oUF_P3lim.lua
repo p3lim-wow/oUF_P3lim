@@ -298,24 +298,40 @@ local function styleFunction(self, unit)
 		self.CustomAuraFilter = unit == 'player' and customFilter
 
 		self.Castbar = CreateFrame('StatusBar', nil, self)
-		self.Castbar:SetPoint('TOPRIGHT', self, 'BOTTOMRIGHT', 0, -100)
-		self.Castbar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -100)
+		self.Castbar:SetWidth(205)
+		self.Castbar:SetHeight(16)
 		self.Castbar:SetStatusBarTexture(texture)
 		self.Castbar:SetStatusBarColor(0.25, 0.25, 0.35)
 		self.Castbar:SetBackdrop(backdrop)
 		self.Castbar:SetBackdropColor(0, 0, 0)
-		self.Castbar:SetHeight(22)
 
 		self.Castbar.Text = self.Castbar:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
-		self.Castbar.Text:SetPoint('LEFT', self.Castbar, 2, -1)
+		self.Castbar.Text:SetPoint('LEFT', self.Castbar, 'LEFT', 2, 1)
 
 		self.Castbar.Time = self.Castbar:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallRight')
-		self.Castbar.Time:SetPoint('RIGHT', self.Castbar, -2, -1)
+		self.Castbar.Time:SetPoint('RIGHT', self.Castbar, 'RIGHT', -2, 1)
 		self.Castbar.CustomTimeText = castbarTime
 
 		self.Castbar.bg = self.Castbar:CreateTexture(nil, 'BORDER')
 		self.Castbar.bg:SetAllPoints(self.Castbar)
 		self.Castbar.bg:SetTexture(0.3, 0.3, 0.3)
+
+		self.Castbar.Icon = self.Castbar:CreateTexture(nil, 'ARTWORK')
+		self.Castbar.Icon:SetHeight(24)
+		self.Castbar.Icon:SetWidth(24)
+
+		local overlay = self.Castbar:CreateTexture(nil, 'OVERLAY')
+		overlay:SetAllPoints(self.Castbar.Icon)
+		overlay:SetTexture([=[Interface\AddOns\oUF_P3lim\media\border]=])
+		overlay:SetVertexColor(0.25, 0.25, 0.25)
+
+		if(unit == 'target') then
+			self.Castbar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -20)
+			self.Castbar.Icon:SetPoint('BOTTOMLEFT', self.Castbar, 'BOTTOMRIGHT', 2, -1)
+		else
+			self.Castbar:SetPoint('TOPRIGHT', self, 'BOTTOMRIGHT', 0, -20)
+			self.Castbar.Icon:SetPoint('BOTTOMRIGHT', self.Castbar, 'BOTTOMLEFT', -2, -1)
+		end
 
 		self:SetAttribute('initial-height', 27)
 		self:SetAttribute('initial-width', 230)
