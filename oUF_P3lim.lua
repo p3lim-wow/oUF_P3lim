@@ -105,7 +105,6 @@ local function updateTime(self, elapsed)
 	
 	if(GameTooltip:IsOwned(self)) then
 		GameTooltip:SetUnitAura(self.frame.unit, self:GetID(), self.filter)
-		hookTooltip(self)
 	end
 end
 
