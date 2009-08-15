@@ -26,12 +26,12 @@ local colors = setmetatable({
 }, {__index = oUF.colors})
 
 local buffFilter = {
-	['Survival Instincts'] = true,
-	['Frenzied Regeneration'] = true,
-	['Savage Roar'] = true,
-	['Barkskin'] = true,
-	['Clearcasting'] = true,
-	['Savage Defense'] = true,
+	[GetSpellInfo(61336)] = true,
+	[GetSpellInfo(22842)] = true,
+	[GetSpellInfo(52610)] = true,
+	[GetSpellInfo(22812)] = true,
+	[GetSpellInfo(16870)] = true,
+	[GetSpellInfo(62600)] = true,
 }
 
 local function menu(self)
@@ -133,9 +133,9 @@ local function updateDebuff(self, icons, unit, icon, index)
 	end
 end
 
-local function customFilter(icons, unit, icon, name)
-	if(buffFilter[name] and icon.owner == 'player') then
-		-- todo: set the buffs.visibleBuffs so it works with buffs.num		
+local function customFilter(icons, unit, icon, name, rank, texture, count, dtype, duration, expiration, caster)
+	if(buffFilter[name] and caster == 'player') then
+		-- todo: set the buffs.visibleBuffs so it works with buffs.num
 		return true
 	end
 end
