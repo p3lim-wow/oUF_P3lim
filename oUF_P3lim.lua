@@ -255,7 +255,7 @@ local function styleFunction(self, unit)
 			self.Experience:SetStatusBarTexture(texture)
 			self.Experience:SetStatusBarColor(unpack(colors.health))
 			self.Experience:SetHeight(11)
-			self.Experience:SetWidth(self:GetAttribute('initial-width'))
+			self.Experience:SetWidth(230)
 			self.Experience.Tooltip = true
 
 			self.Experience.Rested = CreateFrame('StatusBar', nil, self)
