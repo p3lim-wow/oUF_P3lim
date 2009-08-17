@@ -6,5 +6,4 @@
 ## RequiredDeps: oUF
 ## OptionalDeps: oUF_BarFader, oUF_DebuffHighlight, oUF_Experience
 
-customtags.lua
-oUF_P3lim.lua
+oUF_P3lim.xml
