@@ -4,6 +4,6 @@
 ## Title: oUF P3lim
 ## Notes: Just another oUF layout
 ## RequiredDeps: oUF
-## OptionalDeps: oUF_BarFader, oUF_DebuffHighlight, oUF_Experience
+## OptionalDeps: oUF_DebuffHighlight, oUF_Experience
 
 oUF_P3lim.xml
