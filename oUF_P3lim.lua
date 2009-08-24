@@ -23,6 +23,11 @@ local colors = setmetatable({
 		[4] = {1, 1, 0},
 		[5] = {0, 1, 0}
 	}, {__index = oUF.colors.reaction}),
+	runes = setmetatable({
+		[1] = {0.8, 0, 0},
+		[3] = {0, 0.4, 0.7},
+		[4] = {0.8, 0.8, 0.8}
+	}, {__index = oUF.colors.runes})
 }, {__index = oUF.colors})
 
 local buffFilter = {
@@ -339,6 +344,28 @@ local function style(self, unit)
 	end
 
 	if(unit == 'player') then
+		if(select(2, UnitClass('player')) == 'DEATHKNIGHT') then
+			self.Runes = CreateFrame('Frame', nil, self)
+			self.Runes:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -1)
+			self.Runes:SetHeight(4)
+			self.Runes:SetWidth(230)
+			self.Runes:SetBackdrop(backdrop)
+			self.Runes:SetBackdropColor(0, 0, 0)
+			self.Runes.anchor = 'TOPLEFT'
+			self.Runes.growth = 'RIGHT'
+			self.Runes.height = 4
+			self.Runes.width = 230 / 6 - 0.85
+
+			for index = 1, 6 do
+				self.Runes[index] = CreateFrame('StatusBar', nil, self.Runes)
+				self.Runes[index]:SetStatusBarTexture(minimalist)
+
+				self.Runes[index].bg = self.Runes[index]:CreateTexture(nil, 'BACKGROUND')
+				self.Runes[index].bg:SetAllPoints(self.Runes[index])
+				self.Runes[index].bg:SetTexture(0.3, 0.3, 0.3)
+			end
+		end
+
 		self.Leader = self.Health:CreateTexture(nil, 'OVERLAY')
 		self.Leader:SetPoint('TOPLEFT', self, 0, 8)
 		self.Leader:SetHeight(16)
