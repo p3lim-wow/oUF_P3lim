@@ -212,6 +212,35 @@ local function style(self, unit)
 		self.Power.bg:SetAllPoints(self.Power)
 		self.Power.bg:SetTexture([=[Interface\ChatFrame\ChatFrameBackground]=])
 		self.Power.bg.multiplier = 0.3
+
+		self.Castbar = CreateFrame('StatusBar', nil, self)
+		self.Castbar:SetWidth(205)
+		self.Castbar:SetHeight(16)
+		self.Castbar:SetStatusBarTexture(minimalist)
+		self.Castbar:SetStatusBarColor(0.25, 0.25, 0.35)
+		self.Castbar:SetBackdrop(backdrop)
+		self.Castbar:SetBackdropColor(0, 0, 0)
+
+		self.Castbar.bg = self.Castbar:CreateTexture(nil, 'BORDER')
+		self.Castbar.bg:SetAllPoints(self.Castbar)
+		self.Castbar.bg:SetTexture(0.3, 0.3, 0.3)
+
+		self.Castbar.Text = self.Castbar:CreateFontString(nil, 'OVERLAY', 'pfontleft')
+		self.Castbar.Text:SetPoint('LEFT', 2, 0)
+
+		self.Castbar.Time = self.Castbar:CreateFontString(nil, 'OVERLAY', 'pfontright')
+		self.Castbar.Time:SetPoint('RIGHT', -2, 0)
+		self.Castbar.CustomTimeText = castTime
+
+		self.Castbar.Button = CreateFrame('Frame', nil, self.Castbar)
+		self.Castbar.Button:SetHeight(21)
+		self.Castbar.Button:SetWidth(21)
+		self.Castbar.Button:SetBackdrop(backdrop)
+		self.Castbar.Button:SetBackdropColor(0, 0, 0)
+
+		self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, 'ARTWORK')
+		self.Castbar.Icon:SetAllPoints(self.Castbar.Button)
+		self.Castbar.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 	end
 
 	if(unit == 'player' or unit == 'pet') then
@@ -279,35 +308,6 @@ local function style(self, unit)
 		self.Buffs.initialAnchor = 'TOPLEFT'
 		self.Buffs['growth-y'] = 'DOWN'
 		self.PostCreateAuraIcon = createAura
-
-		self.Castbar = CreateFrame('StatusBar', nil, self)
-		self.Castbar:SetWidth(205)
-		self.Castbar:SetHeight(16)
-		self.Castbar:SetStatusBarTexture(minimalist)
-		self.Castbar:SetStatusBarColor(0.25, 0.25, 0.35)
-		self.Castbar:SetBackdrop(backdrop)
-		self.Castbar:SetBackdropColor(0, 0, 0)
-
-		self.Castbar.bg = self.Castbar:CreateTexture(nil, 'BORDER')
-		self.Castbar.bg:SetAllPoints(self.Castbar)
-		self.Castbar.bg:SetTexture(0.3, 0.3, 0.3)
-
-		self.Castbar.Text = self.Castbar:CreateFontString(nil, 'OVERLAY', 'pfontleft')
-		self.Castbar.Text:SetPoint('LEFT', 2, 0)
-
-		self.Castbar.Time = self.Castbar:CreateFontString(nil, 'OVERLAY', 'pfontright')
-		self.Castbar.Time:SetPoint('RIGHT', -2, 0)
-		self.Castbar.CustomTimeText = castTime
-
-		self.Castbar.Button = CreateFrame('Frame', nil, self.Castbar)
-		self.Castbar.Button:SetHeight(21)
-		self.Castbar.Button:SetWidth(21)
-		self.Castbar.Button:SetBackdrop(backdrop)
-		self.Castbar.Button:SetBackdropColor(0, 0, 0)
-
-		self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, 'ARTWORK')
-		self.Castbar.Icon:SetAllPoints(self.Castbar.Button)
-		self.Castbar.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 
 		if(unit == 'target') then
 			self.PostCastStart = castIcon
