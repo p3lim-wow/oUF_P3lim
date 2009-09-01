@@ -214,7 +214,7 @@ local function style(self, unit)
 		self.Power.bg.multiplier = 0.3
 
 		self.Castbar = CreateFrame('StatusBar', nil, self)
-		self.Castbar:SetWidth(self.Health:GetWidth() - 25)
+		self.Castbar:SetWidth(unit == 'pet' and 105 or 205)
 		self.Castbar:SetHeight(16)
 		self.Castbar:SetStatusBarTexture(minimalist)
 		self.Castbar:SetStatusBarColor(0.25, 0.25, 0.35)
@@ -241,6 +241,16 @@ local function style(self, unit)
 		self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, 'ARTWORK')
 		self.Castbar.Icon:SetAllPoints(self.Castbar.Button)
 		self.Castbar.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+
+		if(unit == 'target') then
+			self.PostCastStart = castIcon
+			self.PostChannelStart = castIcon
+			self.Castbar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -60)
+			self.Castbar.Button:SetPoint('BOTTOMLEFT', self.Castbar, 'BOTTOMRIGHT', 4, 0)
+		else
+			self.Castbar:SetPoint('TOPRIGHT', self, 'BOTTOMRIGHT', 0, -60)
+			self.Castbar.Button:SetPoint('BOTTOMRIGHT', self.Castbar, 'BOTTOMLEFT', -4, 0)
+		end
 	end
 
 	if(unit == 'player' or unit == 'pet') then
@@ -308,16 +318,6 @@ local function style(self, unit)
 		self.Buffs.initialAnchor = 'TOPLEFT'
 		self.Buffs['growth-y'] = 'DOWN'
 		self.PostCreateAuraIcon = createAura
-
-		if(unit == 'target') then
-			self.PostCastStart = castIcon
-			self.PostChannelStart = castIcon
-			self.Castbar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -60)
-			self.Castbar.Button:SetPoint('BOTTOMLEFT', self.Castbar, 'BOTTOMRIGHT', 4, 0)
-		else
-			self.Castbar:SetPoint('TOPRIGHT', self, 'BOTTOMRIGHT', 0, -60)
-			self.Castbar.Button:SetPoint('BOTTOMRIGHT', self.Castbar, 'BOTTOMLEFT', -4, 0)
-		end
 
 		self.PostUpdatePower = updatePower
 	end
