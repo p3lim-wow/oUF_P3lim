@@ -162,8 +162,8 @@ local function style(self, unit)
 	self.Health.bg:SetAllPoints(self.Health)
 	self.Health.bg:SetTexture(0.3, 0.3, 0.3)
 
-	local health = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallRight')
-	health:SetPoint('RIGHT', self.Health, -2, -1)
+	local health = self.Health:CreateFontString(nil, 'OVERLAY', 'pfontright')
+	health:SetPoint('RIGHT', self.Health, -2, 0)
 	health.frequentUpdates = 0.25
 	self:Tag(health, '[phealth]')
 
@@ -231,7 +231,7 @@ local function style(self, unit)
 			self.Experience.Rested:SetBackdrop(backdrop)
 			self.Experience.Rested:SetBackdropColor(0, 0, 0)
 
-			self.Experience.Text = self.Experience:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
+			self.Experience.Text = self.Experience:CreateFontString(nil, 'OVERLAY', 'pfont')
 			self.Experience.Text:SetPoint('CENTER', self.Experience)
 
 			self.Experience.bg = self.Experience.Rested:CreateTexture(nil, 'BORDER')
@@ -239,13 +239,13 @@ local function style(self, unit)
 			self.Experience.bg:SetTexture(0.3, 0.3, 0.3)
 		end
 
-		local power = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
-		power:SetPoint('LEFT', self.Health, 2, -1)
+		local power = self.Health:CreateFontString(nil, 'OVERLAY', 'pfontleft')
+		power:SetPoint('LEFT', self.Health, 2, 0)
 		power.frequentUpdates = 0.1
 		self:Tag(power, '[ppower][( )druidpower]')
 	else
-		local info = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
-		info:SetPoint('LEFT', self.Health, 2, -1)
+		local info = self.Health:CreateFontString(nil, 'OVERLAY', 'pfontleft')
+		info:SetPoint('LEFT', self.Health, 2, 0)
 		info:SetPoint('RIGHT', health, 'LEFT')
 		self:Tag(info, '[pname]|cff0090ff[( )rare]|r')
 	end
@@ -266,7 +266,7 @@ local function style(self, unit)
 	end
 
 	if(unit == 'player' or unit == 'target') then
-		self:SetAttribute('initial-height', 27)
+		self:SetAttribute('initial-height', 22)
 		self:SetAttribute('initial-width', 230)
 
 		self.Buffs = CreateFrame('Frame', nil, self)
@@ -292,11 +292,11 @@ local function style(self, unit)
 		self.Castbar.bg:SetAllPoints(self.Castbar)
 		self.Castbar.bg:SetTexture(0.3, 0.3, 0.3)
 
-		self.Castbar.Text = self.Castbar:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallLeft')
-		self.Castbar.Text:SetPoint('LEFT', 2, 1)
+		self.Castbar.Text = self.Castbar:CreateFontString(nil, 'OVERLAY', 'pfontleft')
+		self.Castbar.Text:SetPoint('LEFT', 2, 0)
 
-		self.Castbar.Time = self.Castbar:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmallRight')
-		self.Castbar.Time:SetPoint('RIGHT', -2, 1)
+		self.Castbar.Time = self.Castbar:CreateFontString(nil, 'OVERLAY', 'pfontright')
+		self.Castbar.Time:SetPoint('RIGHT', -2, 0)
 		self.Castbar.CustomTimeText = castTime
 
 		self.Castbar.Button = CreateFrame('Frame', nil, self.Castbar)
@@ -376,8 +376,8 @@ local function style(self, unit)
 		self.Assistant:SetHeight(16)
 		self.Assistant:SetWidth(16)
 
-		local info = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontHighlightSmall')
-		info:SetPoint('CENTER', 0, -1)
+		local info = self.Health:CreateFontString(nil, 'OVERLAY', 'pfont')
+		info:SetPoint('CENTER')
 		info.frequentUpdates = 0.25
 		self:Tag(info, '[pthreat]|cffff0000[pvptime]|r')
 

@@ -1,4 +1,13 @@
 <Ui xmlns='http://www.blizzard.com/wow/ui/'>
+	<Font name='pfont' font='Interface\AddOns\oUF_P3lim\media\marke.ttf' outline='NORMAL' virtual='true'>
+		<FontHeight>
+			<AbsValue val='8'/>
+		</FontHeight>
+	</Font>
+
+	<Font name='pfontleft' inherits='pfont' justifyH='LEFT' virtual='true'/>
+	<Font name='pfontright' inherits='pfont' justifyH='RIGHT' virtual='true'/>
+
 	<Script file='tags.lua'/>
 	<Script file='oUF_P3lim.lua'/>
 </Ui>
