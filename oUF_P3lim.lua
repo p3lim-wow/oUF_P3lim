@@ -214,7 +214,7 @@ local function style(self, unit)
 		self.Power.bg.multiplier = 0.3
 
 		self.Castbar = CreateFrame('StatusBar', nil, self)
-		self.Castbar:SetWidth(205)
+		self.Castbar:SetWidth(self.Health:GetWidth() - 25)
 		self.Castbar:SetHeight(16)
 		self.Castbar:SetStatusBarTexture(minimalist)
 		self.Castbar:SetStatusBarColor(0.25, 0.25, 0.35)
