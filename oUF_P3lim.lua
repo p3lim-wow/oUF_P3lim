@@ -56,10 +56,10 @@ local function updatePower(self, event, unit, bar, minVal, maxVal)
 	if(unit ~= 'target') then return end
 
 	if(maxVal ~= 0) then
-		self.Health:SetHeight(22)
+		self.Health:SetHeight(20)
 		bar:Show()
 	else
-		self.Health:SetHeight(27)
+		self.Health:SetHeight(22)
 		bar:Hide()
 	end
 end
@@ -155,7 +155,7 @@ local function style(self, unit)
 	self.Health:SetPoint('TOPLEFT')
 	self.Health:SetStatusBarTexture(minimalist)
 	self.Health:SetStatusBarColor(0.25, 0.25, 0.35)
-	self.Health:SetHeight((unit == 'focus' or unit == 'targettarget') and 20 or 22)
+	self.Health:SetHeight((unit == 'focus' or unit == 'targettarget') and 19 or 20)
 	self.Health.frequentUpdates = true
 
 	self.Health.bg = self.Health:CreateTexture(nil, 'BORDER')
@@ -173,7 +173,7 @@ local function style(self, unit)
 	self.RaidIcon:SetWidth(16)
 
 	if(unit == 'focus' or unit == 'targettarget') then
-		self:SetAttribute('initial-height', 20)
+		self:SetAttribute('initial-height', 19)
 		self:SetAttribute('initial-width', 182)
 
 		self.Debuffs = CreateFrame('Frame', nil, self)
@@ -251,7 +251,7 @@ local function style(self, unit)
 	end
 
 	if(unit == 'pet') then
-		self:SetAttribute('initial-height', 27)
+		self:SetAttribute('initial-height', 22)
 		self:SetAttribute('initial-width', 130)
 
 		self.Auras = CreateFrame('Frame', nil, self)
