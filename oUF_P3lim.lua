@@ -379,7 +379,7 @@ local function style(self, unit)
 		local info = self.Health:CreateFontString(nil, 'OVERLAY', 'pfont')
 		info:SetPoint('CENTER')
 		info.frequentUpdates = 0.25
-		self:Tag(info, '[pthreat]|cffff0000[pvptime]|r')
+		self:Tag(info, '[pthreat]|cffff0000[( )pvptime]|r')
 
 		self.PostUpdateAuraIcon = updateBuff
 		self.CustomAuraFilter = customFilter
