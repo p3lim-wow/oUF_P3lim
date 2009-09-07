@@ -9,5 +9,6 @@
 	<Font name='pfontright' inherits='pfont' justifyH='RIGHT' virtual='true'/>
 
 	<Script file='tags.lua'/>
+	<Script file='dropdown.lua'/>
 	<Script file='oUF_P3lim.lua'/>
 </Ui>

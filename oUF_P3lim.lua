@@ -40,9 +40,10 @@ local buffFilter = {
 }
 
 local function menu(self)
-	local drop = _G[string.gsub(self.unit, '(.)', string.upper, 1) .. 'FrameDropDown']
-	if(drop) then
-		ToggleDropDownMenu(1, nil, drop, 'cursor')
+	if(self.unit == 'player') then
+		ToggleDropDownMenu(1, nil, oUF_P3lim_DropDown, 'cursor')
+	elseif(_G[string.gsub(self.unit, '(.)', string.upper, 1) .. 'FrameDropDown']) then
+		ToggleDropDownMenu(1, nil, _G[string.gsub(self.unit, '(.)', string.upper, 1) .. 'FrameDropDown'], 'cursor')
 	end
 end
 
