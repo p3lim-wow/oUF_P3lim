@@ -49,17 +49,17 @@ local function initialize(self, level)
 		if(InGroup()) then
 			wipe(info)
 			info.text = string.format(lootone[GetOptOutOfLoot() and 'ignore' or GetLootMethod()], select(4, GetItemQualityColor(GetLootThreshold())))
-			info.value = 'loot'
 			info.notCheckable = 1
-			info.hasArrow = 1
+			info.value = GroupLeader() and 'loot'
+			info.hasArrow = GroupLeader() and 1
 			UIDropDownMenu_AddButton(info, level)
 		end
 
 		wipe(info)
 		info.text = string.format('Difficulty: %s', UnitInRaid('player') and raid[GetRaidDifficulty()] or party[GetDungeonDifficulty()])
-		info.value = 'difficulty'
 		info.notCheckable = 1
-		info.hasArrow = 1
+		info.value = GroupLeader() and 'difficulty'
+		info.hasArrow = GroupLeader() and 1
 		UIDropDownMenu_AddButton(info, level)
 
 		if(GroupLeader()) then
