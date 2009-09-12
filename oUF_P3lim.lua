@@ -34,6 +34,7 @@ local buffFilter = {
 	[GetSpellInfo(62600)] = true,
 	[GetSpellInfo(61336)] = true,
 	[GetSpellInfo(52610)] = true,
+	[GetSpellInfo(32182)] = true,
 	[GetSpellInfo(22842)] = true,
 	[GetSpellInfo(22812)] = true,
 	[GetSpellInfo(16870)] = true
