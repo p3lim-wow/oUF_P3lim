@@ -4,40 +4,32 @@ menu.displayMode = 'MENU'
 menu.info = {}
 
 local loot = {
-	master = '|cff0070dd|rMaster Loot',
+	freeforall = 'Free for All',
 	group = '|cff1eff00Group Loot|r',
-	freeforall = '|cffffffffFree For All|r'
+	master = '|cff0070ddMaster Loot|r',
 }
 
-local lootone = { -- find a localized alternative to the following tables, preferably with all options?
-	freeforall = 'Loot: %sFree|r',
-	group = 'Loot: %sGroup|r',
-	master = 'Loot: %sMaster|r',
-	ignore = 'Loot: %sIgnore|r'
+local globalloot = {
+	needbeforegreed = 'Loot: %sNeed & Greed|r',
+	freeforall = 'Loot: %sFree for All|r',
+	group = 'Loot: %sGroup Loot|r',
+	master = 'Loot: %sMaster Loot|r',
 }
 
 local party = {
-	'5 [N]',
-	'5 [|cffff5050H|r]'
+	'5 |cffffff50Normal|r',
+	'5 |cffff5050Heroic|r'
 }
 
 local raid = {
-	'10 [N]',
-	'25 [N]',
-	'10 [|cffff5050H|r]',
-	'25 [|cffff5050H|r]'
+	'10 |cffffff50Normal|r',
+	'25 |cffffff50Normal|r',
+	'10 |cffff5050Heroic|r',
+	'25 |cffff5050Heroic|r'
 }
 
-local function InGroup()
-	return GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0
-end
-
-local function GroupLeader()
-	return InGroup() and (IsRaidLeader() or IsPartyLeader()) or not InGroup()
-end
-
 local function onEvent()
-	if(GroupLeader()) then
+	if(CanGroupInvite() and GetLootMethod() ~= 'freeforall') then
 		SetLootThreshold(GetLootMethod() == 'master' and 3 or 2)
 	end
 end
@@ -46,23 +38,24 @@ local function initialize(self, level)
 	local info = self.info
 
 	if(level == 1) then
-		if(InGroup()) then
+		if(GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0) then
 			wipe(info)
-			info.text = string.format(lootone[GetOptOutOfLoot() and 'ignore' or GetLootMethod()], select(4, GetItemQualityColor(GetLootThreshold())))
+			info.text = string.format(globalloot[GetLootMethod()], select(4, GetItemQualityColor(GetOptOutOfLoot() and 0 or GetLootThreshold())))
 			info.notCheckable = 1
-			info.value = GroupLeader() and 'loot'
-			info.hasArrow = GroupLeader() and 1
+			info.func = function() if(IsShiftKeyDown()) then SetOptOutOfLoot(not GetOptOutOfLoot()) end end
+			info.value = CanGroupInvite() and 'loot'
+			info.hasArrow = CanGroupInvite() and 1
 			UIDropDownMenu_AddButton(info, level)
 		end
 
 		wipe(info)
 		info.text = string.format('Difficulty: %s', UnitInRaid('player') and raid[GetRaidDifficulty()] or party[GetDungeonDifficulty()])
 		info.notCheckable = 1
-		info.value = GroupLeader() and 'difficulty'
-		info.hasArrow = GroupLeader() and 1
+		info.value = CanGroupInvite() and 'difficulty'
+		info.hasArrow = CanGroupInvite() and 1
 		UIDropDownMenu_AddButton(info, level)
 
-		if(GroupLeader()) then
+		if(CanGroupInvite()) then
 			wipe(info)
 			info.text = RESET_INSTANCES
 			info.notCheckable = 1
@@ -70,7 +63,7 @@ local function initialize(self, level)
 			UIDropDownMenu_AddButton(info, level)
 		end
 
-		if(InGroup()) then
+		if(GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0) then
 			wipe(info)
 			info.text = PARTY_LEAVE
 			info.notCheckable = 1
@@ -86,10 +79,6 @@ local function initialize(self, level)
 				info.func = function() SetLootMethod(k, UnitName('player')) end
 				UIDropDownMenu_AddButton(info, level)
 			end
-
-			info.text = '|cff9d9d9dIgnore Loot|r'
-			info.func = function() SetOptOutOfLoot(not GetOptOutOfLoot()) end
-			UIDropDownMenu_AddButton(info, level)
 		elseif(UIDROPDOWNMENU_MENU_VALUE == 'difficulty') then
 			wipe(info)
 
