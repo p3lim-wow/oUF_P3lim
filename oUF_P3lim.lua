@@ -119,7 +119,7 @@ local function createAura(self, button, icons)
 	button.cd:SetReverse()
 	button:SetBackdrop(backdrop)
 	button:SetBackdropColor(0, 0, 0)
-	button.icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
+	button.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
 	button.icon:SetDrawLayer('ARTWORK')
 	button.overlay:SetTexture()
 
