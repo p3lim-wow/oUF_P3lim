@@ -42,6 +42,14 @@ local buffFilter = {
 	[GetSpellInfo(49016)] = true, -- Death Knight: Hysteria
 }
 
+local debuffFilter = {
+	[GetSpellInfo(770)] = true, -- Faerie Fire
+	[GetSpellInfo(16857)] = true, -- Faerie Fire (Feral)
+	[GetSpellInfo(48564)] = true, -- Mangle (Bear)
+	[GetSpellInfo(48566)] = true, -- Mangle (Cat)
+	[GetSpellInfo(46857)] = true, -- Trauma
+}
+
 local function menu(self)
 	if(self.unit == 'player') then
 		ToggleDropDownMenu(1, nil, oUF_P3lim_DropDown, 'cursor')
@@ -103,10 +111,10 @@ local function updateBuff(self, icons, unit, icon, index)
 end
 
 local function updateDebuff(self, icons, unit, icon, index)
-	local _, _, _, _, dtype = UnitAura(unit, index, icon.filter)
+	local name, _, _, _, dtype = UnitAura(unit, index, icon.filter)
 
 	if(icon.debuff) then
-		if(not UnitIsFriend('player', unit) and icon.owner ~= 'player' and icon.owner ~= 'vehicle') then
+		if(not debuffFilter[name] and not UnitIsFriend('player', unit) and icon.owner ~= 'player' and icon.owner ~= 'vehicle') then
 			icon:SetBackdropColor(0, 0, 0)
 			icon.icon:SetDesaturated(true)
 		else
