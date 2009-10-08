@@ -31,11 +31,15 @@ local colors = setmetatable({
 }, {__index = oUF.colors})
 
 local buffFilter = {
-	[GetSpellInfo(52610)] = true, -- Savage Roar
-	[GetSpellInfo(22812)] = true, -- Barkskin
-	[GetSpellInfo(16870)] = true, -- Clearcast
-	[GetSpellInfo(50334)] = true, -- Berserk
-	[GetSpellInfo(50213)] = true, -- Tiger's Fury
+	[GetSpellInfo(52610)] = true, -- Druid: Savage Roar
+	[GetSpellInfo(22812)] = true, -- Druid: Barkskin
+	[GetSpellInfo(16870)] = true, -- Druid: Clearcast
+	[GetSpellInfo(50334)] = true, -- Druid: Berserk
+	[GetSpellInfo(50213)] = true, -- Druid: Tiger's Fury
+	[GetSpellInfo(51532)] = true, -- Shaman: Maelstrom Weapon
+	[GetSpellInfo(49281)] = true, -- Shaman: Lightning Shield
+	[GetSpellInfo(32182)] = true, -- Shaman: Heroism
+	[GetSpellInfo(49016)] = true, -- Death Knight: Hysteria
 }
 
 local function menu(self)
