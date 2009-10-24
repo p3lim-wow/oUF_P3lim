@@ -93,23 +93,6 @@ local function castTime(self, duration)
 	end
 end
 
-local function updateTime(self, elapsed)
-	self.remaining = max(self.remaining - elapsed, 0)
-	self.time:SetText(self.remaining < 90 and floor(self.remaining) or '')
-end
-
-local function updateBuff(self, icons, unit, icon, index)
-	local _, _, _, _, _, duration, expiration = UnitAura(unit, index, icon.filter)
-
-	if(duration > 0 and expiration) then
-		icon.remaining = expiration - GetTime()
-		icon:SetScript('OnUpdate', updateTime)
-	else
-		icon:SetScript('OnUpdate', nil)
-		icon.time:SetText()
-	end
-end
-
 local function updateDebuff(self, icons, unit, icon, index)
 	local name, _, _, _, dtype = UnitAura(unit, index, icon.filter)
 
@@ -134,13 +117,6 @@ local function createAura(self, button, icons)
 	button.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
 	button.icon:SetDrawLayer('ARTWORK')
 	button.overlay:SetTexture()
-
-	if(self.unit == 'player') then
-		icons.disableCooldown = true
-
-		button.time = button:CreateFontString(nil, 'OVERLAY', 'NumberFontNormal')
-		button.time:SetPoint('TOPLEFT', button)
-	end
 end
 
 local function customFilter(icons, unit, icon, name, rank, texture, count, dtype, duration, expiration, caster)
@@ -393,7 +369,6 @@ local function style(self, unit)
 		info.frequentUpdates = 0.25
 		self:Tag(info, '[pthreat]|cffff0000[( )pvptime]|r')
 
-		self.PostUpdateAuraIcon = updateBuff
 		self.CustomAuraFilter = customFilter
 	end
 
