@@ -36,8 +36,8 @@ local buffFilter = {
 	[GetSpellInfo(16870)] = true, -- Druid: Clearcast
 	[GetSpellInfo(50334)] = true, -- Druid: Berserk
 	[GetSpellInfo(50213)] = true, -- Druid: Tiger's Fury
-	[GetSpellInfo(51532)] = true, -- Shaman: Maelstrom Weapon
-	[GetSpellInfo(49281)] = true, -- Shaman: Lightning Shield
+	[GetSpellInfo(57960)] = true, -- Shaman: Water Shield
+	[GetSpellInfo(51566)] = true, -- Shaman: Tidal Waves (Talent)
 	[GetSpellInfo(32182)] = true, -- Shaman: Heroism
 	[GetSpellInfo(49016)] = true, -- Death Knight: Hysteria
 }
