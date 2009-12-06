@@ -342,6 +342,7 @@ local function style(self, unit)
 			self.Runes.anchor = 'TOPLEFT'
 			self.Runes.growth = 'RIGHT'
 			self.Runes.height = 4
+			self.Runes.spacing = 1
 			self.Runes.width = 230 / 6 - 0.85
 
 			for index = 1, 6 do
