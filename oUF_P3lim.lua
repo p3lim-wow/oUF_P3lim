@@ -215,6 +215,7 @@ local function style(self, unit)
 
 		self.Castbar.Text = self.Castbar:CreateFontString(nil, 'OVERLAY', 'pfontleft')
 		self.Castbar.Text:SetPoint('LEFT', 2, 0)
+		self.Castbar.Text:SetPoint('RIGHT', self.Castbar.Time)
 
 		self.Castbar.Time = self.Castbar:CreateFontString(nil, 'OVERLAY', 'pfontright')
 		self.Castbar.Time:SetPoint('RIGHT', -2, 0)
