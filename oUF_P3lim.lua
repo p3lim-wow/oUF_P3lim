@@ -117,14 +117,11 @@ local function updateDebuff(self, icons, unit, icon, index)
 end
 
 local function createAura(self, button, icons)
-	icons.showDebuffType = true
-
 	button.cd:SetReverse()
 	button:SetBackdrop(backdrop)
 	button:SetBackdropColor(0, 0, 0)
 	button.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
 	button.icon:SetDrawLayer('ARTWORK')
-	button.overlay:SetTexture()
 end
 
 local function customFilter(icons, unit, icon, name, rank, texture, count, dtype, duration, expiration, caster)
