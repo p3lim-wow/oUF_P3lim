@@ -87,9 +87,9 @@ end
 local function castIcon(self, event, unit)
 	local castbar = self.Castbar
 	if(castbar.interrupt) then
-		castbar.Button:SetBackdropColor(0, 0.9, 1)
+		castbar.icon:SetVertexColor(1, 0, 0)
 	else
-		castbar.Button:SetBackdropColor(0, 0, 0)
+		castbar.icon:SetVertexColor(1, 1, 1)
 	end
 end
 
