@@ -98,7 +98,7 @@ local function updateDebuff(self, icons, unit, icon, index)
 	local name, _, _, _, dtype = UnitAura(unit, index, icon.filter)
 
 	if(icon.debuff) then
-		if(debuffFilter[name] or playerUnits[icon.owner]) then
+		if(UnitIsFriend('player', unit) or debuffFilter[name] or playerUnits[icon.owner]) then
 			local color = DebuffTypeColor[dtype] or DebuffTypeColor.none
 			icon:SetBackdropColor(color.r * 0.6, color.g * 0.6, color.b * 0.6)
 			icon.icon:SetDesaturated(false)
