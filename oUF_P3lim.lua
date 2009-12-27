@@ -73,8 +73,6 @@ local function updateCombo(self, event, unit)
 end
 
 local function updatePower(self, event, unit, bar, minVal, maxVal)
-	if(unit ~= 'target') then return end
-
 	if(maxVal ~= 0) then
 		self.Health:SetHeight(20)
 		bar:Show()
@@ -312,8 +310,6 @@ local function style(self, unit)
 		self.Buffs.initialAnchor = 'TOPLEFT'
 		self.Buffs['growth-y'] = 'DOWN'
 		self.PostCreateAuraIcon = createAura
-
-		self.PostUpdatePower = updatePower
 	end
 
 	if(unit == 'target') then
@@ -335,6 +331,8 @@ local function style(self, unit)
 		self.CPoints:SetJustifyH('RIGHT')
 		self.CPoints.unit = PlayerFrame.unit
 		self:RegisterEvent('UNIT_COMBO_POINTS', updateCombo)
+
+		self.PostUpdatePower = updatePower
 	end
 
 	if(unit == 'player') then
