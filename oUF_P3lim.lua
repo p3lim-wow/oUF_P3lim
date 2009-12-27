@@ -14,6 +14,12 @@ local backdrop = {
 	insets = {top = -1, bottom = -1, left = -1, right = -1}
 }
 
+local playerUnits = {
+	player = true,
+	pet = true,
+	vehicle = true,
+}
+
 local colors = setmetatable({
 	power = setmetatable({
 		MANA = {0, 144/255, 1}
@@ -99,13 +105,13 @@ local function updateDebuff(self, icons, unit, icon, index)
 	local name, _, _, _, dtype = UnitAura(unit, index, icon.filter)
 
 	if(icon.debuff) then
-		if(not debuffFilter[name] and not UnitIsFriend('player', unit) and icon.owner ~= 'player' and icon.owner ~= 'vehicle') then
-			icon:SetBackdropColor(0, 0, 0)
-			icon.icon:SetDesaturated(true)
-		else
+		if(debuffFilter[name] or playerUnits[icon.owner]) then
 			local color = DebuffTypeColor[dtype] or DebuffTypeColor.none
 			icon:SetBackdropColor(color.r * 0.6, color.g * 0.6, color.b * 0.6)
 			icon.icon:SetDesaturated(false)
+		else
+			icon:SetBackdropColor(0, 0, 0)
+			icon.icon:SetDesaturated(true)
 		end
 	end
 end
