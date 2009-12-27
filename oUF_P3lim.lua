@@ -358,6 +358,6 @@ oUF:SetActiveStyle('P3lim')
 
 oUF:Spawn('player'):SetPoint('CENTER', -220, -250)
 oUF:Spawn('target'):SetPoint('CENTER', 220, -250)
-oUF:Spawn('targettarget'):SetPoint('CENTER', 244, 225)
-oUF:Spawn('focus'):SetPoint('CENTER', -244, 225)
+oUF:Spawn('targettarget'):SetPoint('CENTER', 244, -225)
+oUF:Spawn('focus'):SetPoint('CENTER', -244, -225)
 oUF:Spawn('pet'):SetPoint('CENTER', -410, -250)
