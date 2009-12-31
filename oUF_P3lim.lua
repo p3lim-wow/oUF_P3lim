@@ -32,25 +32,25 @@ local colors = setmetatable({
 }, {__index = oUF.colors})
 
 local buffFilter = {
-	[GetSpellInfo(52610)] = true, -- Druid: Savage Roar
-	[GetSpellInfo(22812)] = true, -- Druid: Barkskin
-	[GetSpellInfo(16870)] = true, -- Druid: Clearcast
-	[GetSpellInfo(50334)] = true, -- Druid: Berserk
-	[GetSpellInfo(50213)] = true, -- Druid: Tiger's Fury
-	[GetSpellInfo(48517)] = true, -- Druid: Eclipse (Solar)
-	[GetSpellInfo(48518)] = true, -- Druid: Eclipse (Lunar)
-	[GetSpellInfo(57960)] = true, -- Shaman: Water Shield
-	[GetSpellInfo(51566)] = true, -- Shaman: Tidal Waves (Talent)
-	[GetSpellInfo(32182)] = true, -- Shaman: Heroism
-	[GetSpellInfo(49016)] = true, -- Death Knight: Hysteria
+	[52610] = true, -- Druid: Savage Roar
+	[22812] = true, -- Druid: Barkskin
+	[16870] = true, -- Druid: Clearcast
+	[50213] = true, -- Druid: Tiger's Fury
+	[48517] = true, -- Druid: Eclipse (Solar)
+	[48518] = true, -- Druid: Eclipse (Lunar)
+	[57960] = true, -- Shaman: Water Shield
+	[51566] = true, -- Shaman: Tidal Waves (Talent)
+	[32182] = true, -- Shaman: Heroism
+	[49016] = true, -- Death Knight: Hysteria
+	[50334] = true, -- Enchant: Berserk
 }
 
 local debuffFilter = {
-	[GetSpellInfo(770)] = true, -- Faerie Fire
-	[GetSpellInfo(16857)] = true, -- Faerie Fire (Feral)
-	[GetSpellInfo(48564)] = true, -- Mangle (Bear)
-	[GetSpellInfo(48566)] = true, -- Mangle (Cat)
-	[GetSpellInfo(46857)] = true, -- Trauma
+	[770] = true, -- Faerie Fire
+	[16857] = true, -- Faerie Fire (Feral)
+	[48564] = true, -- Mangle (Bear)
+	[48566] = true, -- Mangle (Cat)
+	[46857] = true, -- Trauma
 }
 
 local function menu(self)
@@ -95,10 +95,10 @@ local function castTime(self, duration)
 end
 
 local function updateDebuff(self, icons, unit, icon, index)
-	local name, _, _, _, dtype = UnitAura(unit, index, icon.filter)
+	local name, _, _, _, dtype, _, _, owner, _, _, spellid = UnitAura(unit, index, icon.filter)
 
 	if(icon.debuff) then
-		if(UnitIsFriend('player', unit) or debuffFilter[name] or playerUnits[icon.owner]) then
+		if(UnitIsFriend('player', unit) or debuffFilter[spellid] or playerUnits[owner]) then
 			local color = DebuffTypeColor[dtype] or DebuffTypeColor.none
 			icon:SetBackdropColor(color.r * 0.6, color.g * 0.6, color.b * 0.6)
 			icon.icon:SetDesaturated(false)
@@ -117,8 +117,9 @@ local function createAura(self, button, icons)
 	button.icon:SetDrawLayer('ARTWORK')
 end
 
-local function customFilter(icons, unit, icon, name, rank, texture, count, dtype, duration, expiration, caster)
-	if(buffFilter[name] and caster == 'player') then
+local function customFilter(icons, unit, icon, ...)
+	local _, _, _, _, _, _, _, owner, _, _, spellid = ...
+	if(buffFilter[spellid] and owner == 'player') then
 		return true
 	end
 end
