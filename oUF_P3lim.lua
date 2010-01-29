@@ -54,8 +54,10 @@ local debuffFilter = {
 }
 
 local function menu(self)
-	if(_G[string.gsub(self.unit, '(.)', string.upper, 1) .. 'FrameDropDown']) then
-		ToggleDropDownMenu(1, nil, _G[string.gsub(self.unit, '(.)', string.upper, 1) .. 'FrameDropDown'], 'cursor')
+	local dropdown = _G[string.gsub(self.unit, '^.', string.upper)..'FrameDropDown']
+
+	if(dropdown) then
+		ToggleDropDownMenu(1, nil, dropdown, 'cursor')
 	end
 end
 
