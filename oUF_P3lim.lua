@@ -148,7 +148,7 @@ local function style(self, unit)
 	self.Health.bg:SetAllPoints(self.Health)
 	self.Health.bg:SetTexture(0.3, 0.3, 0.3)
 
-	local health = self.Health:CreateFontString(nil, 'OVERLAY', 'pfontright')
+	local health = self.Health:CreateFontString(nil, 'OVERLAY', 'SempliceRight')
 	health:SetPoint('RIGHT', self.Health, -2, 0)
 	health.frequentUpdates = 0.25
 	self:Tag(health, '[phealth]')
@@ -216,11 +216,11 @@ local function style(self, unit)
 		self.Castbar.bg:SetAllPoints(self.Castbar)
 		self.Castbar.bg:SetTexture(0.3, 0.3, 0.3)
 
-		self.Castbar.Time = self.Castbar:CreateFontString(nil, 'OVERLAY', 'pfontright')
+		self.Castbar.Time = self.Castbar:CreateFontString(nil, 'OVERLAY', 'SempliceRight')
 		self.Castbar.Time:SetPoint('RIGHT', -2, 0)
 		self.Castbar.CustomTimeText = updateCastTime
 
-		self.Castbar.Text = self.Castbar:CreateFontString(nil, 'OVERLAY', 'pfontleft')
+		self.Castbar.Text = self.Castbar:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
 		self.Castbar.Text:SetPoint('LEFT', 2, 0)
 		self.Castbar.Text:SetPoint('RIGHT', self.Castbar.Time)
 
@@ -264,7 +264,7 @@ local function style(self, unit)
 			self.Experience.Rested:SetBackdrop(backdrop)
 			self.Experience.Rested:SetBackdropColor(0, 0, 0)
 
-			self.Experience.Text = self.Experience:CreateFontString(nil, 'OVERLAY', 'pfont')
+			self.Experience.Text = self.Experience:CreateFontString(nil, 'OVERLAY', 'Semplice')
 			self.Experience.Text:SetPoint('CENTER', self.Experience)
 
 			self.Experience.bg = self.Experience.Rested:CreateTexture(nil, 'BORDER')
@@ -272,12 +272,12 @@ local function style(self, unit)
 			self.Experience.bg:SetTexture(0.3, 0.3, 0.3)
 		end
 
-		local power = self.Health:CreateFontString(nil, 'OVERLAY', 'pfontleft')
+		local power = self.Health:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
 		power:SetPoint('LEFT', self.Health, 2, 0)
 		power.frequentUpdates = 0.1
 		self:Tag(power, '[ppower][( )druidpower]')
 	else
-		local info = self.Health:CreateFontString(nil, 'OVERLAY', 'pfontleft')
+		local info = self.Health:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
 		info:SetPoint('LEFT', self.Health, 2, 0)
 		info:SetPoint('RIGHT', health, 'LEFT')
 		self:Tag(info, '[pname]|cff0090ff[( )rare]|r')
@@ -346,16 +346,13 @@ local function style(self, unit)
 		self.Assistant:SetHeight(16)
 		self.Assistant:SetWidth(16)
 
-		local info = self.Health:CreateFontString(nil, 'OVERLAY', 'pfont')
+		local info = self.Health:CreateFontString(nil, 'OVERLAY', 'Semplice')
 		info:SetPoint('CENTER')
 		info.frequentUpdates = 0.25
 		self:Tag(info, '[pthreat]|cffff0000[( )pvptime]|r')
 
 		self.CustomAuraFilter = customFilter
 	end
-
-	self.DebuffHighlightBackdrop = true
-	self.DebuffHighlightFilter = true
 end
 
 oUF:RegisterStyle('P3lim', style)
