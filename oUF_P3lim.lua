@@ -67,13 +67,13 @@ local function updateCombo(self, event, unit)
 	end
 end
 
-local function updatePower(self, event, unit, bar, minVal, maxVal)
-	if(maxVal ~= 0) then
-		self.Health:SetHeight(20)
-		bar:Show()
+local function updatePower(element, unit, min, max)
+	if(max ~= 0) then
+		element:GetParent().Health:SetHeight(20)
+		element:Show()
 	else
-		self.Health:SetHeight(22)
-		bar:Hide()
+		element:GetParent().Health:SetHeight(22)
+		element:Hide()
 	end
 end
 
@@ -186,6 +186,7 @@ local function style(self, unit)
 		self.Power:SetPoint('BOTTOMLEFT')
 		self.Power:SetPoint('TOP', self.Health, 'BOTTOM', 0, -1)
 		self.Power:SetStatusBarTexture(minimalist)
+		self.Power.PostUpdate = unit == 'target' and updatePower
 		self.Power.frequentUpdates = true
 
 		self.Power.colorClass = true
@@ -335,8 +336,6 @@ local function style(self, unit)
 		self.CPoints:SetJustifyH('RIGHT')
 		self.CPoints.unit = PlayerFrame.unit
 		self:RegisterEvent('UNIT_COMBO_POINTS', updateCombo)
-
-		self.PostUpdatePower = updatePower
 	end
 
 	if(unit == 'player') then
