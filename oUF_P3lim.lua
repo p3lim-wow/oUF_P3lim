@@ -77,20 +77,19 @@ local function updatePower(element, unit, min, max)
 	end
 end
 
-local function updateCast(self, event, unit)
-	local castbar = self.Castbar
-	if(castbar.interrupt) then
-		castbar.Text:SetTextColor(1, 0, 0)
+local function updateCast(element)
+	if(element.interrupt) then
+		element.Text:SetTextColor(1, 0, 0)
 	else
-		castbar.Text:SetTextColor(1, 1, 1)
+		element.Text:SetTextColor(1, 1, 1)
 	end
 end
 
-local function updateCastTime(self, duration)
-	if(self.channeling) then
-		self.Time:SetFormattedText('%.1f ', duration)
-	elseif(self.casting) then
-		self.Time:SetFormattedText('%.1f ', self.max - duration)
+local function updateCastTime(element, duration)
+	if(element.channeling) then
+		element.Time:SetFormattedText('%.1f ', duration)
+	elseif(element.casting) then
+		element.Time:SetFormattedText('%.1f ', element.max - duration)
 	end
 end
 
@@ -210,6 +209,8 @@ local function style(self, unit)
 		self.Castbar:SetStatusBarColor(0.25, 0.25, 0.35)
 		self.Castbar:SetBackdrop(backdrop)
 		self.Castbar:SetBackdropColor(0, 0, 0)
+		self.Castbar.PostCastStart = unit == 'focus' or unit == 'target' and updateCast
+		self.Castbar.PostChannelStart = unit == 'focus' or unit == 'target' and updateCast
 
 		self.Castbar.bg = self.Castbar:CreateTexture(nil, 'BORDER')
 		self.Castbar.bg:SetAllPoints(self.Castbar)
@@ -234,14 +235,10 @@ local function style(self, unit)
 			self.Castbar.Icon:SetAllPoints(self.Castbar.Button)
 			self.Castbar.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 		else
-			self.PostCastStart = updateCast
-			self.PostChannelStart = updateCast
 			self.Castbar:SetPoint('BOTTOMLEFT', self, 'TOPLEFT', 0, 3)
 		end
 
 		if(unit == 'target') then
-			self.PostCastStart = updateCast
-			self.PostChannelStart = updateCast
 			self.Castbar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -60)
 			self.Castbar.Button:SetPoint('BOTTOMLEFT', self.Castbar, 'BOTTOMRIGHT', 4, 0)
 		elseif(unit ~= 'focus') then
