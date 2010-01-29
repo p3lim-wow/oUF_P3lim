@@ -151,7 +151,7 @@ local function style(self, unit)
 	local health = self.Health:CreateFontString(nil, 'OVERLAY', 'SempliceRight')
 	health:SetPoint('RIGHT', self.Health, -2, 0)
 	health.frequentUpdates = 0.25
-	self:Tag(health, '[phealth]')
+	self:Tag(health, '[p3limhealth]')
 
 	self.RaidIcon = self.Health:CreateTexture(nil, 'OVERLAY')
 	self.RaidIcon:SetPoint('TOP', self, 0, 8)
@@ -275,12 +275,12 @@ local function style(self, unit)
 		local power = self.Health:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
 		power:SetPoint('LEFT', self.Health, 2, 0)
 		power.frequentUpdates = 0.1
-		self:Tag(power, '[ppower][( )druidpower]')
+		self:Tag(power, '[p3limpower]')
 	else
 		local info = self.Health:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
 		info:SetPoint('LEFT', self.Health, 2, 0)
 		info:SetPoint('RIGHT', health, 'LEFT')
-		self:Tag(info, '[pname]|cff0090ff[( )rare]|r')
+		self:Tag(info, '[p3limname]|cff0090ff[( )rare]|r')
 	end
 
 	if(unit == 'pet') then
@@ -349,7 +349,7 @@ local function style(self, unit)
 		local info = self.Health:CreateFontString(nil, 'OVERLAY', 'Semplice')
 		info:SetPoint('CENTER')
 		info.frequentUpdates = 0.25
-		self:Tag(info, '[pthreat]|cffff0000[( )pvptime]|r')
+		self:Tag(info, '[p3limthreat]|cffff0000[( )p3limpvp]|r')
 
 		self.CustomAuraFilter = customFilter
 	end

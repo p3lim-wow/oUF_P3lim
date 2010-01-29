@@ -29,17 +29,17 @@ local function hex(r, g, b)
 	return ('|cff%02x%02x%02x'):format(r * 255, g * 255, b * 255)
 end
 
-oUF.Tags['[pvptime]'] = function(unit)
+oUF.Tags['[p3limpvp]'] = function(unit)
 	return UnitIsPVP(unit) and not IsPVPTimerRunning() and '+' or IsPVPTimerRunning() and ('%d:%02d'):format((GetPVPTimer() / 1000) / 60, (GetPVPTimer() / 1000) % 60)
 end
 
-oUF.TagEvents['[pthreat]'] = 'UNIT_THREAT_LIST_UPDATE'
-oUF.Tags['[pthreat]'] = function()
+oUF.TagEvents['[p3limthreat]'] = 'UNIT_THREAT_LIST_UPDATE'
+oUF.Tags['[p3limthreat]'] = function()
 	local _, _, perc = UnitDetailedThreatSituation('player', 'target')
 	return perc and perc > 0 and ('%s%d%%|r'):format(hex(GetThreatStatusColor(UnitThreatSituation('player', 'target'))), perc)
 end
 
-oUF.Tags['[phealth]'] = function(unit)
+oUF.Tags['[p3limhealth]'] = function(unit)
 	local min, max = UnitHealth(unit), UnitHealthMax(unit)
 	
 	local status = not UnitIsConnected(unit) and 'Offline' or UnitIsGhost(unit) and 'Ghost' or UnitIsDead(unit) and 'Dead'
@@ -49,23 +49,18 @@ oUF.Tags['[phealth]'] = function(unit)
 	return status and status or target and target or player and player or min ~= max and ('%s |cff0090ff/|r %s'):format(shortVal(min), shortVal(max)) or max
 end
 
-oUF.Tags['[ppower]'] = function(unit)
-	local _, str = UnitPowerType(unit)
-	return ('%s%d|r'):format(hex(colors.power[str] or {1, 1, 1}), oUF.Tags['[curpp]'](unit) or '')
+oUF.Tags['[p3limpower]'] = function(unit)
+	local num, str = UnitPowerType(unit)
+	local manamin, manamax = UnitPower(unit, 0), UnitPowerMax(unit, 0)
+	return ('%s%d|r%s'):format(hex(colors.power[str] or {1, 1, 1}), oUF.Tags['[curpp]'](unit) or '', unit == 'player' and num ~= 0 and manamin ~= manamax and (' |cff0090ff%d%%|r'):format(manamin / manamax * 100) or '')
 end
 
-oUF.TagEvents['[pname]'] = 'UNIT_NAME_UPDATE UNIT_REACTION UNIT_FACTION'
-oUF.Tags['[pname]'] = function(unit)
+oUF.TagEvents['[p3limname]'] = 'UNIT_NAME_UPDATE UNIT_REACTION UNIT_FACTION'
+oUF.Tags['[p3limname]'] = function(unit)
 	local colorString = hex((UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) and colors.tapped or
 		(not UnitIsConnected(unit)) and colors.disconnected or
 		(not UnitIsPlayer(unit)) and colors.reaction[UnitReaction(unit, 'player')] or
 		(UnitFactionGroup(unit) and UnitIsEnemy(unit, 'player') and UnitIsPVP(unit)) and {1, 0, 0} or {1, 1, 1})
 
 	return ('%s%s|r'):format(colorString, UnitName(unit))
-end
-
-oUF.TagEvents['[druidpower]'] = 'UNIT_MANA UPDATE_SHAPESHIFT_FORM'
-oUF.Tags['[druidpower]'] = function(unit)
-	local min, max = UnitPower(unit, 0), UnitPowerMax(unit, 0)
-	return unit == 'player' and UnitPowerType(unit) ~= 0 and min ~= max and ('|cff0090ff%d%%|r'):format(min / max * 100)
 end
