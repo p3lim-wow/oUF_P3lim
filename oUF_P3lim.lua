@@ -124,12 +124,9 @@ local function customFilter(icons, unit, icon, ...)
 end
 
 local function style(self, unit)
+	SecureUnitButton_OnLoad(self, unit, menu)
+
 	self.colors = colors
-	self.menu = menu
-
-	self:RegisterForClicks('AnyUp')
-	self:SetAttribute('type2', 'menu')
-
 	self:SetScript('OnEnter', UnitFrame_OnEnter)
 	self:SetScript('OnLeave', UnitFrame_OnLeave)
 
@@ -331,6 +328,8 @@ local function style(self, unit)
 		self.CPoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
 		self.CPoints:SetTextColor(1, 1, 1)
 		self.CPoints:SetJustifyH('RIGHT')
+		self.CPoints.unit = PlayerFrame.unit
+		self:RegisterEvent('UNIT_COMBO_POINTS', updateCombo)
 	end
 
 	if(unit == 'player') then
