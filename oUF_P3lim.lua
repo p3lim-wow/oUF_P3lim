@@ -54,9 +54,7 @@ local debuffFilter = {
 }
 
 local function menu(self)
-	if(self.unit == 'player') then
-		ToggleDropDownMenu(1, nil, oUF_P3lim_DropDown, 'cursor')
-	elseif(_G[string.gsub(self.unit, '(.)', string.upper, 1) .. 'FrameDropDown']) then
+	if(_G[string.gsub(self.unit, '(.)', string.upper, 1) .. 'FrameDropDown']) then
 		ToggleDropDownMenu(1, nil, _G[string.gsub(self.unit, '(.)', string.upper, 1) .. 'FrameDropDown'], 'cursor')
 	end
 end
