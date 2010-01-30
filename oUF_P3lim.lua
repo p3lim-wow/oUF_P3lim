@@ -61,12 +61,6 @@ local function menu(self)
 	end
 end
 
-local function updateCombo(self, event, unit)
-	if(unit == PlayerFrame.unit and unit ~= self.CPoints.unit) then
-		self.CPoints.unit = unit
-	end
-end
-
 local function updatePower(element, unit, min, max)
 	if(max ~= 0) then
 		element:GetParent().Health:SetHeight(20)
@@ -331,8 +325,6 @@ local function style(self, unit)
 		self.CPoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
 		self.CPoints:SetTextColor(1, 1, 1)
 		self.CPoints:SetJustifyH('RIGHT')
-		self.CPoints.unit = PlayerFrame.unit
-		self:RegisterEvent('UNIT_COMBO_POINTS', updateCombo)
 	end
 
 	if(unit == 'player') then
