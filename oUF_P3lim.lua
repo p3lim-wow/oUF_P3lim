@@ -5,9 +5,6 @@
 
 --]]
 
-local max = math.max
-local floor = math.floor
-
 local minimalist = [=[Interface\AddOns\oUF_P3lim\media\minimalist]=]
 local backdrop = {
 	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
@@ -33,16 +30,12 @@ local colors = setmetatable({
 
 local buffFilter = {
 	[52610] = true, -- Druid: Savage Roar
-	[22812] = true, -- Druid: Barkskin
 	[16870] = true, -- Druid: Clearcast
 	[50213] = true, -- Druid: Tiger's Fury
-	[48517] = true, -- Druid: Eclipse (Solar)
-	[48518] = true, -- Druid: Eclipse (Lunar)
+	[50334] = true, -- Druid: Berserk
 	[57960] = true, -- Shaman: Water Shield
-	[53390] = true, -- Shaman: Tidal Waves (Talent)
-	[32182] = true, -- Shaman: Heroism
-	[49016] = true, -- Death Knight: Hysteria
-	[50334] = true, -- Enchant: Berserk
+	[32182] = true, -- Buff: Heroism
+	[49016] = true, -- Buff: Hysteria
 }
 
 local debuffFilter = {
@@ -62,11 +55,12 @@ local function menu(self)
 end
 
 local function updatePower(element, unit, min, max)
+	local health = element:GetParent().Health
 	if(max ~= 0) then
-		element:GetParent().Health:SetHeight(20)
+		health:SetHeight(20)
 		element:Show()
 	else
-		element:GetParent().Health:SetHeight(22)
+		health:SetHeight(22)
 		element:Hide()
 	end
 end
@@ -88,17 +82,16 @@ local function updateCastTime(element, duration)
 end
 
 local function updateDebuff(self, icons, unit, icon, index)
-	local name, _, _, _, dtype, _, _, owner, _, _, spellid = UnitAura(unit, index, icon.filter)
+	if(not icon.debuff) then return end
 
-	if(icon.debuff) then
-		if(UnitIsFriend('player', unit) or debuffFilter[spellid] or playerUnits[owner]) then
-			local color = DebuffTypeColor[dtype] or DebuffTypeColor.none
-			icon:SetBackdropColor(color.r * 0.6, color.g * 0.6, color.b * 0.6)
-			icon.icon:SetDesaturated(false)
-		else
-			icon:SetBackdropColor(0, 0, 0)
-			icon.icon:SetDesaturated(true)
-		end
+	local _, _, _, _, dtype, _, _, owner, _, _, spellid = UnitAura(unit, index, icon.filter)
+	if(UnitIsFriend('player', unit) or debuffFilter[spellid] or playerUnits[owner]) then
+		local color = DebuffTypeColor[dtype] or DebuffTypeColor.none
+		icon:SetBackdropColor(color.r * 0.6, color.g * 0.6, color.b * 0.6)
+		icon.icon:SetDesaturated(false)
+	else
+		icon:SetBackdropColor(0, 0, 0)
+		icon.icon:SetDesaturated(true)
 	end
 end
 
