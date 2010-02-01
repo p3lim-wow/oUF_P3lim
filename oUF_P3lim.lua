@@ -81,21 +81,20 @@ local function updateCastTime(element, duration)
 	end
 end
 
-local function updateDebuff(self, icons, unit, icon, index)
-	if(not icon.debuff) then return end
+local function updateDebuff(element, unit, button, index)
+	local _, _, _, _, type, _, _, owner, _, _, spell = UnitAura(unit, index, button.filter)
 
-	local _, _, _, _, dtype, _, _, owner, _, _, spellid = UnitAura(unit, index, icon.filter)
 	if(UnitIsFriend('player', unit) or debuffFilter[spellid] or playerUnits[owner]) then
-		local color = DebuffTypeColor[dtype] or DebuffTypeColor.none
-		icon:SetBackdropColor(color.r * 0.6, color.g * 0.6, color.b * 0.6)
-		icon.icon:SetDesaturated(false)
+		local color = DebuffTypeColor[type] or DebuffTypeColor.none
+		button:SetBackdropColor(color.r * 0.6, color.g * 0.6, color.b * 0.6)
+		button.icon:SetDesaturated(false)
 	else
-		icon:SetBackdropColor(0, 0, 0)
-		icon.icon:SetDesaturated(true)
+		button:SetBackdropColor(0, 0, 0)
+		button.icon:SetDesaturated(true)
 	end
 end
 
-local function createAura(self, button, icons)
+local function createAura(element, button)
 	button.cd:SetReverse()
 	button:SetBackdrop(backdrop)
 	button:SetBackdropColor(0, 0, 0)
@@ -103,9 +102,9 @@ local function createAura(self, button, icons)
 	button.icon:SetDrawLayer('ARTWORK')
 end
 
-local function customFilter(icons, unit, icon, ...)
-	local _, _, _, _, _, _, _, owner, _, _, spellid = ...
-	if(buffFilter[spellid] and owner == 'player') then
+local function customFilter(element, ...)
+	local _, _, _, _, _, _, _, _, _, owner, _, _, spell = ...
+	if(buffFilter[spell] and owner == 'player') then
 		return true
 	end
 end
@@ -155,7 +154,7 @@ local function style(self, unit)
 		self.Debuffs.num = 2
 		self.Debuffs.size = 20
 		self.Debuffs.spacing = 4
-		self.PostCreateAuraIcon = createAura
+		self.Debuffs.PostCreateIcon = createAura
 
 		if(unit == 'focus') then
 			self.Debuffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
@@ -196,8 +195,8 @@ local function style(self, unit)
 		self.Castbar:SetStatusBarColor(0.25, 0.25, 0.35)
 		self.Castbar:SetBackdrop(backdrop)
 		self.Castbar:SetBackdropColor(0, 0, 0)
-		self.Castbar.PostCastStart = unit == 'focus' or unit == 'target' and updateCast
-		self.Castbar.PostChannelStart = unit == 'focus' or unit == 'target' and updateCast
+		self.Castbar.PostCastStart = (unit == 'focus' or unit == 'target') and updateCast
+		self.Castbar.PostChannelStart = (unit == 'focus' or unit == 'target') and updateCast
 
 		self.Castbar.bg = self.Castbar:CreateTexture(nil, 'BORDER')
 		self.Castbar.bg:SetAllPoints(self.Castbar)
@@ -282,7 +281,7 @@ local function style(self, unit)
 		self.Auras.spacing = 4
 		self.Auras.initialAnchor = 'TOPRIGHT'
 		self.Auras['growth-x'] = 'LEFT'
-		self.PostCreateAuraIcon = createAura
+		self.Auras.PostCreateIcon = createAura
 	end
 
 	if(unit == 'player' or unit == 'target') then
@@ -298,7 +297,8 @@ local function style(self, unit)
 		self.Buffs.spacing = 4
 		self.Buffs.initialAnchor = 'TOPLEFT'
 		self.Buffs['growth-y'] = 'DOWN'
-		self.PostCreateAuraIcon = createAura
+		self.Buffs.CustomFilter = unit == 'player' and customFilter
+		self.Buffs.PostCreateIcon = createAura
 	end
 
 	if(unit == 'target') then
@@ -311,8 +311,8 @@ local function style(self, unit)
 		self.Debuffs.spacing = 4
 		self.Debuffs.initialAnchor = 'TOPLEFT'
 		self.Debuffs['growth-y'] = 'DOWN'
-		self.PostCreateAuraIcon = createAura
-		self.PostUpdateAuraIcon = updateDebuff
+		self.Debuffs.PostCreateIcon = createAura
+		self.Debuffs.PostUpdateIcon = updateDebuff
 
 		self.CPoints = self:CreateFontString(nil, 'OVERLAY', 'SubZoneTextFont')
 		self.CPoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
@@ -335,8 +335,6 @@ local function style(self, unit)
 		info:SetPoint('CENTER')
 		info.frequentUpdates = 0.25
 		self:Tag(info, '[p3limthreat]|cffff0000[( )p3limpvp]|r')
-
-		self.CustomAuraFilter = customFilter
 	end
 end
 
