@@ -5,19 +5,8 @@
 
 --]]
 
-local minimalist = [=[Interface\AddOns\oUF_P3lim\media\minimalist]=]
-local backdrop = {
-	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
-	insets = {top = -1, bottom = -1, left = -1, right = -1}
-}
-
-local playerUnits = {
-	player = true,
-	pet = true,
-	vehicle = true,
-}
-
-local colors = setmetatable({
+local _, ns = ...
+ns.colors = setmetatable({
 	power = setmetatable({
 		MANA = {0, 144/255, 1}
 	}, {__index = oUF.colors.power}),
@@ -28,321 +17,329 @@ local colors = setmetatable({
 	}, {__index = oUF.colors.reaction}),
 }, {__index = oUF.colors})
 
-local buffFilter = {
-	[52610] = true, -- Druid: Savage Roar
-	[16870] = true, -- Druid: Clearcast
-	[50213] = true, -- Druid: Tiger's Fury
-	[50334] = true, -- Druid: Berserk
-	[57960] = true, -- Shaman: Water Shield
-	[32182] = true, -- Buff: Heroism
-	[49016] = true, -- Buff: Hysteria
+
+local FONT = [=[Interface\AddOns\oUF_P3lim\media\semplice.ttf]=]
+local TEXTURE = [=[Interface\AddOns\oUF_P3lim\media\minimalist]=]
+local BACKDROP = {
+	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
+	insets = {top = -1, bottom = -1, left = -1, right = -1}
 }
 
-local debuffFilter = {
-	[770] = true, -- Faerie Fire
-	[16857] = true, -- Faerie Fire (Feral)
-	[48564] = true, -- Mangle (Bear)
-	[48566] = true, -- Mangle (Cat)
-	[46857] = true, -- Trauma
-}
-
-local function menu(self)
-	local dropdown = _G[string.gsub(self.unit, '^.', string.upper)..'FrameDropDown']
-
-	if(dropdown) then
-		ToggleDropDownMenu(1, nil, dropdown, 'cursor')
-	end
+local function SpawnMenu(self)
+	ToggleDropDownMenu(1, nil, _G[string.gsub(self.unit, '^.', string.upper)..'FrameDropDown'], 'cursor')
 end
 
-local function updatePower(element, unit, min, max)
-	local health = element:GetParent().Health
-	if(max ~= 0) then
-		health:SetHeight(20)
-		element:Show()
-	else
-		health:SetHeight(22)
-		element:Hide()
-	end
+local function CustomCastText(element, duration)
+	element.Time:SetFormattedText('%.1f', element.channeling and duration or (element.max - duration))
 end
 
-local function updateCast(element)
+local function PostCastStart(element)
+	local text = element.Text
 	if(element.interrupt) then
-		element.Text:SetTextColor(1, 0, 0)
+		text:SetTextColor(1, 0, 0)
 	else
-		element.Text:SetTextColor(1, 1, 1)
+		text:SetTextColor(1, 1, 1)
 	end
 end
 
-local function updateCastTime(element, duration)
-	if(element.channeling) then
-		element.Time:SetFormattedText('%.1f ', duration)
-	elseif(element.casting) then
-		element.Time:SetFormattedText('%.1f ', element.max - duration)
-	end
+local function PostUpdatePower(element, unit, min, max)
+	element:GetParent().Health:SetHeight(max ~= 0 and 20 or 22)
 end
 
-local function updateDebuff(element, unit, button, index)
-	local _, _, _, _, type, _, _, owner, _, _, spell = UnitAura(unit, index, button.filter)
-
-	if(UnitIsFriend('player', unit) or debuffFilter[spellid] or playerUnits[owner]) then
-		local color = DebuffTypeColor[type] or DebuffTypeColor.none
-		button:SetBackdropColor(color.r * 0.6, color.g * 0.6, color.b * 0.6)
-		button.icon:SetDesaturated(false)
-	else
-		button:SetBackdropColor(0, 0, 0)
-		button.icon:SetDesaturated(true)
-	end
-end
-
-local function createAura(element, button)
-	button.cd:SetReverse()
-	button:SetBackdrop(backdrop)
+local function PostCreateAura(element, button)
+	button:SetBackdrop(BACKDROP)
 	button:SetBackdropColor(0, 0, 0)
-	button.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+	button.cd:SetReverse()
+	button.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 	button.icon:SetDrawLayer('ARTWORK')
 end
 
-local function customFilter(element, ...)
-	local _, _, _, _, _, _, _, _, _, owner, _, _, spell = ...
-	if(buffFilter[spell] and owner == 'player') then
-		return true
+local PostUpdateDebuff
+do
+	local units = {
+		vehicle = true,
+		player = true,
+	}
+
+	local spells = {
+		[770] = true, -- Faerie Fire
+		[16857] = true, -- Faerie Fire (Feral)
+		[48564] = true, -- Mangle (Bear)
+		[48566] = true, -- Mangle (Cat)
+		[46857] = true, -- Trauma
+	}
+
+	function PostUpdateDebuff(element, unit, button, index)
+		local _, _, _, _, type, _, _, owner, _, _, spell = UnitAura(unit, index, button.filter)
+
+		if(UnitIsFriend('player', unit) or spells[spell] or units[owner]) then
+			local color = DebuffTypeColor[type] or DebuffTypeColor.none
+			button:SetBackdropColor(color.r * 3/5, color.g * 3/5, color.b * 3/5)
+			button.icon:SetDesaturated(false)
+		else
+			button:SetBackdropColor(0, 0, 0)
+			button.icon:SetDesaturated(true)
+		end
 	end
 end
 
-local function style(self, unit)
-	self.colors = colors
-	self.menu = menu
+local CustomBuffFilter
+do
+	local spells = {
+		[52610] = true, -- Druid: Savage Roar
+		[16870] = true, -- Druid: Clearcast
+		[50213] = true, -- Druid: Tiger's Fury
+		[50334] = true, -- Druid: Berserk
+		[57960] = true, -- Shaman: Water Shield
+		[32182] = true, -- Buff: Heroism
+		[49016] = true, -- Buff: Hysteria
+	}
+
+	function CustomBuffFilter(element, ...)
+		local _, _, _, _, _, _, _, _, _, owner, _, _, spell = ...
+		return spells[spell] and owner == 'player'
+	end
+end
+
+local function Style(self, unit)
+	self.colors = ns.colors
 
 	self:RegisterForClicks('AnyUp')
-	self:SetAttribute('type2', 'menu')
-
 	self:SetScript('OnEnter', UnitFrame_OnEnter)
 	self:SetScript('OnLeave', UnitFrame_OnLeave)
 
-	self:SetBackdrop(backdrop)
+	self:SetBackdrop(BACKDROP)
 	self:SetBackdropColor(0, 0, 0)
 
-	self.Health = CreateFrame('StatusBar', nil, self)
-	self.Health:SetPoint('TOPRIGHT')
-	self.Health:SetPoint('TOPLEFT')
-	self.Health:SetStatusBarTexture(minimalist)
-	self.Health:SetStatusBarColor(0.25, 0.25, 0.35)
-	self.Health:SetHeight((unit == 'focus' or unit == 'targettarget') and 19 or 20)
-	self.Health.frequentUpdates = true
+	local petUnit = unit == 'pet'
+	local slimUnit = (unit == 'focus' or unit == 'targettarget')
 
-	self.Health.bg = self.Health:CreateTexture(nil, 'BORDER')
-	self.Health.bg:SetAllPoints(self.Health)
-	self.Health.bg:SetTexture(0.3, 0.3, 0.3)
+	local health = CreateFrame('StatusBar', nil, self)
+	health:SetStatusBarTexture(TEXTURE)
+	health:SetStatusBarColor(1/4, 1/4, 2/5)
+	health:SetHeight(slimUnit and 19 or 20)
+	health.frequentUpdates = true
 
-	local health = self.Health:CreateFontString(nil, 'OVERLAY', 'SempliceRight')
-	health:SetPoint('RIGHT', self.Health, -2, 0)
-	health.frequentUpdates = 0.25
-	self:Tag(health, '[p3limhealth]')
+	local healthBG = health:CreateTexture(nil, 'BORDER')
+	healthBG:SetAllPoints(health)
+	healthBG:SetTexture(1/3, 1/3, 1/3)
 
-	self.RaidIcon = self.Health:CreateTexture(nil, 'OVERLAY')
-	self.RaidIcon:SetPoint('TOP', self, 0, 8)
-	self.RaidIcon:SetHeight(16)
-	self.RaidIcon:SetWidth(16)
+	local healthValue = health:CreateFontString(nil, 'OVERLAY')
+	healthValue:SetPoint('RIGHT', health, -2, 0)
+	healthValue:SetFont(FONT, 8, 'OUTLINE')
+	healthValue:SetJustifyH('RIGHT')
+	healthValue.frequentUpdates = 1/4
 
-	if(unit == 'focus' or unit == 'targettarget') then
-		self:SetAttribute('initial-height', 19)
-		self:SetAttribute('initial-width', 182)
+	self.Health = health
+	self:Tag(healthValue, '[p3limhealth]')
 
-		self.Debuffs = CreateFrame('Frame', nil, self)
-		self.Debuffs:SetHeight(20)
-		self.Debuffs:SetWidth(44)
-		self.Debuffs.num = 2
-		self.Debuffs.size = 20
-		self.Debuffs.spacing = 4
-		self.Debuffs.PostCreateIcon = createAura
+	if(slimUnit) then
+		local debuffs = CreateFrame('Frame', nil, self)
+		debuffs:SetHeight(20)
+		debuffs:SetWidth(44)
+		debuffs.num = 2
+		debuffs.size = 20
+		debuffs.spacing = 4
+		debuffs.PostCreateIcon = PostCreateAura
 
 		if(unit == 'focus') then
-			self.Debuffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
-			self.Debuffs.onlyShowPlayer = true
-			self.Debuffs.initialAnchor = 'TOPLEFT'
+			debuffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
+			debuffs.initialAnchor = 'TOPLEFT'
+			debuffs.onlyShowPlayer = true
 		else
-			self.Debuffs:SetPoint('TOPRIGHT', self, 'TOPLEFT', -4, 0)
-			self.Debuffs.initialAnchor = 'TOPRIGHT'
-			self.Debuffs['growth-x'] = 'LEFT'
+			debuffs:SetPoint('TOPRIGHT', self, 'TOPLEFT', -4, 0)
+			debuffs.initialAnchor = 'TOPRIGHT'
+			debuffs['growth-x'] = 'LEFT'
 		end
+
+		health:SetAllPoints(self)
+
+		self.Debuffs = debuffs
+		self:SetAttribute('initial-height', 19)
+		self:SetAttribute('initial-width', 182)
 	else
-		self.Power = CreateFrame('StatusBar', nil, self)
-		self.Power:SetPoint('BOTTOMRIGHT')
-		self.Power:SetPoint('BOTTOMLEFT')
-		self.Power:SetPoint('TOP', self.Health, 'BOTTOM', 0, -1)
-		self.Power:SetStatusBarTexture(minimalist)
-		self.Power.PostUpdate = unit == 'target' and updatePower
-		self.Power.frequentUpdates = true
+		local power = CreateFrame('StatusBar', nil, self)
+		power:SetPoint('BOTTOMRIGHT')
+		power:SetPoint('BOTTOMLEFT')
+		power:SetPoint('TOP', health, 'BOTTOM', 0, -1)
+		power:SetStatusBarTexture(TEXTURE)
+		power.frequentUpdates = true
 
-		self.Power.colorClass = true
-		self.Power.colorTapping = true
-		self.Power.colorDisconnected = true
-		self.Power.colorReaction = unit ~= 'pet'
-		self.Power.colorHappiness = unit == 'pet'
-		self.Power.colorPower = unit == 'pet'
+		power.colorClass = true
+		power.colorTapping = true
+		power.colorDisconnected = true
+		power.colorReaction = not petUnit
+		power.colorHappiness = petUnit
+		power.colorPower = petUnit
 
-		self.Power.bg = self.Power:CreateTexture(nil, 'BORDER')
-		self.Power.bg:SetAllPoints(self.Power)
-		self.Power.bg:SetTexture([=[Interface\ChatFrame\ChatFrameBackground]=])
-		self.Power.bg.multiplier = 0.3
-	end
+		local powerBG = power:CreateTexture(nil, 'BORDER')
+		powerBG:SetAllPoints(power)
+		powerBG:SetTexture([=[Interface\ChatFrame\ChatFrameBackground]=])
+		powerBG.multiplier = 1/3
+		power.bg = powerBG
 
-	if(unit ~= 'targettarget') then
-		self.Castbar = CreateFrame('StatusBar', nil, self)
-		self.Castbar:SetWidth(unit == 'pet' and 105 or unit == 'focus' and 182 or 205)
-		self.Castbar:SetHeight(unit == 'focus' and 12 or 16)
-		self.Castbar:SetStatusBarTexture(minimalist)
-		self.Castbar:SetStatusBarColor(0.25, 0.25, 0.35)
-		self.Castbar:SetBackdrop(backdrop)
-		self.Castbar:SetBackdropColor(0, 0, 0)
-		self.Castbar.PostCastStart = (unit == 'focus' or unit == 'target') and updateCast
-		self.Castbar.PostChannelStart = (unit == 'focus' or unit == 'target') and updateCast
+		local castbar = CreateFrame('StatusBar', nil, self)
+		castbar:SetWidth(petUnit and 105 or 205)
+		castbar:SetHeight(16)
+		castbar:SetStatusBarTexture(TEXTURE)
+		castbar:SetStatusBarColor(1/4, 1/4, 2/5)
+		castbar:SetBackdrop(BACKDROP)
+		castbar:SetBackdropColor(0, 0, 0)
+		castbar.CustomTimeText = CustomCastTime
 
-		self.Castbar.bg = self.Castbar:CreateTexture(nil, 'BORDER')
-		self.Castbar.bg:SetAllPoints(self.Castbar)
-		self.Castbar.bg:SetTexture(0.3, 0.3, 0.3)
+		local castbarBG = castbar:CreateTexture(nil, 'BORDER')
+		castbarBG:SetAllPoints(castbar)
+		castbarBG:SetTexture(1/3, 1/3, 1/3)
 
-		self.Castbar.Time = self.Castbar:CreateFontString(nil, 'OVERLAY', 'SempliceRight')
-		self.Castbar.Time:SetPoint('RIGHT', -2, 0)
-		self.Castbar.CustomTimeText = updateCastTime
+		local castbarTime = castbar:CreateFontString(nil, 'OVERLAY')
+		castbarTime:SetPoint('RIGHT', -2, 0)
+		castbarTime:SetFont(FONT, 8, 'OUTLINE')
+		castbarTime:SetJustifyH('RIGHT')
+		castbar.Time = castbarTime
 
-		self.Castbar.Text = self.Castbar:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
-		self.Castbar.Text:SetPoint('LEFT', 2, 0)
-		self.Castbar.Text:SetPoint('RIGHT', self.Castbar.Time)
+		local castbarText = castbar:CreateFontString(nil, 'OVERLAY')
+		castbarText:SetPoint('LEFT', 2, 0)
+		castbarText:SetPoint('RIGHT', castbarTime)
+		castbarText:SetFont(FONT, 8, 'OUTLINE')
+		castbarText:SetJustifyH('LEFT')
+		castbar.Text = castbarText
 
-		if(unit ~= 'focus') then
-			self.Castbar.Button = CreateFrame('Frame', nil, self.Castbar)
-			self.Castbar.Button:SetHeight(21)
-			self.Castbar.Button:SetWidth(21)
-			self.Castbar.Button:SetBackdrop(backdrop)
-			self.Castbar.Button:SetBackdropColor(0, 0, 0)
+		local castbarDummy = CreateFrame('Frame', nil, castbar)
+		castbarDummy:SetHeight(21)
+		castbarDummy:SetWidth(21)
+		castbarDummy:SetBackdrop(BACKDROP)
+		castbarDummy:SetBackdropColor(0, 0, 0)
 
-			self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, 'ARTWORK')
-			self.Castbar.Icon:SetAllPoints(self.Castbar.Button)
-			self.Castbar.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-		else
-			self.Castbar:SetPoint('BOTTOMLEFT', self, 'TOPLEFT', 0, 3)
-		end
+		local castbarIcon = castbarDummy:CreateTexture(nil, 'ARTWORK')
+		castbarIcon:SetAllPoints(castbarDummy)
+		castbarIcon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+		castbar.Icon = castbarIcon
 
 		if(unit == 'target') then
-			self.Castbar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -60)
-			self.Castbar.Button:SetPoint('BOTTOMLEFT', self.Castbar, 'BOTTOMRIGHT', 4, 0)
-		elseif(unit ~= 'focus') then
-			self.Castbar:SetPoint('TOPRIGHT', self, 'BOTTOMRIGHT', 0, -60)
-			self.Castbar.Button:SetPoint('BOTTOMRIGHT', self.Castbar, 'BOTTOMLEFT', -4, 0)
-		end
-	end
-
-	if(unit == 'player' or unit == 'pet') then
-		if(IsAddOnLoaded('oUF_Experience')) then
-			self.Experience = CreateFrame('StatusBar', nil, self)
-			self.Experience:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -10)
-			self.Experience:SetPoint('TOPRIGHT', self, 'BOTTOMRIGHT', 0, -10)
-			self.Experience:SetHeight(11)
-			self.Experience:SetStatusBarTexture(minimalist)
-			self.Experience:SetStatusBarColor(0.15, 0.7, 0.1)
-			self.Experience.Tooltip = true
-
-			self.Experience.Rested = CreateFrame('StatusBar', nil, self)
-			self.Experience.Rested:SetAllPoints(self.Experience)
-			self.Experience.Rested:SetStatusBarTexture(minimalist)
-			self.Experience.Rested:SetStatusBarColor(0, 0.4, 1, 0.6)
-			self.Experience.Rested:SetBackdrop(backdrop)
-			self.Experience.Rested:SetBackdropColor(0, 0, 0)
-
-			self.Experience.Text = self.Experience:CreateFontString(nil, 'OVERLAY', 'Semplice')
-			self.Experience.Text:SetPoint('CENTER', self.Experience)
-
-			self.Experience.bg = self.Experience.Rested:CreateTexture(nil, 'BORDER')
-			self.Experience.bg:SetAllPoints(self.Experience)
-			self.Experience.bg:SetTexture(0.3, 0.3, 0.3)
+			castbar.PostCastStart = PostCastStart
+			castbar.PostChannelStart = PostCastStart
+			castbar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -60)
+			castbarDummy:SetPoint('BOTTOMLEFT', castbar, 'BOTTOMRIGHT', 4, 0)
+		else
+			castbar:SetPoint('TOPRIGHT', self, 'BOTTOMRIGHT', 0, -60)
+			castbarDummy:SetPoint('BOTTOMRIGHT', castbar, 'BOTTOMLEFT', -4, 0)
 		end
 
-		local power = self.Health:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
-		power:SetPoint('LEFT', self.Health, 2, 0)
-		power.frequentUpdates = 0.1
-		self:Tag(power, '[p3limpower]')
-	else
-		local info = self.Health:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
-		info:SetPoint('LEFT', self.Health, 2, 0)
-		info:SetPoint('RIGHT', health, 'LEFT')
-		self:Tag(info, '[p3limname]|cff0090ff[( )rare]|r')
-	end
+		local raidicon = health:CreateTexture(nil, 'OVERLAY')
+		raidicon:SetPoint('TOP', self, 0, 8)
+		raidicon:SetHeight(16)
+		raidicon:SetWidth(16)
 
-	if(unit == 'pet') then
+		health:SetPoint('TOPRIGHT')
+		health:SetPoint('TOPLEFT')
+		health:SetHeight(20)
+
+		self.Power = power
+		self.Castbar = castbar
+		self.RaidIcon = raidicon
+
+		self.menu = SpawnMenu
+		self:SetAttribute('type2', 'menu')
 		self:SetAttribute('initial-height', 22)
-		self:SetAttribute('initial-width', 130)
+	end
 
-		self.Auras = CreateFrame('Frame', nil, self)
-		self.Auras:SetPoint('TOPRIGHT', self, 'TOPLEFT', -4, 0)
-		self.Auras:SetHeight(4)
-		self.Auras:SetWidth(256)
-		self.Auras.size = 22
-		self.Auras.spacing = 4
-		self.Auras.initialAnchor = 'TOPRIGHT'
-		self.Auras['growth-x'] = 'LEFT'
-		self.Auras.PostCreateIcon = createAura
+	if(petUnit or unit == 'player') then
+		local powerValue = health:CreateFontString(nil, 'OVERLAY')
+		powerValue:SetPoint('LEFT', health, 2, 0)
+		powerValue:SetFont(FONT, 8, 'OUTLINE')
+		powerValue:SetJustifyH('LEFT')
+		powerValue.frequentUpdates = 0.1
+		self:Tag(powerValue, '[p3limpower][( )p3limdruid]')
+	else
+		local name = health:CreateFontString(nil, 'OVERLAY')
+		name:SetPoint('LEFT', health, 2, 0)
+		name:SetPoint('RIGHT', healthValue, 'LEFT')
+		name:SetFont(FONT, 8, 'OUTLINE')
+		name:SetJustifyH('LEFT')
+		self:Tag(name, '[p3limname]|cff0090ff[( )rare]|r')
 	end
 
 	if(unit == 'player' or unit == 'target') then
-		self:SetAttribute('initial-height', 22)
+		local buffs = CreateFrame('Frame', nil, self)
+		buffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
+		buffs:SetHeight(44)
+		buffs:SetWidth(236)
+		buffs.num = 20
+		buffs.size = 20
+		buffs.spacing = 4
+		buffs.initialAnchor = 'TOPLEFT'
+		buffs['growth-y'] = 'DOWN'
+		buffs.PostCreateIcon = PostCreateAura
+
+		if(unit == 'target') then
+			local debuffs = CreateFrame('Frame', nil, self)
+			debuffs:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -4)
+			debuffs:SetHeight(20 * 0.97)
+			debuffs:SetWidth(230)
+			debuffs.num = 20
+			debuffs.size = 20 * 0.97
+			debuffs.spacing = 4
+			debuffs.initialAnchor = 'TOPLEFT'
+			debuffs['growth-y'] = 'DOWN'
+			debuffs.PostCreateIcon = PostCreateAura
+			debuffs.PostUpdateIcon = PostUpdateDebuff
+
+			local cpoints = self:CreateFontString(nil, 'OVERLAY', 'SubZoneTextFont')
+			cpoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
+			cpoints:SetTextColor(1, 1, 1)
+			cpoints:SetJustifyH('RIGHT')
+
+			self.Debuffs = debuffs
+			self.CPoints = cpoints
+			self.Power.PostUpdate = PostUpdatePower
+		else
+			local leader = health:CreateTexture(nil, 'OVERLAY')
+			leader:SetPoint('TOPLEFT', self, 0, 8)
+			leader:SetHeight(16)
+			leader:SetWidth(16)
+
+			local assistant = health:CreateTexture(nil, 'OVERLAY')
+			assistant:SetPoint('TOPLEFT', self, 0, 8)
+			assistant:SetHeight(16)
+			assistant:SetWidth(16)
+
+			local info = health:CreateFontString(nil, 'OVERLAY')
+			info:SetPoint('CENTER')
+			info:SetFont(FONT, 8, 'OUTLINE')
+			info.frequentUpdates = 1/4
+			self:Tag(info, '[p3limthreat][( )p3limpvp]')
+
+			buffs.CustomFilter = CustomBuffFilter
+
+			self.Leader = leader
+			self.Assistant = assistant
+		end
+
+		self.Buffs = buffs
 		self:SetAttribute('initial-width', 230)
-
-		self.Buffs = CreateFrame('Frame', nil, self)
-		self.Buffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
-		self.Buffs:SetHeight(44)
-		self.Buffs:SetWidth(236)
-		self.Buffs.num = 20
-		self.Buffs.size = 20
-		self.Buffs.spacing = 4
-		self.Buffs.initialAnchor = 'TOPLEFT'
-		self.Buffs['growth-y'] = 'DOWN'
-		self.Buffs.CustomFilter = unit == 'player' and customFilter
-		self.Buffs.PostCreateIcon = createAura
 	end
 
-	if(unit == 'target') then
-		self.Debuffs = CreateFrame('Frame', nil, self)
-		self.Debuffs:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -4)
-		self.Debuffs:SetHeight(20 * 0.97)
-		self.Debuffs:SetWidth(230)
-		self.Debuffs.num = 20
-		self.Debuffs.size = 20 * 0.97
-		self.Debuffs.spacing = 4
-		self.Debuffs.initialAnchor = 'TOPLEFT'
-		self.Debuffs['growth-y'] = 'DOWN'
-		self.Debuffs.PostCreateIcon = createAura
-		self.Debuffs.PostUpdateIcon = updateDebuff
+	if(petUnit) then
+		local auras = CreateFrame('Frame', nil, self)
+		auras:SetPoint('TOPRIGHT', self, 'TOPLEFT', -4, 0)
+		auras:SetHeight(44)
+		auras:SetWidth(256)
+		auras.size = 22
+		auras.spacing = 4
+		auras.initialAnchor = 'TOPRIGHT'
+		auras['growth-x'] = 'LEFT'
+		auras.PostCreateIcon = PostCreateAura
 
-		self.CPoints = self:CreateFontString(nil, 'OVERLAY', 'SubZoneTextFont')
-		self.CPoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
-		self.CPoints:SetTextColor(1, 1, 1)
-		self.CPoints:SetJustifyH('RIGHT')
-	end
-
-	if(unit == 'player') then
-		self.Leader = self.Health:CreateTexture(nil, 'OVERLAY')
-		self.Leader:SetPoint('TOPLEFT', self, 0, 8)
-		self.Leader:SetHeight(16)
-		self.Leader:SetWidth(16)
-
-		self.Assistant = self.Health:CreateTexture(nil, 'OVERLAY')
-		self.Assistant:SetPoint('TOPLEFT', self, 0, 8)
-		self.Assistant:SetHeight(16)
-		self.Assistant:SetWidth(16)
-
-		local info = self.Health:CreateFontString(nil, 'OVERLAY', 'Semplice')
-		info:SetPoint('CENTER')
-		info.frequentUpdates = 0.25
-		self:Tag(info, '[p3limthreat]|cffff0000[( )p3limpvp]|r')
+		self.Auras = auras
+		self:SetAttribute('initial-width', 130)
 	end
 end
 
-oUF:RegisterStyle('P3lim', style)
+oUF:RegisterStyle('P3lim', Style)
 oUF:SetActiveStyle('P3lim')
 
 oUF:Spawn('player'):SetPoint('CENTER', -220, -250)
+oUF:Spawn('pet'):SetPoint('CENTER', -410, -250)
+oUF:Spawn('focus'):SetPoint('CENTER', -244, -225)
 oUF:Spawn('target'):SetPoint('CENTER', 220, -250)
 oUF:Spawn('targettarget'):SetPoint('CENTER', 244, -225)
-oUF:Spawn('focus'):SetPoint('CENTER', -244, -225)
-oUF:Spawn('pet'):SetPoint('CENTER', -410, -250)
