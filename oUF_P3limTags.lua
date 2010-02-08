@@ -50,8 +50,8 @@ end
 
 oUF.Tags['[p3limpower]'] = function(unit)
 	local _, str = UnitPowerType(unit)
-	local r, g, b = unpack(ns.colors.power[str] or {1, 1, 1})
-	return ('|cff%02x%02x%02x%d|r'):format(r * 255, g * 255, b * 255, UnitPower(unit))
+	local r, g, b = unpack(ns.colors.power[str])
+	return ('|cff%02x%02x%02x%d|r'):format(r or 1* 255, g or 1 * 255, b or 1 * 255, UnitPower(unit))
 end
 
 oUF.Tags['[p3limdruid]'] = function(unit)
