@@ -97,8 +97,8 @@ do
 	}
 
 	function CustomBuffFilter(element, ...)
-		local _, _, _, _, _, _, _, _, _, owner, _, _, spell = ...
-		return spells[spell] and owner == 'player'
+		local _, _, _, _, _, _, _, _, _, _, _, _, spell = ...
+		return spells[spell]
 	end
 end
 
