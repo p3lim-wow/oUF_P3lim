@@ -91,6 +91,7 @@ do
 		[50213] = true, -- Druid: Tiger's Fury
 		[50334] = true, -- Druid: Berserk
 		[57960] = true, -- Shaman: Water Shield
+		[70806] = true, -- Shaman: T10 2pc Bonus
 		[32182] = true, -- Buff: Heroism
 		[49016] = true, -- Buff: Hysteria
 	}
