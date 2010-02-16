@@ -275,10 +275,10 @@ local function Style(self, unit)
 		if(unit == 'target') then
 			local debuffs = CreateFrame('Frame', nil, self)
 			debuffs:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -4)
-			debuffs:SetHeight(20 * 0.97)
+			debuffs:SetHeight(19.4)
 			debuffs:SetWidth(230)
 			debuffs.num = 20
-			debuffs.size = 20 * 0.97
+			debuffs.size = 19.4
 			debuffs.spacing = 4
 			debuffs.initialAnchor = 'TOPLEFT'
 			debuffs['growth-y'] = 'DOWN'
