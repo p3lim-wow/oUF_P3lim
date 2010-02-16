@@ -136,10 +136,10 @@ local function Style(self, unit)
 
 	if(slimUnit) then
 		local debuffs = CreateFrame('Frame', nil, self)
-		debuffs:SetHeight(20)
-		debuffs:SetWidth(44)
-		debuffs.num = 2
-		debuffs.size = 20
+		debuffs:SetHeight(19)
+		debuffs:SetWidth(66)
+		debuffs.num = 3
+		debuffs.size = 19
 		debuffs.spacing = 4
 		debuffs.PostCreateIcon = PostCreateAura
 
@@ -157,7 +157,7 @@ local function Style(self, unit)
 
 		self.Debuffs = debuffs
 		self:SetAttribute('initial-height', 19)
-		self:SetAttribute('initial-width', 182)
+		self:SetAttribute('initial-width', 161)
 	else
 		local power = CreateFrame('StatusBar', nil, self)
 		power:SetPoint('BOTTOMRIGHT')
@@ -341,6 +341,6 @@ oUF:SetActiveStyle('P3lim')
 
 oUF:Spawn('player'):SetPoint('CENTER', -220, -250)
 oUF:Spawn('pet'):SetPoint('CENTER', -410, -250)
-oUF:Spawn('focus'):SetPoint('CENTER', -244, -225)
+oUF:Spawn('focus'):SetPoint('CENTER', -255, -225)
 oUF:Spawn('target'):SetPoint('CENTER', 220, -250)
-oUF:Spawn('targettarget'):SetPoint('CENTER', 244, -225)
+oUF:Spawn('targettarget'):SetPoint('CENTER', 254, -225)
