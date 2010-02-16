@@ -132,7 +132,7 @@ local function Style(self, unit)
 	healthValue.frequentUpdates = 1/4
 
 	self.Health = health
-	self:Tag(healthValue, '[p3limhealth]')
+	self:Tag(healthValue, '[p3lim:health]')
 
 	if(slimUnit) then
 		local debuffs = CreateFrame('Frame', nil, self)
@@ -250,14 +250,14 @@ local function Style(self, unit)
 		powerValue:SetFont(FONT, 8, 'OUTLINE')
 		powerValue:SetJustifyH('LEFT')
 		powerValue.frequentUpdates = 0.1
-		self:Tag(powerValue, '[p3limpower][( )p3limdruid]')
+		self:Tag(powerValue, '[p3lim:power][ >p3lim:druid<]')
 	else
 		local name = health:CreateFontString(nil, 'OVERLAY')
 		name:SetPoint('LEFT', health, 2, 0)
 		name:SetPoint('RIGHT', healthValue, 'LEFT')
 		name:SetFont(FONT, 8, 'OUTLINE')
 		name:SetJustifyH('LEFT')
-		self:Tag(name, '[p3limname]|cff0090ff[( )rare]|r')
+		self:Tag(name, '[p3lim:name][|cff0090ff >rare<|r]')
 	end
 
 	if(unit == 'player' or unit == 'target') then
@@ -308,7 +308,7 @@ local function Style(self, unit)
 			info:SetPoint('CENTER')
 			info:SetFont(FONT, 8, 'OUTLINE')
 			info.frequentUpdates = 1/4
-			self:Tag(info, '[p3limthreat][( )p3limpvp]')
+			self:Tag(info, '[p3lim:threat][ >p3lim:pvp<]')
 
 			buffs.CustomFilter = CustomBuffFilter
 
