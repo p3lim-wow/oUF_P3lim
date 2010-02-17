@@ -1,5 +1,3 @@
-local _, ns = ...
-
 local unpack = unpack
 local format = string.format
 local gsub = string.gsub
@@ -48,7 +46,7 @@ for name, func in pairs({
 	end,
 	['power'] = function(unit)
 		local _, type = UnitPowerType(unit)
-		return ('%s%d|r'):format(Hex(oUF.colors.power[type or 'RUNES']), UnitPower(unit))
+		return ('%s%d|r'):format(Hex(_COLORS.power[type or 'RUNES']), UnitPower(unit))
 	end,
 	['druid'] = function(unit)
 		local min, max = UnitPower(unit, 0), UnitPowerMax(unit, 0)
@@ -63,7 +61,7 @@ for name, func in pairs({
 		if((UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) or not UnitIsConnected(unit)) then
 			r, g, b = 3/5, 3/5, 3/5
 		elseif(not UnitIsPlayer(unit) and reaction) then
-			r, g, b = unpack(oUF.colors.reaction[reaction])
+			r, g, b = unpack(_COLORS.reaction[reaction])
 		elseif(UnitFactionGroup(unit) and UnitIsEnemy(unit, 'player') and UnitIsPVP(unit)) then
 			r, g, b = 1, 0, 0
 		end

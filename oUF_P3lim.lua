@@ -5,8 +5,7 @@
 
 --]]
 
-local _, ns = ...
-ns.colors = setmetatable({
+local COLORS = setmetatable({
 	power = setmetatable({
 		MANA = {0, 144/255, 1}
 	}, {__index = oUF.colors.power}),
@@ -16,7 +15,6 @@ ns.colors = setmetatable({
 		[5] = {0, 1, 0}
 	}, {__index = oUF.colors.reaction}),
 }, {__index = oUF.colors})
-
 
 local FONT = [=[Interface\AddOns\oUF_P3lim\media\semplice.ttf]=]
 local TEXTURE = [=[Interface\AddOns\oUF_P3lim\media\minimalist]=]
@@ -103,7 +101,7 @@ do
 end
 
 local function Style(self, unit)
-	self.colors = ns.colors
+	self.colors = COLORS
 
 	self:RegisterForClicks('AnyUp')
 	self:SetScript('OnEnter', UnitFrame_OnEnter)
