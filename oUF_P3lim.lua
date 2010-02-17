@@ -248,7 +248,7 @@ local function Style(self, unit)
 		powerValue:SetFont(FONT, 8, 'OUTLINE')
 		powerValue:SetJustifyH('LEFT')
 		powerValue.frequentUpdates = 0.1
-		self:Tag(powerValue, '[p3lim:power][ >p3lim:druid<]')
+		self:Tag(powerValue, '[p3lim:power][ >p3lim:druid]')
 	else
 		local name = health:CreateFontString(nil, 'OVERLAY')
 		name:SetPoint('LEFT', health, 2, 0)
@@ -306,7 +306,7 @@ local function Style(self, unit)
 			info:SetPoint('CENTER')
 			info:SetFont(FONT, 8, 'OUTLINE')
 			info.frequentUpdates = 1/4
-			self:Tag(info, '[p3lim:threat][ >p3lim:pvp<]')
+			self:Tag(info, '[p3lim:threat][ >p3lim:pvp]')
 
 			buffs.CustomFilter = CustomBuffFilter
 
