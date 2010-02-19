@@ -248,7 +248,7 @@ local function Style(self, unit)
 		powerValue:SetFont(FONT, 8, 'OUTLINE')
 		powerValue:SetJustifyH('LEFT')
 		powerValue.frequentUpdates = 0.1
-		self:Tag(powerValue, '[p3lim:power][ >p3lim:druid]')
+		self:Tag(powerValue, '[p3lim:power< ][p3lim:druid]')
 	else
 		local name = health:CreateFontString(nil, 'OVERLAY')
 		name:SetPoint('LEFT', health, 2, 0)

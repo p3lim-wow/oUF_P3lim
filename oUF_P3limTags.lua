@@ -45,8 +45,11 @@ for name, func in pairs({
 		end
 	end,
 	['power'] = function(unit)
-		local _, type = UnitPowerType(unit)
-		return ('%s%d|r'):format(Hex(_COLORS.power[type or 'RUNES']), UnitPower(unit))
+		local power = UnitPower(unit)
+		if(power > 0) then
+			local _, type = UnitPowerType(unit)
+			return ('%s%d|r'):format(Hex(_COLORS.power[type or 'RUNES']), power)
+		end
 	end,
 	['druid'] = function(unit)
 		local min, max = UnitPower(unit, 0), UnitPowerMax(unit, 0)
