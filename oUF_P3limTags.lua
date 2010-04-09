@@ -1,4 +1,3 @@
-local unpack = unpack
 local format = string.format
 local gsub = string.gsub
 
