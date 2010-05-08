@@ -59,18 +59,10 @@ do
 		player = true,
 	}
 
-	local spells = {
-		[770] = true, -- Faerie Fire
-		[16857] = true, -- Faerie Fire (Feral)
-		[48564] = true, -- Mangle (Bear)
-		[48566] = true, -- Mangle (Cat)
-		[46857] = true, -- Trauma
-	}
-
 	function PostUpdateDebuff(element, unit, button, index)
-		local _, _, _, _, type, _, _, owner, _, _, spell = UnitAura(unit, index, button.filter)
+		local _, _, _, _, type, _, _, owner = UnitAura(unit, index, button.filter)
 
-		if(UnitIsFriend('player', unit) or spells[spell] or units[owner]) then
+		if(UnitIsFriend('player', unit) or units[owner]) then
 			local color = DebuffTypeColor[type] or DebuffTypeColor.none
 			button:SetBackdropColor(color.r * 3/5, color.g * 3/5, color.b * 3/5)
 			button.icon:SetDesaturated(false)
@@ -78,25 +70,6 @@ do
 			button:SetBackdropColor(0, 0, 0)
 			button.icon:SetDesaturated(true)
 		end
-	end
-end
-
-local CustomBuffFilter
-do
-	local spells = {
-		[52610] = true, -- Druid: Savage Roar
-		[16870] = true, -- Druid: Clearcast
-		[50213] = true, -- Druid: Tiger's Fury
-		[50334] = true, -- Druid: Berserk
-		[57960] = true, -- Shaman: Water Shield
-		[70806] = true, -- Shaman: T10 2pc Bonus
-		[32182] = true, -- Buff: Heroism
-		[49016] = true, -- Buff: Hysteria
-	}
-
-	function CustomBuffFilter(element, ...)
-		local _, _, _, _, _, _, _, _, _, _, _, _, spell = ...
-		return spells[spell]
 	end
 end
 
@@ -116,7 +89,6 @@ local function Style(self, unit)
 	local health = CreateFrame('StatusBar', nil, self)
 	health:SetStatusBarTexture(TEXTURE)
 	health:SetStatusBarColor(1/4, 1/4, 2/5)
-	health:SetHeight(slimUnit and 19 or 20)
 	health.frequentUpdates = true
 
 	local healthBG = health:CreateTexture(nil, 'BORDER')
@@ -225,6 +197,7 @@ local function Style(self, unit)
 		raidicon:SetPoint('TOP', self, 0, 8)
 		raidicon:SetSize(16, 16)
 
+		health:SetHeight(20)
 		health:SetPoint('TOPRIGHT')
 		health:SetPoint('TOPLEFT')
 
@@ -253,7 +226,7 @@ local function Style(self, unit)
 		self:Tag(name, '[p3lim:name][|cff0090ff >rare<|r]')
 	end
 
-	if(unit == 'player' or unit == 'target') then
+	if(unit == 'target') then
 		local buffs = CreateFrame('Frame', nil, self)
 		buffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
 		buffs:SetSize(236, 44)
@@ -264,48 +237,46 @@ local function Style(self, unit)
 		buffs['growth-y'] = 'DOWN'
 		buffs.PostCreateIcon = PostCreateAura
 
-		if(unit == 'target') then
-			local debuffs = CreateFrame('Frame', nil, self)
-			debuffs:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -4)
-			debuffs:SetSize(230, 19.4)
-			debuffs.num = 20
-			debuffs.size = 19.4
-			debuffs.spacing = 4
-			debuffs.initialAnchor = 'TOPLEFT'
-			debuffs['growth-y'] = 'DOWN'
-			debuffs.PostCreateIcon = PostCreateAura
-			debuffs.PostUpdateIcon = PostUpdateDebuff
+		local debuffs = CreateFrame('Frame', nil, self)
+		debuffs:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -4)
+		debuffs:SetSize(230, 19.4)
+		debuffs.num = 20
+		debuffs.size = 19.4
+		debuffs.spacing = 4
+		debuffs.initialAnchor = 'TOPLEFT'
+		debuffs['growth-y'] = 'DOWN'
+		debuffs.PostCreateIcon = PostCreateAura
+		debuffs.PostUpdateIcon = PostUpdateDebuff
 
-			local cpoints = self:CreateFontString(nil, 'OVERLAY', 'SubZoneTextFont')
-			cpoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
-			cpoints:SetTextColor(1, 1, 1)
-			cpoints:SetJustifyH('RIGHT')
-
-			self.Debuffs = debuffs
-			self.CPoints = cpoints
-			self.Power.PostUpdate = PostUpdatePower
-		else
-			local leader = health:CreateTexture(nil, 'OVERLAY')
-			leader:SetPoint('TOPLEFT', self, 0, 8)
-			leader:SetSize(16, 16)
-
-			local assistant = health:CreateTexture(nil, 'OVERLAY')
-			assistant:SetPoint('TOPLEFT', self, 0, 8)
-			assistant:SetSize(16, 16)
-
-			local info = health:CreateFontString(nil, 'OVERLAY')
-			info:SetPoint('CENTER')
-			info:SetFont(FONT, 8, 'OUTLINE')
-			info.frequentUpdates = 1/4
-			self:Tag(info, '[p3lim:threat][ >p3lim:pvp]')
-
-			buffs.CustomFilter = CustomBuffFilter
-
-			self.Leader = leader
-			self.Assistant = assistant
-		end
+		local cpoints = self:CreateFontString(nil, 'OVERLAY', 'SubZoneTextFont')
+		cpoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
+		cpoints:SetTextColor(1, 1, 1)
+		cpoints:SetJustifyH('RIGHT')
 
 		self.Buffs = buffs
+		self.Debuffs = debuffs
+		self.CPoints = cpoints
+		self.Power.PostUpdate = PostUpdatePower
+		self:SetAttribute('initial-width', 230)
+	end
+
+	if(unit == 'player') then
+		local leader = health:CreateTexture(nil, 'OVERLAY')
+		leader:SetPoint('TOPLEFT', self, 0, 8)
+		leader:SetSize(16, 16)
+
+		local assistant = health:CreateTexture(nil, 'OVERLAY')
+		assistant:SetPoint('TOPLEFT', self, 0, 8)
+		assistant:SetSize(16, 16)
+
+		local info = health:CreateFontString(nil, 'OVERLAY')
+		info:SetPoint('CENTER')
+		info:SetFont(FONT, 8, 'OUTLINE')
+		info.frequentUpdates = 1/4
+		self:Tag(info, '[p3lim:threat][ >p3lim:pvp]')
+
+		self.Leader = leader
+		self.Assistant = assistant
 		self:SetAttribute('initial-width', 230)
 	end
 
