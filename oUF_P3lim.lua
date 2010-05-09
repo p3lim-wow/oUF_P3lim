@@ -75,9 +75,6 @@ local function Style(self, unit)
 	self:SetBackdrop(BACKDROP)
 	self:SetBackdropColor(0, 0, 0)
 
-	local petUnit = unit == 'pet'
-	local slimUnit = (unit == 'focus' or unit == 'targettarget')
-
 	local health = CreateFrame('StatusBar', nil, self)
 	health:SetStatusBarTexture(TEXTURE)
 	health:SetStatusBarColor(1/4, 1/4, 2/5)
@@ -96,7 +93,7 @@ local function Style(self, unit)
 	self.Health = health
 	self:Tag(healthValue, '[p3lim:health]')
 
-	if(slimUnit) then
+	if(unit == 'focus' or unit == 'targettarget') then
 		local debuffs = CreateFrame('Frame', nil, self)
 		debuffs:SetSize(66, 19)
 		debuffs.num = 3
@@ -130,9 +127,9 @@ local function Style(self, unit)
 		power.colorClass = true
 		power.colorTapping = true
 		power.colorDisconnected = true
-		power.colorReaction = not petUnit
-		power.colorHappiness = petUnit
-		power.colorPower = petUnit
+		power.colorReaction = unit ~= 'pet'
+		power.colorHappiness = unit == 'pet'
+		power.colorPower = unit == 'pet'
 
 		local powerBG = power:CreateTexture(nil, 'BORDER')
 		powerBG:SetAllPoints(power)
@@ -141,7 +138,7 @@ local function Style(self, unit)
 		power.bg = powerBG
 
 		local castbar = CreateFrame('StatusBar', nil, self)
-		castbar:SetSize(petUnit and 105 or 205, 16)
+		castbar:SetSize(unit == 'pet' and 105 or 205, 16)
 		castbar:SetStatusBarTexture(TEXTURE)
 		castbar:SetStatusBarColor(1/4, 1/4, 2/5)
 		castbar:SetBackdrop(BACKDROP)
@@ -202,7 +199,7 @@ local function Style(self, unit)
 		self:SetAttribute('initial-height', 22)
 	end
 
-	if(petUnit or unit == 'player') then
+	if(unit == 'pet' or unit == 'player') then
 		local powerValue = health:CreateFontString(nil, 'OVERLAY')
 		powerValue:SetPoint('LEFT', health, 2, 0)
 		powerValue:SetFont(FONT, 8, 'OUTLINE')
@@ -271,7 +268,7 @@ local function Style(self, unit)
 		self:SetAttribute('initial-width', 230)
 	end
 
-	if(petUnit) then
+	if(unit == 'pet') then
 		local auras = CreateFrame('Frame', nil, self)
 		auras:SetPoint('TOPRIGHT', self, 'TOPLEFT', -4, 0)
 		auras:SetSize(256, 44)
