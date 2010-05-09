@@ -250,12 +250,11 @@ local function Style(self, unit)
 
 		local cpoints = self:CreateFontString(nil, 'OVERLAY', 'SubZoneTextFont')
 		cpoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
-		cpoints:SetTextColor(1, 1, 1)
 		cpoints:SetJustifyH('RIGHT')
+		self:Tag(cpoints, '|cffffffff[cpoints]|r')
 
 		self.Buffs = buffs
 		self.Debuffs = debuffs
-		self.CPoints = cpoints
 		self.Power.PostUpdate = PostUpdatePower
 		self:SetAttribute('initial-width', 230)
 	end
