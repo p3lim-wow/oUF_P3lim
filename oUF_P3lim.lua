@@ -52,24 +52,16 @@ local function PostCreateAura(element, button)
 	button.icon:SetDrawLayer('ARTWORK')
 end
 
-local PostUpdateDebuff
-do
-	local units = {
-		vehicle = true,
-		player = true,
-	}
+local PostUpdateDebuff(element, unit, button, index)
+	if(UnitIsFriend('player', unit) or button.isPlayer) then
+		local _, _, _, _, type = UnitAura(unit, index, button.filter)
+		local color = DebuffTypeColor[type] or DebuffTypeColor.none
 
-	function PostUpdateDebuff(element, unit, button, index)
-		local _, _, _, _, type, _, _, owner = UnitAura(unit, index, button.filter)
-
-		if(UnitIsFriend('player', unit) or units[owner]) then
-			local color = DebuffTypeColor[type] or DebuffTypeColor.none
-			button:SetBackdropColor(color.r * 3/5, color.g * 3/5, color.b * 3/5)
-			button.icon:SetDesaturated(false)
-		else
-			button:SetBackdropColor(0, 0, 0)
-			button.icon:SetDesaturated(true)
-		end
+		button:SetBackdropColor(color.r * 3/5, color.g * 3/5, color.b * 3/5)
+		button.icon:SetDesaturated(false)
+	else
+		button:SetBackdropColor(0, 0, 0)
+		button.icon:SetDesaturated(true)
 	end
 end
 
