@@ -12,15 +12,6 @@ local function ShortenValue(value)
 end
 
 for name, func in pairs({
-	['pvp'] = function(unit)
-		local running = IsPVPTimerRunning()
-		if(UnitIsPVP(unit) and not running) then
-			return '|cffff0000+|r'
-		elseif(running) then
-			local timer = GetPVPTimer() / 1e3
-			return ('|cffff0000%d:%02d|r'):format(timer / 60, timer % 60)
-		end
-	end,
 	['threat'] = function(unit)
 		local tanking, status, percent = UnitDetailedThreatSituation('player', 'target')
 		if(percent and percent > 0) then

@@ -80,8 +80,7 @@ local UnitSpecific = {
 		local info = health:CreateFontString(nil, 'OVERLAY')
 		info:SetPoint('CENTER')
 		info:SetFont(FONT, 8, 'OUTLINE')
-		info.frequentUpdates = 1/4
-		self:Tag(info, '[p3lim:threat][ >p3lim:pvp]')
+		self:Tag(info, '[p3lim:threat]')
 
 		self:SetAttribute('initial-width', 230)
 	end,
@@ -242,7 +241,7 @@ local function Shared(self, unit)
 		name:SetPoint('RIGHT', healthValue, 'LEFT')
 		name:SetFont(FONT, 8, 'OUTLINE')
 		name:SetJustifyH('LEFT')
-		self:Tag(name, '[p3lim:name][|cff0090ff >rare<|r]')
+		self:Tag(name, '[p3lim:name< ][|cff0090ff>rare<|r]')
 
 		local debuffs = CreateFrame('Frame', nil, self)
 		debuffs.spacing = 4
