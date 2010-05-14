@@ -284,10 +284,11 @@ local function Style(self, unit)
 end
 
 oUF:RegisterStyle('P3lim', Style)
-oUF:SetActiveStyle('P3lim')
-
-oUF:Spawn('player'):SetPoint('CENTER', -220, -250)
-oUF:Spawn('pet'):SetPoint('CENTER', -410, -250)
-oUF:Spawn('focus'):SetPoint('CENTER', -255, -225)
-oUF:Spawn('target'):SetPoint('CENTER', 220, -250)
-oUF:Spawn('targettarget'):SetPoint('CENTER', 254, -225)
+oUF:Factory(function(self)
+	self:SetActiveStyle('P3lim')
+	self:Spawn('player'):SetPoint('CENTER', -220, -250)
+	self:Spawn('pet'):SetPoint('CENTER', -410, -250)
+	self:Spawn('focus'):SetPoint('CENTER', -255, -225)
+	self:Spawn('target'):SetPoint('CENTER', 220, -250)
+	self:Spawn('targettarget'):SetPoint('CENTER', 254, -225)
+end)
