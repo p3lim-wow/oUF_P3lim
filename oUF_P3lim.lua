@@ -52,7 +52,7 @@ local function PostCreateAura(element, button)
 	button.icon:SetDrawLayer('ARTWORK')
 end
 
-local PostUpdateDebuff(element, unit, button, index)
+local function PostUpdateDebuff(element, unit, button, index)
 	if(UnitIsFriend('player', unit) or button.isPlayer) then
 		local _, _, _, _, type = UnitAura(unit, index, button.filter)
 		local color = DebuffTypeColor[type] or DebuffTypeColor.none
