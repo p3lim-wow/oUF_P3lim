@@ -27,19 +27,6 @@ local function SpawnMenu(self)
 	ToggleDropDownMenu(1, nil, _G[string.gsub(self.unit, '^.', string.upper)..'FrameDropDown'], 'cursor')
 end
 
-local function CustomCastText(element, duration)
-	element.Time:SetFormattedText('%.1f', element.channeling and duration or (element.max - duration))
-end
-
-local function PostCastStart(element)
-	local text = element.Text
-	if(element.interrupt) then
-		text:SetTextColor(1, 0, 0)
-	else
-		text:SetTextColor(1, 1, 1)
-	end
-end
-
 local function PostUpdatePower(element, unit, min, max)
 	element:GetParent().Health:SetHeight(max ~= 0 and 20 or 22)
 end
@@ -168,51 +155,7 @@ local function Shared(self, unit)
 		powerBG.multiplier = 1/3
 		power.bg = powerBG
 
-		local castbar = CreateFrame('StatusBar', nil, self)
-		castbar:SetSize(unit == 'pet' and 105 or 205, 16)
-		castbar:SetStatusBarTexture(TEXTURE)
-		castbar:SetStatusBarColor(1/4, 1/4, 2/5)
-		castbar:SetBackdrop(BACKDROP)
-		castbar:SetBackdropColor(0, 0, 0)
-		castbar.CustomTimeText = CustomCastText
-		self.Castbar = castbar
-
-		local castbarBG = castbar:CreateTexture(nil, 'BORDER')
-		castbarBG:SetAllPoints()
-		castbarBG:SetTexture(1/3, 1/3, 1/3)
-
-		local castbarTime = castbar:CreateFontString(nil, 'OVERLAY')
-		castbarTime:SetPoint('RIGHT', -2, 0)
-		castbarTime:SetFont(FONT, 8, 'OUTLINE')
-		castbarTime:SetJustifyH('RIGHT')
-		castbar.Time = castbarTime
-
-		local castbarText = castbar:CreateFontString(nil, 'OVERLAY')
-		castbarText:SetPoint('LEFT', 2, 0)
-		castbarText:SetPoint('RIGHT', castbarTime)
-		castbarText:SetFont(FONT, 8, 'OUTLINE')
-		castbarText:SetJustifyH('LEFT')
-		castbar.Text = castbarText
-
-		local castbarDummy = CreateFrame('Frame', nil, castbar)
-		castbarDummy:SetSize(21, 21)
-		castbarDummy:SetBackdrop(BACKDROP)
-		castbarDummy:SetBackdropColor(0, 0, 0)
-
-		local castbarIcon = castbarDummy:CreateTexture(nil, 'ARTWORK')
-		castbarIcon:SetAllPoints()
-		castbarIcon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-		castbar.Icon = castbarIcon
-
-		if(unit == 'target') then
-			castbar.PostCastStart = PostCastStart
-			castbar.PostChannelStart = PostCastStart
-			castbar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -60)
-			castbarDummy:SetPoint('BOTTOMLEFT', castbar, 'BOTTOMRIGHT', 4, 0)
-		else
-			castbar:SetPoint('TOPRIGHT', self, 'BOTTOMRIGHT', 0, -60)
-			castbarDummy:SetPoint('BOTTOMRIGHT', castbar, 'BOTTOMLEFT', -4, 0)
-
+		if(unit ~= 'target') then
 			local powerValue = health:CreateFontString(nil, 'OVERLAY')
 			powerValue:SetPoint('LEFT', health, 2, 0)
 			powerValue:SetFont(FONT, 8, 'OUTLINE')
