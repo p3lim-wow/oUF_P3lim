@@ -54,17 +54,17 @@ end
 
 local UnitSpecific = {
 	player = function(self)
-		local leader = health:CreateTexture(nil, 'OVERLAY')
+		local leader = self.Health:CreateTexture(nil, 'OVERLAY')
 		leader:SetPoint('TOPLEFT', self, 0, 8)
 		leader:SetSize(16, 16)
 		self.Leader = leader
 
-		local assistant = health:CreateTexture(nil, 'OVERLAY')
+		local assistant = self.Health:CreateTexture(nil, 'OVERLAY')
 		assistant:SetPoint('TOPLEFT', self, 0, 8)
 		assistant:SetSize(16, 16)
 		self.Assistant = assistant
 
-		local info = health:CreateFontString(nil, 'OVERLAY')
+		local info = self.Health:CreateFontString(nil, 'OVERLAY')
 		info:SetPoint('CENTER')
 		info:SetFont(FONT, 8, 'OUTLINE')
 		self:Tag(info, '[p3lim:threat]')
@@ -202,7 +202,7 @@ local function Shared(self, unit)
 			debuffs.num = 3
 			debuffs.size = 19
 
-			self.Health:SetAllPoints()
+			health:SetAllPoints()
 			self:SetAttribute('initial-height', 19)
 			self:SetAttribute('initial-width', 161)
 		end
@@ -220,7 +220,7 @@ local function Shared(self, unit)
 	end
 
 	if(UnitSpecific[unit]) then
-		return UnitSpecific[unit]
+		return UnitSpecific[unit](self)
 	end
 end
 
