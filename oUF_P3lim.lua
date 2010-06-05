@@ -5,17 +5,6 @@
 
 --]]
 
-local COLORS = setmetatable({
-	power = setmetatable({
-		MANA = {0, 144/255, 1}
-	}, {__index = oUF.colors.power}),
-	reaction = setmetatable({
-		[2] = {1, 0, 0},
-		[4] = {1, 1, 0},
-		[5] = {0, 1, 0}
-	}, {__index = oUF.colors.reaction}),
-}, {__index = oUF.colors})
-
 local FONT = [=[Interface\AddOns\oUF_P3lim\media\semplice.ttf]=]
 local TEXTURE = [=[Interface\AddOns\oUF_P3lim\media\minimalist]=]
 local BACKDROP = {
@@ -107,8 +96,6 @@ local UnitSpecific = {
 }
 
 local function Shared(self, unit)
-	self.colors = COLORS
-
 	self:RegisterForClicks('AnyUp')
 	self:SetScript('OnEnter', UnitFrame_OnEnter)
 	self:SetScript('OnLeave', UnitFrame_OnLeave)
@@ -223,6 +210,8 @@ local function Shared(self, unit)
 		return UnitSpecific[unit](self)
 	end
 end
+
+oUF.colors.power.MANA = {0, 144/255, 1}
 
 oUF:RegisterStyle('P3lim', Shared)
 oUF:Factory(function(self)
