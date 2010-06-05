@@ -5,7 +5,7 @@
 
 --]]
 
-local FONT = [=[Interface\AddOns\oUF_P3lim\media\semplice.ttf]=]
+local FONT = [=[Interface\AddOns\oUF_P3lim\semplice.ttf]=]
 local TEXTURE = [=[Interface\ChatFrame\ChatFrameBackground]=]
 local BACKDROP = {
 	bgFile = TEXTURE, insets = {top = -1, bottom = -1, left = -1, right = -1}
