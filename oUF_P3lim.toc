@@ -2,8 +2,7 @@
 ## Author: p3lim
 ## Version: 30300.3-Beta
 ## Title: oUF P3lim
-## Notes: Just another oUF layout
+## Notes: Minimalistic layout
 ## RequiredDeps: oUF
-## OptionalDeps: oUF_DebuffHighlight, oUF_Experience
 
 oUF_P3lim.lua
