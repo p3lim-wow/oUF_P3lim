@@ -6,10 +6,9 @@
 --]]
 
 local FONT = [=[Interface\AddOns\oUF_P3lim\media\semplice.ttf]=]
-local TEXTURE = [=[Interface\AddOns\oUF_P3lim\media\minimalist]=]
+local TEXTURE = [=[Interface\ChatFrame\ChatFrameBackground]=]
 local BACKDROP = {
-	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
-	insets = {top = -1, bottom = -1, left = -1, right = -1}
+	bgFile = TEXTURE, insets = {top = -1, bottom = -1, left = -1, right = -1}
 }
 
 local function SpawnMenu(self)
@@ -105,7 +104,7 @@ local function Shared(self, unit)
 
 	local health = CreateFrame('StatusBar', nil, self)
 	health:SetStatusBarTexture(TEXTURE)
-	health:SetStatusBarColor(1/4, 1/4, 2/5)
+	health:SetStatusBarColor(1/6, 1/6, 2/7)
 	health.frequentUpdates = true
 	self.Health = health
 
@@ -138,7 +137,7 @@ local function Shared(self, unit)
 
 		local powerBG = power:CreateTexture(nil, 'BORDER')
 		powerBG:SetAllPoints()
-		powerBG:SetTexture([=[Interface\ChatFrame\ChatFrameBackground]=])
+		powerBG:SetTexture(TEXTURE)
 		powerBG.multiplier = 1/3
 		power.bg = powerBG
 
