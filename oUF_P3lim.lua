@@ -46,7 +46,7 @@ for name, func in pairs({
 	end,
 	['power'] = function(unit)
 		local power = UnitPower(unit)
-		if(power > 0) then
+		if(power > 0 and not UnitIsDeadOrGhost(unit)) then
 			local _, type = UnitPowerType(unit)
 			local colors = _COLORS.power
 			return ('%s%d|r'):format(Hex(colors[type] or colors['RUNES']), power)
