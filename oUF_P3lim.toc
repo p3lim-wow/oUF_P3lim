@@ -1,6 +1,6 @@
 ## Interface: 30300
 ## Author: p3lim
-## Version: 30300.3-Beta
+## Version: 30300.4-Beta
 ## Title: oUF P3lim
 ## Notes: Minimalistic layout
 ## RequiredDeps: oUF
