@@ -279,8 +279,6 @@ local function Shared(self, unit)
 	end
 end
 
-oUF.colors.power.MANA = {0, 144/255, 1}
-
 oUF:RegisterStyle('P3lim', Shared)
 oUF:Factory(function(self)
 	self:SetActiveStyle('P3lim')
