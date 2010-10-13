@@ -230,7 +230,6 @@ local function Shared(self, unit)
 
 		self.menu = SpawnMenu
 		self:SetHeight(22)
-		self:SetAttribute('type2', 'menu')
 	end
 
 	if(unit == 'focus' or unit:find('target')) then
