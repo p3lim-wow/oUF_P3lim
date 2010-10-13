@@ -121,7 +121,7 @@ local UnitSpecific = {
 
 		local info = self.Health:CreateFontString(nil, 'OVERLAY')
 		info:SetPoint('CENTER')
-		info:SetFont(FONT, 8, 'OUTLINE')
+		info:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		self:Tag(info, '[p3lim:threat]')
 
 		self:SetWidth(230)
@@ -183,7 +183,7 @@ local function Shared(self, unit)
 
 	local healthValue = health:CreateFontString(nil, 'OVERLAY')
 	healthValue:SetPoint('RIGHT', health, -2, 0)
-	healthValue:SetFont(FONT, 8, 'OUTLINE')
+	healthValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 	healthValue:SetJustifyH('RIGHT')
 	healthValue.frequentUpdates = 1/4
 	self:Tag(healthValue, '[p3lim:health]')
@@ -213,7 +213,7 @@ local function Shared(self, unit)
 		if(unit ~= 'target') then
 			local powerValue = health:CreateFontString(nil, 'OVERLAY')
 			powerValue:SetPoint('LEFT', health, 2, 0)
-			powerValue:SetFont(FONT, 8, 'OUTLINE')
+			powerValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 			powerValue:SetJustifyH('LEFT')
 			powerValue.frequentUpdates = 0.1
 			self:Tag(powerValue, '[p3lim:power< ][p3lim:druid]')
