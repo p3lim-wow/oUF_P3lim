@@ -124,7 +124,7 @@ local UnitSpecific = {
 		info:SetFont(FONT, 8, 'OUTLINE')
 		self:Tag(info, '[p3lim:threat]')
 
-		self:SetAttribute('initial-width', 230)
+		self:SetWidth(230)
 	end,
 	target = function(self)
 		local buffs = CreateFrame('Frame', nil, self)
@@ -144,7 +144,7 @@ local UnitSpecific = {
 		self:Tag(cpoints, '|cffffffff[cpoints]|r')
 
 		self.Power.PostUpdate = PostUpdatePower
-		self:SetAttribute('initial-width', 230)
+		self:SetWidth(230)
 	end,
 	pet = function(self)
 		local auras = CreateFrame('Frame', nil, self)
@@ -157,7 +157,7 @@ local UnitSpecific = {
 		auras.PostCreateIcon = PostCreateAura
 		self.Auras = auras
 
-		self:SetAttribute('initial-width', 130)
+		self:SetWidth(130)
 	end,
 }
 
@@ -229,8 +229,8 @@ local function Shared(self, unit)
 		health:SetPoint('TOPLEFT')
 
 		self.menu = SpawnMenu
+		self:SetHeight(22)
 		self:SetAttribute('type2', 'menu')
-		self:SetAttribute('initial-height', 22)
 	end
 
 	if(unit == 'focus' or unit:find('target')) then
@@ -258,8 +258,7 @@ local function Shared(self, unit)
 			debuffs.size = 19
 
 			health:SetAllPoints()
-			self:SetAttribute('initial-height', 19)
-			self:SetAttribute('initial-width', 161)
+			self:SetSize(161, 19)
 		end
 
 		if(unit == 'focus') then
