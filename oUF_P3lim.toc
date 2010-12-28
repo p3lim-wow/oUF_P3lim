@@ -1,6 +1,6 @@
 ## Interface: 40000
 ## Author: p3lim
-## Version: 40000.5-Beta
+## Version: 40000.6-Release
 ## Title: oUF P3lim
 ## Notes: Minimalistic layout
 ## RequiredDeps: oUF
