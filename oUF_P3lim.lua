@@ -164,8 +164,7 @@ local UnitSpecific = {
 local function Shared(self, unit)
 	self.colors.power.MANA = {0, 144/255, 1}
 
-	-- XXX: Change to AnyUp when RegisterAttributeDriver doesn't cause clicks
-	self:RegisterForClicks('AnyDown')
+	self:RegisterForClicks('AnyUp')
 	self:SetScript('OnEnter', UnitFrame_OnEnter)
 	self:SetScript('OnLeave', UnitFrame_OnLeave)
 
