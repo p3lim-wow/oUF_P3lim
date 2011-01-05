@@ -90,6 +90,30 @@ local UnitSpecific = {
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:friendly]')
 		self:SetWidth(130)
 	end,
+	party = function(self)
+		local name = self.Health:CreateFontString(nil, 'OVERLAY')
+		name:SetPoint('LEFT', 3, 0)
+		name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
+		name:SetJustifyH('LEFT')
+		self:Tag(name, '[p3lim:unbuffed< ][p3lim:leader][raidcolor][name]')
+
+		local phase = self.Health:CreateFontString(nil, 'OVERLAY')
+		phase:SetPoint('CENTER')
+		phase:SetFont([=[Fonts\ARIALN.TTF]=], 12, 'OUTLINEMONOCHROME')
+		self:Tag(phase, '|cff6000ff[p3lim:phase]|r')
+
+		local roleicon = self:CreateTexture(nil, 'ARTWORK')
+		roleicon:SetPoint('LEFT', self, 'RIGHT', 3, 0)
+		roleicon:SetSize(14, 14)
+		roleicon:SetAlpha(0)
+		self.LFDRole = roleicon
+
+		self:HookScript('OnEnter', function() groupicon:SetAlpha(1) end)
+		self:HookScript('OnLeave', function() groupicon:SetAlpha(0) end)
+
+		self.Health:SetAllPoints()
+		self:Tag(self.HealthValue, '[p3lim:status][p3lim:percent]')
+	end
 }
 
 local function Shared(self, unit)
@@ -230,4 +254,12 @@ oUF:Factory(function(self)
 	self:Spawn('focus'):SetPoint('CENTER', -335, -225)
 	self:Spawn('target'):SetPoint('CENTER', 300, -250)
 	self:Spawn('targettarget'):SetPoint('CENTER', 334, -225)
+
+	self:SpawnHeader(nil, nil, 'party',
+		'showParty', true, 'showPlayer', true, 'yOffset', -6,
+		'oUF-initialConfigFunction', [[
+			self:SetHeight(16)
+			self:SetWidth(126)
+		]]
+	):SetPoint('TOP', Minimap, 'BOTTOM', 0, -10)
 end)
