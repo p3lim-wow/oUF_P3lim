@@ -70,6 +70,10 @@ oUF.Tags['p3lim:name'] = function(unit)
 	return ('%s%s|r'):format(Hex(r, g, b), UnitName(unit))
 end
 
+oUF.Tags['p3lim:spell'] = function(unit)
+	return UnitCastingInfo(unit) or UnitChannelInfo(unit)
+end
+
 local function SpawnMenu(self)
 	ToggleDropDownMenu(1, nil, _G[string.gsub(self.unit, '^.', string.upper)..'FrameDropDown'], 'cursor')
 end
@@ -198,12 +202,25 @@ local function Shared(self, unit)
 		power.bg = powerBG
 
 		if(unit ~= 'target') then
+			local castbar = CreateFrame('StatusBar', nil, self)
+			castbar:SetAllPoints(health)
+			castbar:SetStatusBarTexture(TEXTURE)
+			castbar:SetStatusBarColor(0, 0, 0, 0)
+			castbar:SetToplevel(true)
+			self.Castbar = castbar
+
+			local spark = castbar:CreateTexture(nil, 'OVERLAY')
+			spark:SetSize(2, 20)
+			spark:SetTexture(1, 1, 1)
+			castbar.Spark = spark
+
 			local powerValue = health:CreateFontString(nil, 'OVERLAY')
 			powerValue:SetPoint('LEFT', health, 2, 0)
+			powerValue:SetPoint('RIGHT', healthValue, 'LEFT', -3)
 			powerValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 			powerValue:SetJustifyH('LEFT')
 			powerValue.frequentUpdates = 0.1
-			self:Tag(powerValue, '[p3lim:power][ >p3lim:druid]')
+			self:Tag(powerValue, '[p3lim:power][ >p3lim:druid][ | >p3lim:spell]')
 		end
 
 		local raidicon = health:CreateTexture(nil, 'OVERLAY')
