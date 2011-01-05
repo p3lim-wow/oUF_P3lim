@@ -21,14 +21,6 @@ local function ShortenValue(value)
 	end
 end
 
-oUF.TagEvents['p3lim:threat'] = 'UNIT_THREAT_LIST_UPDATE'
-oUF.Tags['p3lim:threat'] = function(unit)
-	local tanking, status, percent = UnitDetailedThreatSituation('player', 'target')
-	if(percent and percent > 0) then
-		return ('%s%d%%|r'):format(Hex(GetThreatStatusColor(status)), percent)
-	end
-end
-
 oUF.Tags['p3lim:health'] = function(unit)
 	local min, max = UnitHealth(unit), UnitHealthMax(unit)
 	local status = not UnitIsConnected(unit) and 'Offline' or UnitIsGhost(unit) and 'Ghost' or UnitIsDead(unit) and 'Dead'
@@ -118,11 +110,6 @@ local UnitSpecific = {
 		assistant:SetPoint('TOPLEFT', self, 0, 8)
 		assistant:SetSize(16, 16)
 		self.Assistant = assistant
-
-		local info = self.Health:CreateFontString(nil, 'OVERLAY')
-		info:SetPoint('CENTER')
-		info:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
-		self:Tag(info, '[p3lim:threat]')
 
 		self:SetWidth(230)
 	end,
