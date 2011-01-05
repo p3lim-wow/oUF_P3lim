@@ -11,69 +11,6 @@ local BACKDROP = {
 	bgFile = TEXTURE, insets = {top = -1, bottom = -1, left = -1, right = -1}
 }
 
-local function ShortenValue(value)
-	if(value >= 1e6) then
-		return ('%.2fm'):format(value / 1e6):gsub('%.?0+([km])$', '%1')
-	elseif(value >= 1e4) then
-		return ('%.1fk'):format(value / 1e3):gsub('%.?0+([km])$', '%1')
-	else
-		return value
-	end
-end
-
-oUF.Tags['p3lim:health'] = function(unit)
-	local min, max = UnitHealth(unit), UnitHealthMax(unit)
-	local status = not UnitIsConnected(unit) and 'Offline' or UnitIsGhost(unit) and 'Ghost' or UnitIsDead(unit) and 'Dead'
-
-	if(status) then
-		return status
-	elseif(unit == 'target' and UnitCanAttack('player', unit)) then
-		return ('%s (%d|cff0090ff%%|r)'):format(ShortenValue(min), min / max * 100)
-	elseif(unit == 'player' and min ~= max) then
-		return ('|cffff8080%d|r %d|cff0090ff%%|r'):format(min - max, min / max * 100)
-	elseif(min ~= max) then
-		return ('%s |cff0090ff/|r %s'):format(ShortenValue(min), ShortenValue(max))
-	else
-		return max
-	end
-end
-
-oUF.Tags['p3lim:power'] = function(unit)
-	local power = UnitPower(unit)
-	if(power > 0 and not UnitIsDeadOrGhost(unit)) then
-		local _, type = UnitPowerType(unit)
-		local colors = _COLORS.power
-		return ('%s%d|r'):format(Hex(colors[type] or colors['RUNES']), power)
-	end
-end
-
-oUF.Tags['p3lim:druid'] = function(unit)
-	local min, max = UnitPower(unit, 0), UnitPowerMax(unit, 0)
-	if(UnitPowerType(unit) ~= 0 and min ~= max) then
-		return ('|cff0090ff%d%%|r'):format(min / max * 100)
-	end
-end
-
-oUF.TagEvents['p3lim:name'] = 'UNIT_NAME_UPDATE UNIT_REACTION UNIT_FACTION'
-oUF.Tags['p3lim:name'] = function(unit)
-	local reaction = UnitReaction(unit, 'player')
-
-	local r, g, b = 1, 1, 1
-	if((UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) or not UnitIsConnected(unit)) then
-		r, g, b = 3/5, 3/5, 3/5
-	elseif(not UnitIsPlayer(unit) and reaction) then
-		r, g, b = unpack(_COLORS.reaction[reaction])
-	elseif(UnitFactionGroup(unit) and UnitIsEnemy(unit, 'player') and UnitIsPVP(unit)) then
-		r, g, b = 1, 0, 0
-	end
-
-	return ('%s%s|r'):format(Hex(r, g, b), UnitName(unit))
-end
-
-oUF.Tags['p3lim:spell'] = function(unit)
-	return UnitCastingInfo(unit) or UnitChannelInfo(unit)
-end
-
 local function SpawnMenu(self)
 	ToggleDropDownMenu(1, nil, _G[string.gsub(self.unit, '^.', string.upper)..'FrameDropDown'], 'cursor')
 end
@@ -115,6 +52,7 @@ local UnitSpecific = {
 		assistant:SetSize(16, 16)
 		self.Assistant = assistant
 
+		self:Tag(self.HealthValue, '[p3lim:status][p3lim:player]')
 		self:SetWidth(230)
 	end,
 	target = function(self)
@@ -135,6 +73,7 @@ local UnitSpecific = {
 		self:Tag(cpoints, '|cffffffff[cpoints]|r')
 
 		self.Power.PostUpdate = PostUpdatePower
+		self:Tag(self.HealthValue, '[p3lim:status][p3lim:hostile][p3lim:friendly]')
 		self:SetWidth(230)
 	end,
 	pet = function(self)
@@ -148,6 +87,7 @@ local UnitSpecific = {
 		auras.PostCreateIcon = PostCreateAura
 		self.Auras = auras
 
+		self:Tag(self.HealthValue, '[p3lim:status][p3lim:friendly]')
 		self:SetWidth(130)
 	end,
 }
@@ -177,7 +117,7 @@ local function Shared(self, unit)
 	healthValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 	healthValue:SetJustifyH('RIGHT')
 	healthValue.frequentUpdates = 1/4
-	self:Tag(healthValue, '[p3lim:health]')
+	self.HealthValue = healthValue
 
 	if(unit == 'player' or unit == 'target' or unit == 'pet') then
 		local power = CreateFrame('StatusBar', nil, self)
@@ -242,7 +182,7 @@ local function Shared(self, unit)
 		name:SetPoint('RIGHT', healthValue, 'LEFT')
 		name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		name:SetJustifyH('LEFT')
-		self:Tag(name, '[p3lim:name< ][|cff0090ff>rare<|r]')
+		self:Tag(name, '[p3lim:color][name][ |cff0090ff>rare<|r]')
 
 		local debuffs = CreateFrame('Frame', nil, self)
 		debuffs.spacing = 4
@@ -262,6 +202,7 @@ local function Shared(self, unit)
 
 			health:SetAllPoints()
 			self:SetSize(161, 19)
+			self:Tag(healthValue, '[p3lim:status][p3lim:hostile][p3lim:friendly]')
 		end
 
 		if(unit == 'focus') then

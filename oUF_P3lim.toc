@@ -5,4 +5,5 @@
 ## Notes: Minimalistic layout
 ## RequiredDeps: oUF
 
+tags.lua
 oUF_P3lim.lua
