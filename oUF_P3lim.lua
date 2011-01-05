@@ -248,7 +248,7 @@ local function Shared(self, unit)
 		end
 
 		if(unit == 'focus') then
-			debuffs:SetPoint('TOPLEFT', self, 'TOPRIGHT')
+			debuffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
 			debuffs.onlyShowPlayer = true
 		elseif(unit ~= 'target') then
 			debuffs:SetPoint('TOPRIGHT', self, 'TOPLEFT', -4, 0)
