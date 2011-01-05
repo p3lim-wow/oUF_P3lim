@@ -203,7 +203,7 @@ local function Shared(self, unit)
 			powerValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 			powerValue:SetJustifyH('LEFT')
 			powerValue.frequentUpdates = 0.1
-			self:Tag(powerValue, '[p3lim:power< ][p3lim:druid]')
+			self:Tag(powerValue, '[p3lim:power][ >p3lim:druid]')
 		end
 
 		local raidicon = health:CreateTexture(nil, 'OVERLAY')
