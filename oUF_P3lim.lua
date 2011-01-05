@@ -223,7 +223,7 @@ local function Shared(self, unit)
 		local name = health:CreateFontString(nil, 'OVERLAY')
 		name:SetPoint('LEFT', health, 2, 0)
 		name:SetPoint('RIGHT', healthValue, 'LEFT')
-		name:SetFont(FONT, 8, 'OUTLINE')
+		name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		name:SetJustifyH('LEFT')
 		self:Tag(name, '[p3lim:name< ][|cff0090ff>rare<|r]')
 
