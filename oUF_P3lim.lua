@@ -108,8 +108,8 @@ local UnitSpecific = {
 		roleicon:SetAlpha(0)
 		self.LFDRole = roleicon
 
-		self:HookScript('OnEnter', function() groupicon:SetAlpha(1) end)
-		self:HookScript('OnLeave', function() groupicon:SetAlpha(0) end)
+		self:HookScript('OnEnter', function() roleicon:SetAlpha(1) end)
+		self:HookScript('OnLeave', function() roleicon:SetAlpha(0) end)
 
 		self.Health:SetAllPoints()
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:percent]')
