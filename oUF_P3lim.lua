@@ -156,7 +156,6 @@ local function Shared(self, unit)
 		power.colorTapping = true
 		power.colorDisconnected = true
 		power.colorReaction = unit ~= 'pet'
-		power.colorHappiness = unit == 'pet'
 		power.colorPower = unit == 'pet'
 
 		local powerBG = power:CreateTexture(nil, 'BORDER')
