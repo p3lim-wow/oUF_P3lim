@@ -19,6 +19,15 @@ local function PostUpdatePower(element, unit, min, max)
 	element:GetParent().Health:SetHeight(max ~= 0 and 20 or 22)
 end
 
+local function PostUpdateCast(element, unit)
+	local Spark = element.Spark
+	if(not element.interrupt and UnitCanAttack('player', unit)) then
+		Spark:SetTexture(1, 0, 0)
+	else
+		Spark:SetTexture(1, 1, 1)
+	end
+end
+
 local function PostCreateAura(element, button)
 	button:SetBackdrop(BACKDROP)
 	button:SetBackdropColor(0, 0, 0)
@@ -164,19 +173,19 @@ local function Shared(self, unit)
 		powerBG.multiplier = 1/3
 		power.bg = powerBG
 
+		local castbar = CreateFrame('StatusBar', nil, self)
+		castbar:SetAllPoints(health)
+		castbar:SetStatusBarTexture(TEXTURE)
+		castbar:SetStatusBarColor(0, 0, 0, 0)
+		castbar:SetToplevel(true)
+		self.Castbar = castbar
+
+		local spark = castbar:CreateTexture(nil, 'OVERLAY')
+		spark:SetSize(2, 20)
+		spark:SetTexture(1, 1, 1)
+		castbar.Spark = spark
+
 		if(unit ~= 'target') then
-			local castbar = CreateFrame('StatusBar', nil, self)
-			castbar:SetAllPoints(health)
-			castbar:SetStatusBarTexture(TEXTURE)
-			castbar:SetStatusBarColor(0, 0, 0, 0)
-			castbar:SetToplevel(true)
-			self.Castbar = castbar
-
-			local spark = castbar:CreateTexture(nil, 'OVERLAY')
-			spark:SetSize(2, 20)
-			spark:SetTexture(1, 1, 1)
-			castbar.Spark = spark
-
 			local powerValue = health:CreateFontString(nil, 'OVERLAY')
 			powerValue:SetPoint('LEFT', health, 2, 0)
 			powerValue:SetPoint('RIGHT', healthValue, 'LEFT', -3)
@@ -184,6 +193,11 @@ local function Shared(self, unit)
 			powerValue:SetJustifyH('LEFT')
 			powerValue.frequentUpdates = 0.1
 			self:Tag(powerValue, '[p3lim:power][ >p3lim:druid][ | >p3lim:spell]')
+		else
+			castbar.PostCastStart = PostUpdateCast
+			castbar.PostCastInterruptible = PostUpdateCast
+			castbar.PostCastNotInterruptible = PostUpdateCast
+			castbar.PostChannelStart = PostUpdateCast
 		end
 
 		local raidicon = health:CreateTexture(nil, 'OVERLAY')
