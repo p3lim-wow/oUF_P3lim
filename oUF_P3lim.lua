@@ -37,16 +37,10 @@ local function PostCreateAura(element, button)
 end
 
 local function PostUpdateDebuff(element, unit, button, index)
-	if(UnitIsFriend('player', unit) or button.isPlayer) then
-		local _, _, _, _, type = UnitAura(unit, index, button.filter)
-		local color = DebuffTypeColor[type] or DebuffTypeColor.none
+	local _, _, _, _, type = UnitAura(unit, index, button.filter)
+	local color = DebuffTypeColor[type or 'none']
 
-		button:SetBackdropColor(color.r * 3/5, color.g * 3/5, color.b * 3/5)
-		button.icon:SetDesaturated(false)
-	else
-		button:SetBackdropColor(0, 0, 0)
-		button.icon:SetDesaturated(true)
-	end
+	button:SetBackdropColor(color.r * 3/5, color.g * 3/5, color.b * 3/5)
 end
 
 local UnitSpecific = {
@@ -69,6 +63,9 @@ local UnitSpecific = {
 		powerValue.frequentUpdates = 0.1
 		self:Tag(powerValue, '[p3lim:power][ >p3lim:druid][ | >p3lim:spell]')
 
+		self.Debuffs.size = 22
+		self.Debuffs:SetSize(230, 20)
+
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:player]')
 		self:SetWidth(230)
 	end,
@@ -84,15 +81,21 @@ local UnitSpecific = {
 		buffs.PostCreateIcon = PostCreateAura
 		self.Buffs = buffs
 
+		local cpoints = self:CreateFontString(nil, 'OVERLAY', 'SubZoneTextFont')
+		cpoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
+		cpoints:SetJustifyH('RIGHT')
+		self:Tag(cpoints, '|cffffffff[cpoints]|r')
+
 		self.Castbar.PostCastStart = PostUpdateCast
 		self.Castbar.PostCastInterruptible = PostUpdateCast
 		self.Castbar.PostCastNotInterruptible = PostUpdateCast
 		self.Castbar.PostChannelStart = PostUpdateCast
 
-		local cpoints = self:CreateFontString(nil, 'OVERLAY', 'SubZoneTextFont')
-		cpoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
-		cpoints:SetJustifyH('RIGHT')
-		self:Tag(cpoints, '|cffffffff[cpoints]|r')
+		self.Debuffs.num = 20
+		self.Debuffs.size = 19.4
+		self.Debuffs['growth-y'] = 'DOWN'
+		self.Debuffs:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -4)
+		self.Debuffs:SetSize(230, 19.4)
 
 		self.Power.PostUpdate = PostUpdatePower
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:hostile][p3lim:friendly]')
@@ -151,6 +154,13 @@ local function Shared(self, unit)
 	healthValue.frequentUpdates = 1/4
 	self.HealthValue = healthValue
 
+	local debuffs = CreateFrame('Frame', nil, self)
+	debuffs.spacing = 4
+	debuffs.initialAnchor = 'TOPLEFT'
+	debuffs.PostCreateIcon = PostCreateAura
+	debuffs.PostUpdateIcon = PostUpdateDebuff
+	self.Debuffs = debuffs
+
 	if(unit == 'player' or unit == 'target') then
 		local power = CreateFrame('StatusBar', nil, self)
 		power:SetPoint('BOTTOMRIGHT')
@@ -196,45 +206,31 @@ local function Shared(self, unit)
 		self:SetHeight(22)
 	end
 
-	if(unit == 'focus' or unit:find('target')) then
+	if(unit ~= 'player') then
 		local name = health:CreateFontString(nil, 'OVERLAY')
 		name:SetPoint('LEFT', health, 2, 0)
 		name:SetPoint('RIGHT', healthValue, 'LEFT')
 		name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		name:SetJustifyH('LEFT')
 		self:Tag(name, '[p3lim:color][name][ |cff0090ff>rare<|r]')
+	end
 
-		local debuffs = CreateFrame('Frame', nil, self)
-		debuffs.spacing = 4
-		debuffs.initialAnchor = 'TOPLEFT'
-		debuffs.PostCreateIcon = PostCreateAura
-		self.Debuffs = debuffs
+	if(unit == 'focus' or unit == 'targettarget') then
+		debuffs.num = 3
+		debuffs.size = 19
+		debuffs:SetSize(230, 19)
 
-		if(unit == 'target') then
-			debuffs.num = 20
-			debuffs.size = 19.4
-			debuffs['growth-y'] = 'DOWN'
-			debuffs.PostUpdateIcon = PostUpdateDebuff
-			debuffs:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -4)
-		else
-			debuffs.num = 3
-			debuffs.size = 19
+		health:SetAllPoints()
+		self:SetSize(161, 19)
+	end
 
-			health:SetAllPoints()
-			self:SetSize(161, 19)
-			self:Tag(healthValue, '[p3lim:status][p3lim:hostile][p3lim:friendly]')
-		end
-
-		if(unit == 'focus') then
-			debuffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
-			debuffs.onlyShowPlayer = true
-		elseif(unit ~= 'target') then
-			debuffs:SetPoint('TOPRIGHT', self, 'TOPLEFT', -4, 0)
-			debuffs.initialAnchor = 'TOPRIGHT'
-			debuffs['growth-x'] = 'LEFT'
-		end
-
-		debuffs:SetSize(230, debuffs.size)
+	if(unit == 'focus') then
+		debuffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
+		debuffs.onlyShowPlayer = true
+	elseif(unit == 'player' or unit == 'targettarget') then
+		debuffs:SetPoint('TOPRIGHT', self, 'TOPLEFT', -4, 0)
+		debuffs.initialAnchor = 'TOPRIGHT'
+		debuffs['growth-x'] = 'LEFT'
 	end
 
 	if(UnitSpecific[unit]) then
