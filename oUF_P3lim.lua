@@ -61,6 +61,14 @@ local UnitSpecific = {
 		assistant:SetSize(16, 16)
 		self.Assistant = assistant
 
+		local powerValue = self.Health:CreateFontString(nil, 'OVERLAY')
+		powerValue:SetPoint('LEFT', self.Health, 2, 0)
+		powerValue:SetPoint('RIGHT', self.HealthValue, 'LEFT', -3)
+		powerValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
+		powerValue:SetJustifyH('LEFT')
+		powerValue.frequentUpdates = 0.1
+		self:Tag(powerValue, '[p3lim:power][ >p3lim:druid][ | >p3lim:spell]')
+
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:player]')
 		self:SetWidth(230)
 	end,
@@ -75,6 +83,11 @@ local UnitSpecific = {
 		buffs['growth-y'] = 'DOWN'
 		buffs.PostCreateIcon = PostCreateAura
 		self.Buffs = buffs
+
+		self.Castbar.PostCastStart = PostUpdateCast
+		self.Castbar.PostCastInterruptible = PostUpdateCast
+		self.Castbar.PostCastNotInterruptible = PostUpdateCast
+		self.Castbar.PostChannelStart = PostUpdateCast
 
 		local cpoints = self:CreateFontString(nil, 'OVERLAY', 'SubZoneTextFont')
 		cpoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
@@ -184,21 +197,6 @@ local function Shared(self, unit)
 		spark:SetSize(2, 20)
 		spark:SetTexture(1, 1, 1)
 		castbar.Spark = spark
-
-		if(unit ~= 'target') then
-			local powerValue = health:CreateFontString(nil, 'OVERLAY')
-			powerValue:SetPoint('LEFT', health, 2, 0)
-			powerValue:SetPoint('RIGHT', healthValue, 'LEFT', -3)
-			powerValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
-			powerValue:SetJustifyH('LEFT')
-			powerValue.frequentUpdates = 0.1
-			self:Tag(powerValue, '[p3lim:power][ >p3lim:druid][ | >p3lim:spell]')
-		else
-			castbar.PostCastStart = PostUpdateCast
-			castbar.PostCastInterruptible = PostUpdateCast
-			castbar.PostCastNotInterruptible = PostUpdateCast
-			castbar.PostChannelStart = PostUpdateCast
-		end
 
 		local raidicon = health:CreateTexture(nil, 'OVERLAY')
 		raidicon:SetPoint('TOP', self, 0, 8)
