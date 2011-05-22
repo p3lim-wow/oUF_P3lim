@@ -98,20 +98,6 @@ local UnitSpecific = {
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:hostile][p3lim:friendly]')
 		self:SetWidth(230)
 	end,
-	pet = function(self)
-		local auras = CreateFrame('Frame', nil, self)
-		auras:SetPoint('TOPRIGHT', self, 'TOPLEFT', -4, 0)
-		auras:SetSize(236, 44)
-		auras.size = 20
-		auras.spacing = 4
-		auras.initialAnchor = 'TOPRIGHT'
-		auras['growth-x'] = 'LEFT'
-		auras.PostCreateIcon = PostCreateAura
-		self.Auras = auras
-
-		self:Tag(self.HealthValue, '[p3lim:status][p3lim:friendly]')
-		self:SetWidth(130)
-	end,
 	party = function(self)
 		local name = self.Health:CreateFontString(nil, 'OVERLAY')
 		name:SetPoint('LEFT', 3, 0)
@@ -165,7 +151,7 @@ local function Shared(self, unit)
 	healthValue.frequentUpdates = 1/4
 	self.HealthValue = healthValue
 
-	if(unit == 'player' or unit == 'target' or unit == 'pet') then
+	if(unit == 'player' or unit == 'target') then
 		local power = CreateFrame('StatusBar', nil, self)
 		power:SetPoint('BOTTOMRIGHT')
 		power:SetPoint('BOTTOMLEFT')
@@ -177,8 +163,7 @@ local function Shared(self, unit)
 		power.colorClass = true
 		power.colorTapping = true
 		power.colorDisconnected = true
-		power.colorReaction = unit ~= 'pet'
-		power.colorPower = unit == 'pet'
+		power.colorReaction = true
 
 		local powerBG = power:CreateTexture(nil, 'BORDER')
 		powerBG:SetAllPoints()
@@ -261,7 +246,6 @@ oUF:RegisterStyle('P3lim', Shared)
 oUF:Factory(function(self)
 	self:SetActiveStyle('P3lim')
 	self:Spawn('player'):SetPoint('CENTER', -300, -250)
-	self:Spawn('pet'):SetPoint('CENTER', -490, -250)
 	self:Spawn('focus'):SetPoint('CENTER', -335, -225)
 	self:Spawn('target'):SetPoint('CENTER', 300, -250)
 	self:Spawn('targettarget'):SetPoint('CENTER', 334, -225)
