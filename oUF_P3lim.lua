@@ -84,16 +84,6 @@ end
 
 local UnitSpecific = {
 	player = function(self)
-		local leader = self.Health:CreateTexture(nil, 'OVERLAY')
-		leader:SetPoint('TOPLEFT', self, 0, 8)
-		leader:SetSize(16, 16)
-		self.Leader = leader
- 
-		local assistant = self.Health:CreateTexture(nil, 'OVERLAY')
-		assistant:SetPoint('TOPLEFT', self, 0, 8)
-		assistant:SetSize(16, 16)
-		self.Assistant = assistant
-
 		local powerValue = self.Health:CreateFontString(nil, 'OVERLAY')
 		powerValue:SetPoint('LEFT', self.Health, 2, 0)
 		powerValue:SetPoint('RIGHT', self.HealthValue, 'LEFT', -3)
@@ -141,11 +131,6 @@ local UnitSpecific = {
 		name:SetJustifyH('LEFT')
 		self:Tag(name, '[p3lim:unbuffed< ][p3lim:leader][raidcolor][name]')
 
-		local phase = self.Health:CreateFontString(nil, 'OVERLAY')
-		phase:SetPoint('CENTER')
-		phase:SetFont([=[Fonts\ARIALN.TTF]=], 12, 'OUTLINEMONOCHROME')
-		self:Tag(phase, '|cff6000ff[p3lim:phase]|r')
-
 		local roleicon = self:CreateTexture(nil, 'ARTWORK')
 		roleicon:SetPoint('LEFT', self, 'RIGHT', 3, 0)
 		roleicon:SetSize(14, 14)
@@ -159,6 +144,8 @@ local UnitSpecific = {
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:percent]')
 	end
 }
+UnitSpecific.raid = UnitSpecific.party
+
 local function Shared(self, unit)
 	self.colors.power.MANA = {0, 144/255, 1}
 
@@ -242,7 +229,7 @@ local function Shared(self, unit)
 		self:SetHeight(22)
 	end
 
-	if(unit ~= 'player') then
+	if(unit ~= 'player' and unit ~= 'party' and unit ~= 'raid') then
 		local name = health:CreateFontString(nil, 'OVERLAY')
 		name:SetPoint('LEFT', health, 2, 0)
 		name:SetPoint('RIGHT', healthValue, 'LEFT')
@@ -251,7 +238,7 @@ local function Shared(self, unit)
 		self:Tag(name, '[p3lim:color][name][ |cff0090ff>rare<|r]')
 	end
 
-	if(unit ~= 'party') then
+	if(unit ~= 'party' and unit ~= 'raid') then
 		local debuffs = CreateFrame('Frame', nil, self)
 		debuffs.spacing = 4
 		debuffs.initialAnchor = 'TOPLEFT'
@@ -290,8 +277,8 @@ oUF:Factory(function(self)
 	self:Spawn('target'):SetPoint('CENTER', 300, -250)
 	self:Spawn('targettarget'):SetPoint('CENTER', 334, -225)
 
-	self:SpawnHeader(nil, nil, 'party',
-		'showParty', true, 'showPlayer', true, 'yOffset', -6,
+	self:SpawnHeader(nil, nil, 'party,raid10',
+		'showParty', true, 'showRaid', true, 'showPlayer', true, 'yOffset', -6,
 		'oUF-initialConfigFunction', [[
 			self:SetHeight(16)
 			self:SetWidth(126)
