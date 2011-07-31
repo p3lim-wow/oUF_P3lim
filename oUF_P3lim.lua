@@ -37,10 +37,49 @@ local function PostCreateAura(element, button)
 end
 
 local function PostUpdateDebuff(element, unit, button, index)
-	local _, _, _, _, type = UnitAura(unit, index, button.filter)
+	local _, _, _, _, type, _, _, owner = UnitAura(unit, index, button.filter)
 	local color = DebuffTypeColor[type or 'none']
 
-	button:SetBackdropColor(color.r * 3/5, color.g * 3/5, color.b * 3/5)
+	if(owner == 'player') then
+		button:SetBackdropColor(color.r * 3/5, color.g * 3/5, color.b * 3/5)
+		button.icon:SetDesaturated(false)
+	else
+		button:SetBackdropColor(0, 0, 0)
+		button.icon:SetDesaturated(true)
+	end
+end
+
+
+local FilterPlayerBuffs
+do
+	local spells = {
+		[5217] = true, -- Tiger's Fury
+		[50334] = true, -- Berserk
+		[52610] = true, -- Savage Roar
+	}
+
+	function FilterPlayerBuffs(...)
+		local _, _, _, _, _, _, _, _, _, _, _, _, _, id = ...
+		return spells[id]
+	end
+end
+
+local FilterTargetDebuffs
+do
+	local spells = {
+		[770] = true, -- Faerie Fire
+		[7386] = true, -- Sunder Armor
+		[16511] = true, -- Hemorrhage
+		[16857] = true, -- Faerie Fire (Feral)
+		[33876] = true, -- Mangle (Cat)
+		[33878] = true, -- Mangle (Bear)
+		[46857] = true, -- Trauma
+	}
+
+	function FilterTargetDebuffs(...)
+		local _, _, _, _, _, _, _, _, _, _, owner, _, _, id = ...
+		return owner == 'player' or spells[id]
+	end
 end
 
 local UnitSpecific = {
@@ -49,7 +88,7 @@ local UnitSpecific = {
 		leader:SetPoint('TOPLEFT', self, 0, 8)
 		leader:SetSize(16, 16)
 		self.Leader = leader
-
+ 
 		local assistant = self.Health:CreateTexture(nil, 'OVERLAY')
 		assistant:SetPoint('TOPLEFT', self, 0, 8)
 		assistant:SetSize(16, 16)
@@ -65,22 +104,12 @@ local UnitSpecific = {
 
 		self.Debuffs.size = 22
 		self.Debuffs:SetSize(230, 20)
+		self.Buffs.CustomFilter = FilterPlayerBuffs
 
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:player]')
 		self:SetWidth(230)
 	end,
 	target = function(self)
-		local buffs = CreateFrame('Frame', nil, self)
-		buffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
-		buffs:SetSize(236, 44)
-		buffs.num = 20
-		buffs.size = 20
-		buffs.spacing = 4
-		buffs.initialAnchor = 'TOPLEFT'
-		buffs['growth-y'] = 'DOWN'
-		buffs.PostCreateIcon = PostCreateAura
-		self.Buffs = buffs
-
 		local cpoints = self:CreateFontString(nil, 'OVERLAY', 'SubZoneTextFont')
 		cpoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
 		cpoints:SetJustifyH('RIGHT')
@@ -96,6 +125,10 @@ local UnitSpecific = {
 		self.Debuffs['growth-y'] = 'DOWN'
 		self.Debuffs:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -4)
 		self.Debuffs:SetSize(230, 19.4)
+		self.Debuffs.CustomFilter = FilterTargetDebuffs
+		self.Debuffs.PostUpdateIcon = PostUpdateDebuff
+
+		self:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED', CLEU)
 
 		self.Power.PostUpdate = PostUpdatePower
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:hostile][p3lim:friendly]')
@@ -126,7 +159,6 @@ local UnitSpecific = {
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:percent]')
 	end
 }
-
 local function Shared(self, unit)
 	self.colors.power.MANA = {0, 144/255, 1}
 
@@ -154,13 +186,6 @@ local function Shared(self, unit)
 	healthValue.frequentUpdates = 1/4
 	self.HealthValue = healthValue
 
-	local debuffs = CreateFrame('Frame', nil, self)
-	debuffs.spacing = 4
-	debuffs.initialAnchor = 'TOPLEFT'
-	debuffs.PostCreateIcon = PostCreateAura
-	debuffs.PostUpdateIcon = PostUpdateDebuff
-	self.Debuffs = debuffs
-
 	if(unit == 'player' or unit == 'target') then
 		local power = CreateFrame('StatusBar', nil, self)
 		power:SetPoint('BOTTOMRIGHT')
@@ -180,6 +205,17 @@ local function Shared(self, unit)
 		powerBG:SetTexture(TEXTURE)
 		powerBG.multiplier = 1/3
 		power.bg = powerBG
+
+		local buffs = CreateFrame('Frame', nil, self)
+		buffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
+		buffs:SetSize(236, 44)
+		buffs.num = 20
+		buffs.size = 22
+		buffs.spacing = 4
+		buffs.initialAnchor = 'TOPLEFT'
+		buffs['growth-y'] = 'DOWN'
+		buffs.PostCreateIcon = PostCreateAura
+		self.Buffs = buffs
 
 		local castbar = CreateFrame('StatusBar', nil, self)
 		castbar:SetAllPoints(health)
@@ -215,22 +251,30 @@ local function Shared(self, unit)
 		self:Tag(name, '[p3lim:color][name][ |cff0090ff>rare<|r]')
 	end
 
-	if(unit == 'focus' or unit == 'targettarget') then
-		debuffs.num = 3
-		debuffs.size = 19
-		debuffs:SetSize(230, 19)
+	if(unit ~= 'party') then
+		local debuffs = CreateFrame('Frame', nil, self)
+		debuffs.spacing = 4
+		debuffs.initialAnchor = 'TOPLEFT'
+		debuffs.PostCreateIcon = PostCreateAura
+		self.Debuffs = debuffs
 
-		health:SetAllPoints()
-		self:SetSize(161, 19)
-	end
+		if(unit == 'focus' or unit == 'targettarget') then
+			debuffs.num = 3
+			debuffs.size = 19
+			debuffs:SetSize(230, 19)
 
-	if(unit == 'focus') then
-		debuffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
-		debuffs.onlyShowPlayer = true
-	elseif(unit == 'player' or unit == 'targettarget') then
-		debuffs:SetPoint('TOPRIGHT', self, 'TOPLEFT', -4, 0)
-		debuffs.initialAnchor = 'TOPRIGHT'
-		debuffs['growth-x'] = 'LEFT'
+			health:SetAllPoints()
+			self:SetSize(161, 19)
+		end
+
+		if(unit == 'focus') then
+			debuffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
+			debuffs.onlyShowPlayer = true
+		elseif(unit == 'player' or unit == 'targettarget') then
+			debuffs:SetPoint('TOPRIGHT', self, 'TOPLEFT', -4, 0)
+			debuffs.initialAnchor = 'TOPRIGHT'
+			debuffs['growth-x'] = 'LEFT'
+		end
 	end
 
 	if(UnitSpecific[unit]) then
