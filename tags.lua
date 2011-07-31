@@ -109,13 +109,6 @@ oUF.Tags['p3lim:leader'] = function(unit)
 	end
 end
 
-oUF.TagEvents['p3lim:phase'] = 'UNIT_PHASE'
-oUF.Tags['p3lim:phase'] = function(unit)
-	if(not UnitInPhase(unit)) then
-		return RANGE_INDICATOR
-	end
-end
-
 oUF.TagEvents['p3lim:unbuffed'] = 'UNIT_AURA'
 oUF.Tags['p3lim:unbuffed'] = function(unit)
 	if(not UnitAura(unit, 'Mark of the Wild') and not UnitAura(unit, 'Blessing of Kings')) then
