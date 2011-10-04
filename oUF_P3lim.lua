@@ -112,6 +112,7 @@ do
 		[5217] = true, -- Tiger's Fury
 		[50334] = true, -- Berserk
 		[52610] = true, -- Savage Roar
+		[79633] = true, -- Tol'vir Potion
 	}
 
 	function FilterPlayerBuffs(...)
