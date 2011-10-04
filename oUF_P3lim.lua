@@ -36,7 +36,7 @@ local function PostCreateAura(element, button)
 	button.icon:SetDrawLayer('ARTWORK')
 end
 
-local CLEU, PostUpdateDebuff
+local CLEU, ATGC, PostUpdateDebuff
 do
 	local stack = 0
 	function PostUpdateDebuff(element, unit, button, index)
@@ -60,8 +60,9 @@ do
 		end
 	end
 
-	local player
+	local player, glyphed
 	function CLEU(self, ...)
+		if(not glyphed) then return end
 		if(not player) then
 			player = UnitGUID('player')
 		end
@@ -70,7 +71,7 @@ do
 		if(source ~= player) then return end
 
 		if(spell == 1079) then
-			if(event == 'SPELL_AURA_APPLIED' or event == 'SPELL_AURA_REFRESH') then
+			if(event == 'SPELL_AURA_APPLIED' or event == 'SPELL_AURA_REFRESH' or event == 'SPELL_AURA_REMOVED') then
 				stack = 0
 				self.Debuffs:ForceUpdate()
 			end
@@ -88,6 +89,21 @@ do
 			end
 		end
 	end
+
+	local talentGroup
+	local talents = CreateFrame('Frame')
+	talents:RegisterEvent('PLAYER_TALENT_UPDATE')
+	talents:RegisterEvent('GLYPH_UPDATED')
+	talents:SetScript('OnEvent', function(self, event)
+		for index = 1, NUM_GLYPH_SLOTS do
+			local _, _, _, glyph = GetGlyphSocketInfo(index)
+			if(glyph == 54815) then
+				glyphed = true
+				return
+			end
+		end
+		glyphed = false
+	end)
 end
 
 local FilterPlayerBuffs
@@ -158,7 +174,9 @@ local UnitSpecific = {
 		self.Debuffs.CustomFilter = FilterTargetDebuffs
 		self.Debuffs.PostUpdateIcon = PostUpdateDebuff
 
-		self:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED', CLEU)
+		if(select(2, UnitClass('player')) == 'DRUID') then
+			self:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED', CLEU)
+		end
 
 		self.Power.PostUpdate = PostUpdatePower
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:hostile][p3lim:friendly]')
