@@ -134,8 +134,8 @@ do
 	}
 
 	function FilterTargetDebuffs(...)
-		local _, _, _, _, _, _, _, _, _, _, owner, _, _, id = ...
-		return owner == 'player' or spells[id]
+		local _, unit, _, _, _, _, _, _, _, _, owner, _, _, id = ...
+		return owner == 'player' or UnitIsFriend('player', unit) or spells[id]
 	end
 end
 
