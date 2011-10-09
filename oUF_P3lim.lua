@@ -36,7 +36,7 @@ local function PostCreateAura(element, button)
 	button.icon:SetDrawLayer('ARTWORK')
 end
 
-local CLEU, ATGC, PostUpdateDebuff
+local CLEU, PostUpdateDebuff
 do
 	local stack = 0
 	function PostUpdateDebuff(element, unit, button, index)
@@ -231,12 +231,6 @@ local function Shared(self, unit)
 	healthValue:SetJustifyH('RIGHT')
 	healthValue.frequentUpdates = 1/4
 	self.HealthValue = healthValue
-
-	local threat = self.Health:CreateTexture(nil, 'OVERLAY')
-	threat:SetAllPoints(self)
-	threat:SetTexture([=[Interface\RaidFrame\Raid-FrameHighlights]=])
-	threat:SetTexCoord(0.02, 0.543, 0.29, 0.552)
-	self.Threat = threat
 
 	if(unit == 'player' or unit == 'target') then
 		local power = CreateFrame('StatusBar', nil, self)
