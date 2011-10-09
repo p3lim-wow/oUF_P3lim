@@ -9,7 +9,9 @@ local function ShortValue(value)
 	end
 end
 
-oUF.Tags['p3lim:status'] = function(unit)
+local tags = oUF.Tags
+
+tags.Methods['p3lim:status'] = function(unit)
 	if(not UnitIsConnected(unit)) then
 		return 'Offline'
 	elseif(UnitIsGhost(unit)) then
@@ -19,14 +21,14 @@ oUF.Tags['p3lim:status'] = function(unit)
 	end
 end
 
-oUF.Tags['p3lim:health'] = function(unit)
+tags.Methods['p3lim:health'] = function(unit)
 	local max = UnitHealthMax(unit)
 	if(UnitHealth(unit) == max) then
 		return max
 	end
 end
 
-oUF.Tags['p3lim:deficit'] = function(unit)
+tags.Methods['p3lim:deficit'] = function(unit)
 	if(_TAGS['p3lim:status'](unit)) then return end
 
 	local cur, max = UnitHealth(unit), UnitHealthMax(unit)
@@ -35,13 +37,13 @@ oUF.Tags['p3lim:deficit'] = function(unit)
 	end
 end
 
-oUF.Tags['p3lim:percent'] = function(unit)
+tags.Methods['p3lim:percent'] = function(unit)
 	if(_TAGS['p3lim:status'](unit)) then return end
 
 	return ('%d|cff0090ff%%|r'):format(UnitHealth(unit) / UnitHealthMax(unit) * 100)
 end
 
-oUF.Tags['p3lim:player'] = function(unit)
+tags.Methods['p3lim:player'] = function(unit)
 	if(_TAGS['p3lim:status'](unit)) then return end
 
 	local maxHealth = _TAGS['p3lim:health'](unit)
@@ -52,14 +54,14 @@ oUF.Tags['p3lim:player'] = function(unit)
 	end
 end
 
-oUF.Tags['p3lim:hostile'] = function(unit)
+tags.Methods['p3lim:hostile'] = function(unit)
 	if(_TAGS['p3lim:status'](unit)) then return end
 	if(UnitCanAttack('player', unit)) then
 		return ('%s (%s)'):format(ShortValue(UnitHealth(unit)), _TAGS['p3lim:percent'](unit))
 	end
 end
 
-oUF.Tags['p3lim:friendly'] = function(unit)
+tags.Methods['p3lim:friendly'] = function(unit)
 	if(_TAGS['p3lim:status'](unit)) then return end
 
 	if(UnitCanAssist('player', unit)) then
@@ -72,7 +74,7 @@ oUF.Tags['p3lim:friendly'] = function(unit)
 	end
 end
 
-oUF.Tags['p3lim:power'] = function(unit)
+tags.Methods['p3lim:power'] = function(unit)
 	local power = UnitPower(unit)
 	if(power > 0 and not UnitIsDeadOrGhost(unit)) then
 		local _, type = UnitPowerType(unit)
@@ -81,15 +83,15 @@ oUF.Tags['p3lim:power'] = function(unit)
 	end
 end
 
-oUF.Tags['p3lim:druid'] = function(unit)
+tags.Methods['p3lim:druid'] = function(unit)
 	local min, max = UnitPower(unit, 0), UnitPowerMax(unit, 0)
 	if(UnitPowerType(unit) ~= 0 and min ~= max) then
 		return ('|cff0090ff%d%%|r'):format(min / max * 100)
 	end
 end
 
-oUF.TagEvents['p3lim:color'] = 'UNIT_REACTION UNIT_FACTION'
-oUF.Tags['p3lim:color'] = function(unit)
+tags.Events['p3lim:color'] = 'UNIT_REACTION UNIT_FACTION'
+tags.Methods['p3lim:color'] = function(unit)
 	local reaction = UnitReaction(unit, 'player')
 	if((UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) or not UnitIsConnected(unit)) then
 		return Hex(3/5, 3/5, 3/5)
@@ -102,20 +104,20 @@ oUF.Tags['p3lim:color'] = function(unit)
 	end
 end
 
-oUF.TagEvents['p3lim:leader'] = 'PARTY_LEADER_CHANGED'
-oUF.Tags['p3lim:leader'] = function(unit)
+tags.Events['p3lim:leader'] = 'PARTY_LEADER_CHANGED'
+tags.Methods['p3lim:leader'] = function(unit)
 	if(UnitIsPartyLeader(unit)) then
 		return '|cffffff00!|r'
 	end
 end
 
-oUF.TagEvents['p3lim:unbuffed'] = 'UNIT_AURA'
-oUF.Tags['p3lim:unbuffed'] = function(unit)
+tags.Events['p3lim:unbuffed'] = 'UNIT_AURA'
+tags.Methods['p3lim:unbuffed'] = function(unit)
 	if(not UnitAura(unit, 'Mark of the Wild') and not UnitAura(unit, 'Blessing of Kings')) then
 		return '|cffff00ff!|r'
 	end
 end
 
-oUF.Tags['p3lim:spell'] = function(unit)
+tags.Methods['p3lim:spell'] = function(unit)
 	return UnitCastingInfo(unit) or UnitChannelInfo(unit)
 end
