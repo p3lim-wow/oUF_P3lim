@@ -135,7 +135,7 @@ do
 
 	function FilterTargetDebuffs(...)
 		local _, unit, _, _, _, _, _, _, _, _, owner, _, _, id = ...
-		return owner == 'player' or UnitIsFriend('player', unit) or spells[id]
+		return owner == 'player' or owner == 'vehicle' or UnitIsFriend('player', unit) or spells[id]
 	end
 end
 
@@ -336,6 +336,7 @@ oUF:Factory(function(self)
 	self:Spawn('target'):SetPoint('CENTER', 300, -250)
 	self:Spawn('targettarget'):SetPoint('CENTER', 334, -225)
 
+	if(select(2, UnitClass'player') == 'SHAMAN') then return end
 	self:SpawnHeader(nil, nil, 'party,raid10',
 		'showParty', true, 'showRaid', true, 'showPlayer', true, 'yOffset', -6,
 		'oUF-initialConfigFunction', [[
