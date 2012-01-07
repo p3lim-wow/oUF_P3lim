@@ -64,7 +64,7 @@ end
 tags.Methods['p3lim:friendly'] = function(unit)
 	if(_TAGS['p3lim:status'](unit)) then return end
 
-	if(UnitCanAssist('player', unit)) then
+	if(not UnitCanAttack('player', unit)) then
 		local maxHealth = _TAGS['p3lim:health'](unit)
 		if(maxHealth) then
 			return maxHealth
