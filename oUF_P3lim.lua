@@ -112,6 +112,16 @@ do
 		[5217] = true, -- Tiger's Fury
 		[50334] = true, -- Berserk
 		[52610] = true, -- Savage Roar
+
+		[5171] = true, -- Slice and Dice
+		[13750] = true, -- Adrenaline Rush
+		[13877] = true, -- Blade Flurry
+		[84745] = true, -- Shallow Insight
+		[84746] = true, -- Moderate Insight
+		[84747] = true, -- Deep Insight
+
+		[32182] = true, -- Heroism
+		[80353] = true, -- Time Warp
 		[79633] = true, -- Tol'vir Potion
 	}
 
