@@ -342,9 +342,9 @@ oUF:RegisterStyle('P3lim', Shared)
 oUF:Factory(function(self)
 	self:SetActiveStyle('P3lim')
 	self:Spawn('player'):SetPoint('CENTER', -300, -250)
-	self:Spawn('focus'):SetPoint('CENTER', -335, -225)
+	self:Spawn('focus'):SetPoint('TOPLEFT', oUF_P3limPlayer, 0, 26)
 	self:Spawn('target'):SetPoint('CENTER', 300, -250)
-	self:Spawn('targettarget'):SetPoint('CENTER', 334, -225)
+	self:Spawn('targettarget'):SetPoint('TOPRIGHT', oUF_P3limTarget, 0, 26)
 
 	if(select(2, UnitClass'player') == 'SHAMAN') then return end
 	self:SpawnHeader(nil, nil, 'party,raid10',
