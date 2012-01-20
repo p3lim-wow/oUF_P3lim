@@ -134,13 +134,21 @@ end
 local FilterTargetDebuffs
 do
 	local spells = {
-		[770] = true, -- Faerie Fire
+		-- Armor
 		[7386] = true, -- Sunder Armor
+		[8647] = true, -- Expose Armor
+		[91565] = true, -- Faerie Fire
+
+		-- Bleed
 		[16511] = true, -- Hemorrhage
-		[16857] = true, -- Faerie Fire (Feral)
 		[33876] = true, -- Mangle (Cat)
 		[33878] = true, -- Mangle (Bear)
 		[46857] = true, -- Trauma
+
+		-- Vulnerability
+		[30070] = true, -- Blood Frenzy
+		[58683] = true, -- Savage Combat
+		[81326] = true, -- Brittle Bones
 	}
 
 	function FilterTargetDebuffs(...)
