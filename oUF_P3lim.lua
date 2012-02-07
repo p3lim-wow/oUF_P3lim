@@ -55,6 +55,8 @@ do
 		[5217] = true, -- Tiger's Fury
 		[50334] = true, -- Berserk
 		[52610] = true, -- Savage Roar
+		[81022] = true, -- Stampede
+		[109861] = true, -- Kiril, Fury of the Beast
 
 		[5171] = true, -- Slice and Dice
 		[13750] = true, -- Adrenaline Rush
@@ -62,10 +64,12 @@ do
 		[84745] = true, -- Shallow Insight
 		[84746] = true, -- Moderate Insight
 		[84747] = true, -- Deep Insight
+		[105864] = true, -- Tricks of Time (2pc)
 
 		[32182] = true, -- Heroism
-		[80353] = true, -- Time Warp
+		[57933] = true, -- Tricks of the Trade
 		[79633] = true, -- Tol'vir Potion
+		[80353] = true, -- Time Warp
 	}
 
 	function FilterPlayerBuffs(...)
