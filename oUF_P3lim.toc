@@ -1,6 +1,6 @@
 ## Interface: 40200
 ## Author: p3lim
-## Version: 40200.9-Release
+## Version: @project-version@
 ## Title: oUF P3lim
 ## Notes: Minimalistic layout
 ## RequiredDeps: oUF
