@@ -37,9 +37,9 @@ local function PostCreateAura(element, button)
 end
 
 local function PostUpdateDebuff(element, unit, button, index)
-	local _, _, _, _, type = UnitAura(unit, index, button.filter)
+	local _, _, _, _, type, _, _, owner = UnitAura(unit, index, button.filter)
 
-	if(button.owner == 'player') then
+	if(owner == 'player') then
 		local color = DebuffTypeColor[type or 'none']
 		button:SetBackdropColor(color.r * 3/5, color.g * 3/5, color.b * 3/5)
 		button.icon:SetDesaturated(false)
