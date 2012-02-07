@@ -36,74 +36,17 @@ local function PostCreateAura(element, button)
 	button.icon:SetDrawLayer('ARTWORK')
 end
 
-local CLEU, PostUpdateDebuff
-do
-	local stack = 0
-	function PostUpdateDebuff(element, unit, button, index)
-		local _, _, _, count, type, _, _, owner, _, _, id = UnitAura(unit, index, button.filter)
+local function PostUpdateDebuff(element, unit, button, index)
+	local _, _, _, _, type = UnitAura(unit, index, button.filter)
+
+	if(button.owner == 'player') then
 		local color = DebuffTypeColor[type or 'none']
-
-		if(owner == 'player') then
-			button:SetBackdropColor(color.r * 3/5, color.g * 3/5, color.b * 3/5)
-			button.icon:SetDesaturated(false)
-		else
-			button:SetBackdropColor(0, 0, 0)
-			button.icon:SetDesaturated(true)
-		end
-
-		if(id == 1079 and owner == 'player') then
-			if(stack) then
-				button.count:SetText(stack > 0 and stack or '')
-			end
-		elseif(not count or count < 2) then
-			button.count:SetText()
-		end
+		button:SetBackdropColor(color.r * 3/5, color.g * 3/5, color.b * 3/5)
+		button.icon:SetDesaturated(false)
+	else
+		button:SetBackdropColor(0, 0, 0)
+		button.icon:SetDesaturated(true)
 	end
-
-	local player, glyphed
-	function CLEU(self, ...)
-		if(not glyphed) then return end
-		if(not player) then
-			player = UnitGUID('player')
-		end
-
-		local _, _, event, _, source, _, _, _, _, _, _, _, spell = ...
-		if(source ~= player) then return end
-
-		if(spell == 1079) then
-			if(event == 'SPELL_AURA_APPLIED' or event == 'SPELL_AURA_REFRESH' or event == 'SPELL_AURA_REMOVED') then
-				stack = 0
-				self.Debuffs:ForceUpdate()
-			end
-		end
-
-		if(event == 'SPELL_DAMAGE') then
-			if(spell == 5221 and stack < 3) then
-				stack = stack + 1
-				self.Debuffs:ForceUpdate()
-			elseif(spell == 22568) then
-				if(UnitHealth('target') / UnitHealthMax('target') <= 0.25) then
-					stack = 0
-					self.Debuffs:ForceUpdate()
-				end
-			end
-		end
-	end
-
-	local talentGroup
-	local talents = CreateFrame('Frame')
-	talents:RegisterEvent('PLAYER_TALENT_UPDATE')
-	talents:RegisterEvent('GLYPH_UPDATED')
-	talents:SetScript('OnEvent', function(self, event)
-		for index = 1, NUM_GLYPH_SLOTS do
-			local _, _, _, glyph = GetGlyphSocketInfo(index)
-			if(glyph == 54815) then
-				glyphed = true
-				return
-			end
-		end
-		glyphed = false
-	end)
 end
 
 local FilterPlayerBuffs
@@ -192,10 +135,6 @@ local UnitSpecific = {
 		self.Debuffs:SetSize(230, 19.4)
 		self.Debuffs.CustomFilter = FilterTargetDebuffs
 		self.Debuffs.PostUpdateIcon = PostUpdateDebuff
-
-		if(select(2, UnitClass('player')) == 'DRUID') then
-			self:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED', CLEU)
-		end
 
 		self.Power.PostUpdate = PostUpdatePower
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:hostile][p3lim:friendly]')
