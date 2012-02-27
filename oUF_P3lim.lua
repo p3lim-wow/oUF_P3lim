@@ -106,33 +106,32 @@ end
 
 local UnitSpecific = {
 	player = function(self)
-		local powerValue = self.Health:CreateFontString(nil, 'OVERLAY')
-		powerValue:SetPoint('LEFT', self.Health, 2, 0)
-		powerValue:SetPoint('RIGHT', self.HealthValue, 'LEFT', -3)
-		powerValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
-		powerValue:SetJustifyH('LEFT')
-		powerValue.frequentUpdates = 0.1
-		self:Tag(powerValue, '[p3lim:power][ >p3lim:druid][ | >p3lim:spell]')
+		local PowerValue = self.Health:CreateFontString(nil, 'OVERLAY')
+		PowerValue:SetPoint('LEFT', 2, 0)
+		PowerValue:SetPoint('RIGHT', self.HealthValue, 'LEFT', -3)
+		PowerValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
+		PowerValue:SetJustifyH('LEFT')
+		PowerValue.frequentUpdates = 0.1
+		self:Tag(PowerValue, '[p3lim:power][ >p3lim:druid][ | >p3lim:spell]')
 
 		self.Debuffs.size = 22
-		self.Debuffs:SetSize(230, 20)
+		self.Debuffs:SetSize(230, 22)
 		self.Buffs.CustomFilter = FilterPlayerBuffs
 
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:player]')
 		self:SetWidth(230)
 	end,
 	target = function(self)
-		local cpoints = self:CreateFontString(nil, 'OVERLAY', 'SubZoneTextFont')
-		cpoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
-		cpoints:SetJustifyH('RIGHT')
-		self:Tag(cpoints, '|cffffffff[cpoints]|r')
+		local ComboPoints = self:CreateFontString(nil, 'OVERLAY', 'SubZoneTextFont')
+		ComboPoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
+		ComboPoints:SetJustifyH('RIGHT')
+		self:Tag(ComboPoints, '|cffffffff[cpoints]|r')
 
 		self.Castbar.PostCastStart = PostUpdateCast
 		self.Castbar.PostCastInterruptible = PostUpdateCast
 		self.Castbar.PostCastNotInterruptible = PostUpdateCast
 		self.Castbar.PostChannelStart = PostUpdateCast
 
-		self.Debuffs.num = 20
 		self.Debuffs.size = 19.4
 		self.Debuffs['growth-y'] = 'DOWN'
 		self.Debuffs:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -4)
@@ -145,20 +144,20 @@ local UnitSpecific = {
 		self:SetWidth(230)
 	end,
 	party = function(self)
-		local name = self.Health:CreateFontString(nil, 'OVERLAY')
-		name:SetPoint('LEFT', 3, 0)
-		name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
-		name:SetJustifyH('LEFT')
-		self:Tag(name, '[p3lim:unbuffed< ][p3lim:leader][raidcolor][name]')
+		local Name = self.Health:CreateFontString(nil, 'OVERLAY')
+		Name:SetPoint('LEFT', 3, 0)
+		Name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
+		Name:SetJustifyH('LEFT')
+		self:Tag(Name, '[p3lim:unbuffed< ][p3lim:leader][raidcolor][name]')
 
-		local roleicon = self:CreateTexture(nil, 'ARTWORK')
-		roleicon:SetPoint('LEFT', self, 'RIGHT', 3, 0)
-		roleicon:SetSize(14, 14)
-		roleicon:SetAlpha(0)
-		self.LFDRole = roleicon
+		local RoleIcon = self:CreateTexture(nil, 'ARTWORK')
+		RoleIcon:SetPoint('LEFT', self, 'RIGHT', 3, 0)
+		RoleIcon:SetSize(14, 14)
+		RoleIcon:SetAlpha(0)
+		self.LFDRole = RoleIcon
 
-		self:HookScript('OnEnter', function() roleicon:SetAlpha(1) end)
-		self:HookScript('OnLeave', function() roleicon:SetAlpha(0) end)
+		self:HookScript('OnEnter', function() RoleIcon:SetAlpha(1) end)
+		self:HookScript('OnLeave', function() RoleIcon:SetAlpha(0) end)
 
 		self.Health:SetAllPoints()
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:percent]')
@@ -176,112 +175,112 @@ local function Shared(self, unit)
 	self:SetBackdrop(BACKDROP)
 	self:SetBackdropColor(0, 0, 0)
 
-	local health = CreateFrame('StatusBar', nil, self)
-	health:SetStatusBarTexture(TEXTURE)
-	health:SetStatusBarColor(1/6, 1/6, 2/7)
-	health.frequentUpdates = true
-	self.Health = health
+	local Health = CreateFrame('StatusBar', nil, self)
+	Health:SetStatusBarTexture(TEXTURE)
+	Health:SetStatusBarColor(1/6, 1/6, 2/7)
+	Health.frequentUpdates = true
+	self.Health = Health
 
-	local healthBG = health:CreateTexture(nil, 'BORDER')
-	healthBG:SetAllPoints()
-	healthBG:SetTexture(1/3, 1/3, 1/3)
+	local HealthBG = Health:CreateTexture(nil, 'BORDER')
+	HealthBG:SetAllPoints()
+	HealthBG:SetTexture(1/3, 1/3, 1/3)
 
-	local healthValue = health:CreateFontString(nil, 'OVERLAY')
-	healthValue:SetPoint('RIGHT', health, -2, 0)
-	healthValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
-	healthValue:SetJustifyH('RIGHT')
-	healthValue.frequentUpdates = 1/4
-	self.HealthValue = healthValue
+	local HealthValue = Health:CreateFontString(nil, 'OVERLAY')
+	HealthValue:SetPoint('RIGHT', -2, 0)
+	HealthValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
+	HealthValue:SetJustifyH('RIGHT')
+	HealthValue.frequentUpdates = 1/4
+	self.HealthValue = HealthValue
+
+	if(unit ~= 'party' and unit ~= 'raid') then
+		local Debuffs = CreateFrame('Frame', nil, self)
+		Debuffs.spacing = 4
+		Debuffs.initialAnchor = 'TOPLEFT'
+		Debuffs.PostCreateIcon = PostCreateAura
+		self.Debuffs = Debuffs
+
+		if(unit == 'focus') then
+			Debuffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
+			Debuffs.onlyShowPlayer = true
+		elseif(unit ~= 'target') then
+			Debuffs:SetPoint('TOPRIGHT', self, 'TOPLEFT', -4, 0)
+			Debuffs.initialAnchor = 'TOPRIGHT'
+			Debuffs['growth-x'] = 'LEFT'
+		end
+
+		if(unit == 'focus' or unit == 'targettarget') then
+			Debuffs.num = 3
+			Debuffs.size = 19
+			Debuffs:SetSize(230, 19)
+
+			Health:SetAllPoints()
+			self:SetSize(161, 19)
+		end
+	end
 
 	if(unit == 'player' or unit == 'target') then
-		local power = CreateFrame('StatusBar', nil, self)
-		power:SetPoint('BOTTOMRIGHT')
-		power:SetPoint('BOTTOMLEFT')
-		power:SetPoint('TOP', health, 'BOTTOM', 0, -1)
-		power:SetStatusBarTexture(TEXTURE)
-		power.frequentUpdates = true
-		self.Power = power
+		local Power = CreateFrame('StatusBar', nil, self)
+		Power:SetPoint('BOTTOMRIGHT')
+		Power:SetPoint('BOTTOMLEFT')
+		Power:SetPoint('TOP', Health, 'BOTTOM', 0, -1)
+		Power:SetStatusBarTexture(TEXTURE)
+		Power.frequentUpdates = true
+		self.Power = Power
 
-		power.colorClass = true
-		power.colorTapping = true
-		power.colorDisconnected = true
-		power.colorReaction = true
+		Power.colorClass = true
+		Power.colorTapping = true
+		Power.colorDisconnected = true
+		Power.colorReaction = true
 
-		local powerBG = power:CreateTexture(nil, 'BORDER')
-		powerBG:SetAllPoints()
-		powerBG:SetTexture(TEXTURE)
-		powerBG.multiplier = 1/3
-		power.bg = powerBG
+		local PowerBG = Power:CreateTexture(nil, 'BORDER')
+		PowerBG:SetAllPoints()
+		PowerBG:SetTexture(TEXTURE)
+		PowerBG.multiplier = 1/3
+		Power.bg = PowerBG
 
-		local buffs = CreateFrame('Frame', nil, self)
-		buffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
-		buffs:SetSize(236, 44)
-		buffs.num = 20
-		buffs.size = 22
-		buffs.spacing = 4
-		buffs.initialAnchor = 'TOPLEFT'
-		buffs['growth-y'] = 'DOWN'
-		buffs.PostCreateIcon = PostCreateAura
-		self.Buffs = buffs
+		local Buffs = CreateFrame('Frame', nil, self)
+		Buffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
+		Buffs:SetSize(236, 44)
+		Buffs.num = 20
+		Buffs.size = 22
+		Buffs.spacing = 4
+		Buffs.initialAnchor = 'TOPLEFT'
+		Buffs['growth-y'] = 'DOWN'
+		Buffs.PostCreateIcon = PostCreateAura
+		self.Buffs = Buffs
 
-		local castbar = CreateFrame('StatusBar', nil, self)
-		castbar:SetAllPoints(health)
-		castbar:SetStatusBarTexture(TEXTURE)
-		castbar:SetStatusBarColor(0, 0, 0, 0)
-		castbar:SetToplevel(true)
-		self.Castbar = castbar
+		local Castbar = CreateFrame('StatusBar', nil, self)
+		Castbar:SetAllPoints(Health)
+		Castbar:SetStatusBarTexture(TEXTURE)
+		Castbar:SetStatusBarColor(0, 0, 0, 0)
+		Castbar:SetToplevel(true)
+		self.Castbar = Castbar
 
-		local spark = castbar:CreateTexture(nil, 'OVERLAY')
-		spark:SetSize(2, 20)
-		spark:SetTexture(1, 1, 1)
-		castbar.Spark = spark
+		local Spark = Castbar:CreateTexture(nil, 'OVERLAY')
+		Spark:SetSize(2, 20)
+		Spark:SetTexture(1, 1, 1)
+		Castbar.Spark = Spark
 
-		local raidicon = health:CreateTexture(nil, 'OVERLAY')
-		raidicon:SetPoint('TOP', self, 0, 8)
-		raidicon:SetSize(16, 16)
-		self.RaidIcon = raidicon
+		local RaidIcon = Health:CreateTexture(nil, 'OVERLAY')
+		RaidIcon:SetPoint('TOP', self, 0, 8)
+		RaidIcon:SetSize(16, 16)
+		self.RaidIcon = RaidIcon
 
-		health:SetHeight(20)
-		health:SetPoint('TOPRIGHT')
-		health:SetPoint('TOPLEFT')
+		Health:SetHeight(20)
+		Health:SetPoint('TOPRIGHT')
+		Health:SetPoint('TOPLEFT')
 
 		self.menu = SpawnMenu
 		self:SetHeight(22)
 	end
 
 	if(unit ~= 'player' and unit ~= 'party' and unit ~= 'raid') then
-		local name = health:CreateFontString(nil, 'OVERLAY')
-		name:SetPoint('LEFT', health, 2, 0)
-		name:SetPoint('RIGHT', healthValue, 'LEFT')
-		name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
-		name:SetJustifyH('LEFT')
-		self:Tag(name, '[p3lim:color][name][ |cff0090ff>rare<|r]')
-	end
-
-	if(unit ~= 'party' and unit ~= 'raid') then
-		local debuffs = CreateFrame('Frame', nil, self)
-		debuffs.spacing = 4
-		debuffs.initialAnchor = 'TOPLEFT'
-		debuffs.PostCreateIcon = PostCreateAura
-		self.Debuffs = debuffs
-
-		if(unit == 'focus' or unit == 'targettarget') then
-			debuffs.num = 3
-			debuffs.size = 19
-			debuffs:SetSize(230, 19)
-
-			health:SetAllPoints()
-			self:SetSize(161, 19)
-		end
-
-		if(unit == 'focus') then
-			debuffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
-			debuffs.onlyShowPlayer = true
-		elseif(unit == 'player' or unit == 'targettarget') then
-			debuffs:SetPoint('TOPRIGHT', self, 'TOPLEFT', -4, 0)
-			debuffs.initialAnchor = 'TOPRIGHT'
-			debuffs['growth-x'] = 'LEFT'
-		end
+		local Name = Health:CreateFontString(nil, 'OVERLAY')
+		Name:SetPoint('LEFT', 2, 0)
+		Name:SetPoint('RIGHT', HealthValue, 'LEFT')
+		Name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
+		Name:SetJustifyH('LEFT')
+		self:Tag(Name, '[p3lim:color][name][ |cff0090ff>rare<|r]')
 	end
 
 	if(UnitSpecific[unit]) then
@@ -298,6 +297,7 @@ oUF:Factory(function(self)
 	self:Spawn('targettarget'):SetPoint('TOPRIGHT', oUF_P3limTarget, 0, 26)
 
 	if(select(2, UnitClass'player') == 'SHAMAN') then return end
+
 	self:SpawnHeader(nil, nil, 'party,raid10',
 		'showParty', true, 'showRaid', true, 'showPlayer', true, 'yOffset', -6,
 		'oUF-initialConfigFunction', [[
