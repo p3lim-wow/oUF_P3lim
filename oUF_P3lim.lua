@@ -159,6 +159,9 @@ local UnitSpecific = {
 		self:HookScript('OnEnter', function() RoleIcon:SetAlpha(1) end)
 		self:HookScript('OnLeave', function() RoleIcon:SetAlpha(0) end)
 
+		self.Debuffs.size = 17
+		self.Debuffs:SetSize(74, 17)
+
 		self.Health:SetAllPoints()
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:percent]')
 	end
@@ -192,30 +195,28 @@ local function Shared(self, unit)
 	HealthValue.frequentUpdates = 1/4
 	self.HealthValue = HealthValue
 
-	if(unit ~= 'party' and unit ~= 'raid') then
-		local Debuffs = CreateFrame('Frame', nil, self)
-		Debuffs.spacing = 4
-		Debuffs.initialAnchor = 'TOPLEFT'
-		Debuffs.PostCreateIcon = PostCreateAura
-		self.Debuffs = Debuffs
+	local Debuffs = CreateFrame('Frame', nil, self)
+	Debuffs.spacing = 4
+	Debuffs.initialAnchor = 'TOPLEFT'
+	Debuffs.PostCreateIcon = PostCreateAura
+	self.Debuffs = Debuffs
 
-		if(unit == 'focus') then
-			Debuffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
-			Debuffs.onlyShowPlayer = true
-		elseif(unit ~= 'target') then
-			Debuffs:SetPoint('TOPRIGHT', self, 'TOPLEFT', -4, 0)
-			Debuffs.initialAnchor = 'TOPRIGHT'
-			Debuffs['growth-x'] = 'LEFT'
-		end
+	if(unit == 'focus') then
+		Debuffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
+		Debuffs.onlyShowPlayer = true
+	elseif(unit ~= 'target') then
+		Debuffs:SetPoint('TOPRIGHT', self, 'TOPLEFT', -4, 0)
+		Debuffs.initialAnchor = 'TOPRIGHT'
+		Debuffs['growth-x'] = 'LEFT'
+	end
 
-		if(unit == 'focus' or unit == 'targettarget') then
-			Debuffs.num = 3
-			Debuffs.size = 19
-			Debuffs:SetSize(230, 19)
+	if(unit == 'focus' or unit == 'targettarget') then
+		Debuffs.num = 3
+		Debuffs.size = 19
+		Debuffs:SetSize(230, 19)
 
-			Health:SetAllPoints()
-			self:SetSize(161, 19)
-		end
+		Health:SetAllPoints()
+		self:SetSize(161, 19)
 	end
 
 	if(unit == 'player' or unit == 'target') then
