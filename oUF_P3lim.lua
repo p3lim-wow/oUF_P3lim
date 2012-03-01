@@ -164,11 +164,18 @@ local UnitSpecific = {
 
 		self.Health:SetAllPoints()
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:percent]')
+	end,
+	boss = function(self)
+		self:SetSize(126, 19)
+		self.Health:SetAllPoints()
+		self:Tag(self.HealthValue, '[p3lim:percent]')
 	end
 }
 UnitSpecific.raid = UnitSpecific.party
 
 local function Shared(self, unit)
+	unit = unit:match('(boss)%d?$') or unit
+
 	self.colors.power.MANA = {0, 144/255, 1}
 
 	self:RegisterForClicks('AnyUp')
@@ -297,13 +304,28 @@ oUF:Factory(function(self)
 	self:Spawn('target'):SetPoint('CENTER', 300, -250)
 	self:Spawn('targettarget'):SetPoint('TOPRIGHT', oUF_P3limTarget, 0, 26)
 
-	if(select(2, UnitClass'player') == 'SHAMAN') then return end
+	if(select(2, UnitClass'player') ~= 'SHAMAN') then
+		self:SpawnHeader(nil, nil, 'party,raid10',
+			'showParty', true, 'showRaid', true, 'showPlayer', true, 'yOffset', -6,
+			'oUF-initialConfigFunction', [[
+				self:SetHeight(16)
+				self:SetWidth(126)
+			]]
+		):SetPoint('TOP', Minimap, 'BOTTOM', 0, -10)
+	end
 
-	self:SpawnHeader(nil, nil, 'party,raid10',
-		'showParty', true, 'showRaid', true, 'showPlayer', true, 'yOffset', -6,
-		'oUF-initialConfigFunction', [[
-			self:SetHeight(16)
-			self:SetWidth(126)
-		]]
-	):SetPoint('TOP', Minimap, 'BOTTOM', 0, -10)
+	for index = 1, MAX_BOSS_FRAMES do
+		local boss = self:Spawn('boss' .. index)
+		if(index == 1) then
+			boss:SetPoint('TOP', oUF_P3limRaid or Minimap, 'BOTTOM', 0, -20)
+		else
+			boss:SetPoint('TOP', _G['oUF_P3limBoss' .. index - 1, 'BOTTOM', 0, -6)
+		end
+	end
 end)
+
+for index = 1, MAX_BOSS_FRAMES do
+	local frame = _G['Boss' .. index .. 'TargetFrame']
+	frame:UnregisterAllEvents()
+	frame:Hide()
+end
