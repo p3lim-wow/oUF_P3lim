@@ -4,6 +4,7 @@
 ## Title: oUF P3lim
 ## Notes: Minimalistic layout
 ## RequiredDeps: oUF
+## OptionalDeps: oUF_Fader
 
 tags.lua
 oUF_P3lim.lua
