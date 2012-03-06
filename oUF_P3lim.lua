@@ -318,7 +318,7 @@ oUF:Factory(function(self)
 		if(index == 1) then
 			boss:SetPoint('TOP', oUF_P3limRaid or Minimap, 'BOTTOM', 0, -20)
 		else
-			boss:SetPoint('TOP', _G['oUF_P3limBoss' .. index - 1, 'BOTTOM', 0, -6)
+			boss:SetPoint('TOP', _G['oUF_P3limBoss' .. index - 1], 'BOTTOM', 0, -6)
 		end
 	end
 end)
