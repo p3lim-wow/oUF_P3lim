@@ -159,9 +159,6 @@ local UnitSpecific = {
 		self:HookScript('OnEnter', function() RoleIcon:SetAlpha(1) end)
 		self:HookScript('OnLeave', function() RoleIcon:SetAlpha(0) end)
 
-		self.Debuffs.size = 17
-		self.Debuffs:SetSize(74, 17)
-
 		self.Health:SetAllPoints()
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:percent]')
 	end,
@@ -201,30 +198,6 @@ local function Shared(self, unit)
 	HealthValue:SetJustifyH('RIGHT')
 	HealthValue.frequentUpdates = 1/4
 	self.HealthValue = HealthValue
-
-	local Debuffs = CreateFrame('Frame', nil, self)
-	Debuffs.spacing = 4
-	Debuffs.initialAnchor = 'TOPLEFT'
-	Debuffs.PostCreateIcon = PostCreateAura
-	self.Debuffs = Debuffs
-
-	if(unit == 'focus') then
-		Debuffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
-		Debuffs.onlyShowPlayer = true
-	elseif(unit ~= 'target') then
-		Debuffs:SetPoint('TOPRIGHT', self, 'TOPLEFT', -4, 0)
-		Debuffs.initialAnchor = 'TOPRIGHT'
-		Debuffs['growth-x'] = 'LEFT'
-	end
-
-	if(unit == 'focus' or unit == 'targettarget') then
-		Debuffs.num = 3
-		Debuffs.size = 19
-		Debuffs:SetSize(230, 19)
-
-		Health:SetAllPoints()
-		self:SetSize(161, 19)
-	end
 
 	if(unit == 'player' or unit == 'target') then
 		local Power = CreateFrame('StatusBar', nil, self)
@@ -289,6 +262,32 @@ local function Shared(self, unit)
 		Name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		Name:SetJustifyH('LEFT')
 		self:Tag(Name, '[p3lim:color][name][ |cff0090ff>rare<|r]')
+	end
+
+	if(unit ~= 'party' and unit ~= 'raid' and unit ~= 'boss') then
+		local Debuffs = CreateFrame('Frame', nil, self)
+		Debuffs.spacing = 4
+		Debuffs.initialAnchor = 'TOPLEFT'
+		Debuffs.PostCreateIcon = PostCreateAura
+		self.Debuffs = Debuffs
+
+		if(unit == 'focus') then
+			Debuffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
+			Debuffs.onlyShowPlayer = true
+		elseif(unit ~= 'target') then
+			Debuffs:SetPoint('TOPRIGHT', self, 'TOPLEFT', -4, 0)
+			Debuffs.initialAnchor = 'TOPRIGHT'
+			Debuffs['growth-x'] = 'LEFT'
+		end
+
+		if(unit == 'focus' or unit == 'targettarget') then
+			Debuffs.num = 3
+			Debuffs.size = 19
+			Debuffs:SetSize(230, 19)
+
+			Health:SetAllPoints()
+			self:SetSize(161, 19)
+		end
 	end
 
 	if(UnitSpecific[unit]) then
