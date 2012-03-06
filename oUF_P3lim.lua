@@ -52,12 +52,14 @@ end
 local FilterPlayerBuffs
 do
 	local spells = {
+		-- Druid
 		[5217] = true, -- Tiger's Fury
 		[50334] = true, -- Berserk
 		[52610] = true, -- Savage Roar
 		[81022] = true, -- Stampede
 		[109861] = true, -- Kiril, Fury of the Beast
 
+		-- Rogue
 		[5171] = true, -- Slice and Dice
 		[13750] = true, -- Adrenaline Rush
 		[13877] = true, -- Blade Flurry
@@ -66,6 +68,7 @@ do
 		[84747] = true, -- Deep Insight
 		[105864] = true, -- Tricks of Time (2pc)
 
+		-- Shared
 		[32182] = true, -- Heroism
 		[57933] = true, -- Tricks of the Trade
 		[79633] = true, -- Tol'vir Potion
