@@ -86,8 +86,8 @@ local FilterTargetDebuffs
 do
 	local spells = {
 		-- Armor
-		[7386] = true, -- Sunder Armor
 		[8647] = true, -- Expose Armor
+		[58567] = true, -- Sunder Armor
 		[91565] = true, -- Faerie Fire
 
 		-- Bleed
