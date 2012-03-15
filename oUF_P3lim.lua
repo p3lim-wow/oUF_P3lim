@@ -63,9 +63,10 @@ do
 		[5171] = true, -- Slice and Dice
 		[13750] = true, -- Adrenaline Rush
 		[13877] = true, -- Blade Flurry
-		[84745] = true, -- Shallow Insight
-		[84746] = true, -- Moderate Insight
-		[84747] = true, -- Deep Insight
+		[73651] = true, -- Recuperate
+		[84745] = true, -- Bandit's Guile (Shallow Insight)
+		[84746] = true, -- Bandit's Guile (Moderate Insight)
+		[84747] = true, -- Bandit's Guile (Deep Insight)
 		[105864] = true, -- Tricks of Time (2pc)
 
 		-- Shared
