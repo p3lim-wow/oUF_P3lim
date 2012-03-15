@@ -116,7 +116,7 @@ local UnitSpecific = {
 		PowerValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		PowerValue:SetJustifyH('LEFT')
 		PowerValue.frequentUpdates = 0.1
-		self:Tag(PowerValue, '[p3lim:power][ >p3lim:druid][ | >p3lim:spell]')
+		self:Tag(PowerValue, '[|cffffff00>holypower<|r ][p3lim:power][ >p3lim:druid][ | >p3lim:spell]')
 
 		self.Debuffs.size = 22
 		self.Debuffs:SetSize(230, 22)
