@@ -63,6 +63,7 @@ do
 		[5171] = true, -- Slice and Dice
 		[13750] = true, -- Adrenaline Rush
 		[13877] = true, -- Blade Flurry
+		[51713] = true, -- Shadow Dance
 		[73651] = true, -- Recuperate
 		[84745] = true, -- Bandit's Guile (Shallow Insight)
 		[84746] = true, -- Bandit's Guile (Moderate Insight)
