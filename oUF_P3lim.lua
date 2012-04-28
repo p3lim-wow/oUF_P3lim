@@ -154,6 +154,7 @@ local UnitSpecific = {
 	party = function(self)
 		local Name = self.Health:CreateFontString(nil, 'OVERLAY')
 		Name:SetPoint('LEFT', 3, 0)
+		Name:SetPoint('RIGHT', self.HealthValue, 'LEFT')
 		Name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		Name:SetJustifyH('LEFT')
 		self:Tag(Name, '[p3lim:unbuffed< ][p3lim:leader][raidcolor][name]')
