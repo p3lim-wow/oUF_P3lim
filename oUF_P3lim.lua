@@ -320,7 +320,7 @@ oUF:Factory(function(self)
 	self:Spawn('targettarget'):SetPoint('TOPRIGHT', oUF_P3limTarget, 0, 26)
 
 	if(select(2, UnitClass'player') ~= 'SHAMAN') then
-		self:SpawnHeader(nil, nil, 'party,raid10',
+		self:SpawnHeader(nil, nil, 'custom [group:party] show; [@raid3,exists] show; [@raid26,exists] hide; hide',
 			'showParty', true, 'showRaid', true, 'showPlayer', true, 'yOffset', -6,
 			'oUF-initialConfigFunction', [[
 				self:SetHeight(16)
