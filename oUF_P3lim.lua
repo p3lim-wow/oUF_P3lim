@@ -12,7 +12,10 @@ local BACKDROP = {
 }
 
 local function SpawnMenu(self)
-	ToggleDropDownMenu(1, nil, _G[string.gsub(self.unit, '^.', string.upper)..'FrameDropDown'], 'cursor')
+	local dropdown = _G[string.gsub(self.unit, '^.', string.upper)..'FrameDropDown']
+	if(dropdown) then
+		ToggleDropDownMenu(1, nil, dropdown, 'cursor')
+	end
 end
 
 local function PostUpdatePower(element, unit, min, max)
