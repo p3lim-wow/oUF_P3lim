@@ -320,15 +320,13 @@ oUF:Factory(function(self)
 	self:Spawn('target'):SetPoint('CENTER', 300, -250)
 	self:Spawn('targettarget'):SetPoint('TOPRIGHT', oUF_P3limTarget, 0, 26)
 
-	if(select(2, UnitClass'player') ~= 'SHAMAN') then
-		self:SpawnHeader(nil, nil, 'custom [group:party] show; [@raid3,exists] show; [@raid26,exists] hide; hide',
-			'showParty', true, 'showRaid', true, 'showPlayer', true, 'yOffset', -6,
-			'oUF-initialConfigFunction', [[
-				self:SetHeight(16)
-				self:SetWidth(126)
-			]]
-		):SetPoint('TOP', Minimap, 'BOTTOM', 0, -10)
-	end
+	self:SpawnHeader(nil, nil, 'custom [group:party] show; [@raid3,exists] show; [@raid26,exists] hide; hide',
+		'showParty', true, 'showRaid', true, 'showPlayer', true, 'yOffset', -6,
+		'oUF-initialConfigFunction', [[
+			self:SetHeight(16)
+			self:SetWidth(126)
+		]]
+	):SetPoint('TOP', Minimap, 'BOTTOM', 0, -10)
 
 	for index = 1, MAX_BOSS_FRAMES do
 		local boss = self:Spawn('boss' .. index)
@@ -337,11 +335,9 @@ oUF:Factory(function(self)
 		else
 			boss:SetPoint('TOP', _G['oUF_P3limBoss' .. index - 1], 'BOTTOM', 0, -6)
 		end
+
+		local blizz = _G['Boss' .. index .. 'TargetFrame']
+		blizz:UnregisterAllEvents()
+		blizz:Hide()
 	end
 end)
-
-for index = 1, MAX_BOSS_FRAMES do
-	local frame = _G['Boss' .. index .. 'TargetFrame']
-	frame:UnregisterAllEvents()
-	frame:Hide()
-end
