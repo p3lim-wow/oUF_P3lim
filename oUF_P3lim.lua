@@ -60,7 +60,7 @@ do
 		[50334] = true, -- Berserk
 		[52610] = true, -- Savage Roar
 		[81022] = true, -- Stampede
-		[109861] = true, -- Kiril, Fury of the Beast
+		[109864] = true, -- Kiril, Fury of the Beast
 
 		-- Rogue
 		[5171] = true, -- Slice and Dice
