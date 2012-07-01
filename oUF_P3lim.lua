@@ -299,14 +299,6 @@ local function Shared(self, unit)
 		end
 	end
 
-	self.FadeCasting = true
-	self.FadeCombat = true
-	self.FadeTarget = true
-	self.FadeHealth = true
-	self.FadePower = true
-	self.FadeSmooth = 0.5
-	self.FadeMinAlpha = 0
-
 	if(UnitSpecific[unit]) then
 		return UnitSpecific[unit](self)
 	end
