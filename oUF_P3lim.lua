@@ -57,26 +57,14 @@ do
 	local spells = {
 		-- Druid
 		[5217] = true, -- Tiger's Fury
-		[50334] = true, -- Berserk
 		[52610] = true, -- Savage Roar
-		[81022] = true, -- Stampede
-		[109864] = true, -- Kiril, Fury of the Beast
-
-		-- Rogue
-		[5171] = true, -- Slice and Dice
-		[13750] = true, -- Adrenaline Rush
-		[13877] = true, -- Blade Flurry
-		[51713] = true, -- Shadow Dance
-		[73651] = true, -- Recuperate
-		[84745] = true, -- Bandit's Guile (Shallow Insight)
-		[84746] = true, -- Bandit's Guile (Moderate Insight)
-		[84747] = true, -- Bandit's Guile (Deep Insight)
-		[105864] = true, -- Tricks of Time (2pc)
+		[106951] = true, -- Berserk
+		[127538] = true, -- Savage Roar (glyphed)
+		[124974] = true, -- Nature's Vigil
 
 		-- Shared
 		[32182] = true, -- Heroism
 		[57933] = true, -- Tricks of the Trade
-		[79633] = true, -- Tol'vir Potion
 		[80353] = true, -- Time Warp
 	}
 
@@ -89,21 +77,8 @@ end
 local FilterTargetDebuffs
 do
 	local spells = {
-		-- Armor
-		[8647] = true, -- Expose Armor
-		[58567] = true, -- Sunder Armor
-		[91565] = true, -- Faerie Fire
-
-		-- Bleed
-		[16511] = true, -- Hemorrhage
-		[33876] = true, -- Mangle (Cat)
-		[33878] = true, -- Mangle (Bear)
-		[46857] = true, -- Trauma
-
-		-- Vulnerability
-		[30070] = true, -- Blood Frenzy
-		[58683] = true, -- Savage Combat
-		[81326] = true, -- Brittle Bones
+		[81326] = true, -- Physical Vulnerability
+		[113746] = true, -- Weakened Armor
 	}
 
 	function FilterTargetDebuffs(...)
