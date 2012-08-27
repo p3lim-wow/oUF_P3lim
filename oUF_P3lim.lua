@@ -97,6 +97,25 @@ local UnitSpecific = {
 		PowerValue.frequentUpdates = 0.1
 		self:Tag(PowerValue, '[|cffffff00>holypower<|r ][p3lim:power][ >p3lim:druid][ | >p3lim:spell]')
 
+		local Experience = CreateFrame('StatusBar', nil, self)
+		Experience:SetPoint('BOTTOM', 0, -20)
+		Experience:SetSize(230, 6)
+		Experience:SetStatusBarTexture(TEXTURE)
+		Experience:SetStatusBarColor(0.15, 0.7, 0.1)
+		self.Experience = Experience
+
+		local Rested = CreateFrame('StatusBar', nil, Experience)
+		Rested:SetAllPoints()
+		Rested:SetStatusBarTexture(TEXTURE)
+		Rested:SetStatusBarColor(0, 0.4, 1, 0.6)
+		Rested:SetBackdrop(BACKDROP)
+		Rested:SetBackdropColor(0, 0, 0)
+		Experience.Rested = Rested
+
+		local ExperienceBG = Rested:CreateTexture(nil, 'BORDER')
+		ExperienceBG:SetAllPoints()
+		ExperienceBG:SetTexture(1/3, 1/3, 1/3)
+
 		self.Debuffs.size = 22
 		self.Debuffs:SetSize(230, 22)
 		self.Buffs.CustomFilter = FilterPlayerBuffs
