@@ -113,7 +113,7 @@ end
 
 tags.Events['p3lim:leader'] = 'PARTY_LEADER_CHANGED'
 tags.Methods['p3lim:leader'] = function(unit)
-	if(UnitIsPartyLeader(unit)) then
+	if(UnitIsGroupLeader(unit)) then
 		return '|cffffff00!|r'
 	end
 end
