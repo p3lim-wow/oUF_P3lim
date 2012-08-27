@@ -120,7 +120,7 @@ end
 
 tags.Events['p3lim:unbuffed'] = 'UNIT_AURA'
 tags.Methods['p3lim:unbuffed'] = function(unit)
-	if(not UnitAura(unit, 'Mark of the Wild') and not UnitAura(unit, 'Blessing of Kings')) then
+	if(not UnitAura(unit, 'Mark of the Wild') and not UnitAura(unit, 'Blessing of Kings') and not UnitAura(unit, 'Legacy of the Emperor')) then
 		return '|cffff00ff!|r'
 	end
 end
