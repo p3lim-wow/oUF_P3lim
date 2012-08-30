@@ -40,7 +40,7 @@ local function PostCreateAura(element, button)
 end
 
 local function PostUpdateDebuff(element, unit, button, index)
-	local _, _, _, _, type, _, _, owner = UnitAura(unit, index, button.filter)
+	local __, __, __, __, type, __, __, owner = UnitAura(unit, index, button.filter)
 
 	if(owner == 'player') then
 		local color = DebuffTypeColor[type or 'none']
@@ -69,7 +69,7 @@ do
 	}
 
 	function FilterPlayerBuffs(...)
-		local _, _, _, _, _, _, _, _, _, _, _, _, _, id = ...
+		local __, __, __, __, __, __, __, __, __, __, __, __, __, id = ...
 		return spells[id]
 	end
 end
@@ -82,7 +82,7 @@ do
 	}
 
 	function FilterTargetDebuffs(...)
-		local _, unit, _, _, _, _, _, _, _, _, owner, _, _, id = ...
+		local __, unit, __, __, __, __, __, __, __, __, owner, __, __, id = ...
 		return owner == 'player' or owner == 'vehicle' or UnitIsFriend('player', unit) or spells[id]
 	end
 end
