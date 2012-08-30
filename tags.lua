@@ -9,14 +9,7 @@ local function ShortValue(value)
 	end
 end
 
-local tags
-if(oUF.version == '1.6.0') then
-	tags = oUF.Tags
-else
-	tags = {}
-	tags.Methods = oUF.Tags
-	tags.Events = oUF.TagEvents
-end
+local tags = oUF.Tags
 
 tags.Methods['p3lim:status'] = function(unit)
 	if(not UnitIsConnected(unit)) then
