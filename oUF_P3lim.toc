@@ -1,4 +1,4 @@
-## Interface: 40300
+## Interface: 50001
 ## Author: p3lim
 ## Version: @project-version@
 ## Title: oUF P3lim
