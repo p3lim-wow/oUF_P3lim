@@ -61,6 +61,8 @@ do
 		[106951] = true, -- Berserk
 		[127538] = true, -- Savage Roar (glyphed)
 		[124974] = true, -- Nature's Vigil
+		[132158] = true, -- Nature's Swiftness
+		[109864] = true, -- Kiril, Fury of Beasts (Heroic)
 
 		-- Shared
 		[32182] = true, -- Heroism
@@ -77,8 +79,10 @@ end
 local FilterTargetDebuffs
 do
 	local spells = {
-		[81326] = true, -- Physical Vulnerability
-		[113746] = true, -- Weakened Armor
+		[1490] = true, -- Curse of Elements (Magic Vulnerability)
+		[58410] = true, -- Master Poisoner (Magic Vulnerability)
+		[81326] = true, -- Physical Vulnerability (Shared)
+		[113746] = true, -- Weakened Armor (Shared)
 	}
 
 	function FilterTargetDebuffs(...)
