@@ -104,6 +104,7 @@ do
 		[127538] = true, -- Savage Roar (glyphed)
 		[124974] = true, -- Nature's Vigil
 		[132158] = true, -- Nature's Swiftness
+		[132402] = true, -- Savage Defense
 		[109864] = true, -- Kiril, Fury of Beasts (Heroic)
 
 		-- Shared
