@@ -60,6 +60,51 @@ local function UpdateSavage(self, event)
 	end
 end
 
+local UpdateComboPoints
+do
+	local spells = {
+		[1822] = true, -- Rake
+		[5221] = true, -- Shred
+		[6785] = true, -- Ravage
+		[33876] = true, -- Mangle
+		[102545] = true, -- Ravage!
+		[114236] = true, -- Shred!
+	}
+
+	local count, form = 0
+	local playerGUID
+
+	function UpdateCombo(self, event, ...)
+		if(event == 'COMBAT_LOG_EVENT_UNFILTERED' and form) then
+			local _, param, _, source, _, _, _, destination, _, _, _, spell, _, _, _, _, _, _, _, _, crit = ...
+			if(param == 'SPELL_DAMAGE' and source == playerGUID and destination == UnitGUID('target')) then
+				if(spells[spell] and crit) then
+					count = min(count + 1, 5)
+				end
+			end
+		elseif(event == 'UPDATE_SHAPESHIFT_FORM') then
+			if(not playerGUID) then
+				playerGUID = UnitGUID('player')
+			end
+
+			form = GetShapeshiftForm() == 3
+		else
+			if(UnitHasVehicleUI('player')) then
+				count = GetComboPoints('vehicle', 'target')
+			else
+				count = GetComboPoints('player', 'target')
+			end
+		end
+
+		local element = self.ComboPoints
+		if(count > 0) then
+			element:SetText(count)
+		else
+			element:SetText()
+		end
+	end
+end
+
 local function PostUpdatePower(element, unit, min, max)
 	element:GetParent().Health:SetHeight(max ~= 0 and 20 or 22)
 end
@@ -188,9 +233,9 @@ local UnitSpecific = {
 			Savage[0]:SetPoint('LEFT', Savage[1], -20, 0)
 			Savage[2]:SetPoint('RIGHT', Savage[1], 20, 0)
 
-			self:RegisterEvent('SPELL_UPDATE_CHARGES', UpdateSavage)
-			self:RegisterEvent('PLAYER_REGEN_ENABLED', UpdateSavage)
-			self:RegisterEvent('PLAYER_REGEN_DISABLED', UpdateSavage)
+			self:RegisterEvent('SPELL_UPDATE_CHARGES', UpdateSavage, true)
+			self:RegisterEvent('PLAYER_REGEN_ENABLED', UpdateSavage, true)
+			self:RegisterEvent('PLAYER_REGEN_DISABLED', UpdateSavage, true)
 		end
 
 		self.Debuffs.size = 22
@@ -204,7 +249,18 @@ local UnitSpecific = {
 		local ComboPoints = self:CreateFontString(nil, 'OVERLAY', 'SubZoneTextFont')
 		ComboPoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
 		ComboPoints:SetJustifyH('RIGHT')
-		self:Tag(ComboPoints, '|cffffffff[cpoints]|r')
+		ComboPoints:SetTextColor(1, 1, 1)
+
+		if(select(3, UnitClass('player')) == 11) then
+			self.ComboPoints = ComboPoints
+
+			self:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED', UpdateCombo, true)
+			self:RegisterEvent('UPDATE_SHAPESHIFT_FORM', UpdateCombo, true)
+			self:RegisterEvent('PLAYER_TARGET_CHANGED', UpdateCombo, true)
+			self:RegisterEvent('UNIT_COMBO_POINTS', UpdateCombo, true)
+		else
+			self:Tag(ComboPoints, '[cpoints]')
+		end
 
 		self.Castbar.PostCastStart = PostUpdateCast
 		self.Castbar.PostCastInterruptible = PostUpdateCast
