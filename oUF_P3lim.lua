@@ -71,13 +71,14 @@ do
 		[114236] = true, -- Shred!
 	}
 
+	local min = math.min
 	local count, form = 0
 	local playerGUID
 
 	function UpdateCombo(self, event, ...)
-		if(event == 'COMBAT_LOG_EVENT_UNFILTERED' and form) then
+		if(event == 'COMBAT_LOG_EVENT_UNFILTERED') then
 			local _, param, _, source, _, _, _, destination, _, _, _, spell, _, _, _, _, _, _, _, _, crit = ...
-			if(param == 'SPELL_DAMAGE' and source == playerGUID and destination == UnitGUID('target')) then
+			if(form and param == 'SPELL_DAMAGE' and source == playerGUID and destination == UnitGUID('target')) then
 				if(spells[spell] and crit) then
 					count = min(count + 1, 5)
 				end
