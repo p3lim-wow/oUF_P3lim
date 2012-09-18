@@ -259,6 +259,8 @@ local UnitSpecific = {
 			self:RegisterEvent('UPDATE_SHAPESHIFT_FORM', UpdateCombo, true)
 			self:RegisterEvent('PLAYER_TARGET_CHANGED', UpdateCombo, true)
 			self:RegisterEvent('UNIT_COMBO_POINTS', UpdateCombo, true)
+
+			table.insert(self.__elements, UpdateCombo)
 		else
 			self:Tag(ComboPoints, '[cpoints]')
 		end
