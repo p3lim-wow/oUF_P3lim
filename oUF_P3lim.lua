@@ -373,7 +373,7 @@ local function Shared(self, unit)
 		Castbar:SetAllPoints(Health)
 		Castbar:SetStatusBarTexture(TEXTURE)
 		Castbar:SetStatusBarColor(0, 0, 0, 0)
-		Castbar:SetToplevel(true)
+		Castbar:SetFrameStrata('HIGH')
 		self.Castbar = Castbar
 
 		local Spark = Castbar:CreateTexture(nil, 'OVERLAY')
