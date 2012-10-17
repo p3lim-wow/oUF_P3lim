@@ -11,7 +11,7 @@ end
 
 local tags = oUF.Tags
 
-tags.Methods['p3lim:status'] = function(unit)
+local function Status(unit)
 	if(not UnitIsConnected(unit)) then
 		return 'Offline'
 	elseif(UnitIsGhost(unit)) then
@@ -21,6 +21,8 @@ tags.Methods['p3lim:status'] = function(unit)
 	end
 end
 
+tags.Methods['p3lim:status'] = Status
+
 tags.Methods['p3lim:health'] = function(unit)
 	local max = UnitHealthMax(unit)
 	if(UnitHealth(unit) == max) then
@@ -29,7 +31,7 @@ tags.Methods['p3lim:health'] = function(unit)
 end
 
 tags.Methods['p3lim:deficit'] = function(unit)
-	if(_TAGS['p3lim:status'](unit)) then return end
+	if(Status(unit)) then return end
 
 	local cur, max = UnitHealth(unit), UnitHealthMax(unit)
 	if(cur ~= max) then
@@ -38,13 +40,13 @@ tags.Methods['p3lim:deficit'] = function(unit)
 end
 
 tags.Methods['p3lim:percent'] = function(unit)
-	if(_TAGS['p3lim:status'](unit)) then return end
+	if(Status(unit)) then return end
 
 	return ('%d|cff0090ff%%|r'):format(UnitHealth(unit) / UnitHealthMax(unit) * 100)
 end
 
 tags.Methods['p3lim:player'] = function(unit)
-	if(_TAGS['p3lim:status'](unit)) then return end
+	if(Status(unit)) then return end
 
 	local maxHealth = _TAGS['p3lim:health'](unit)
 	if(maxHealth) then
@@ -55,14 +57,15 @@ tags.Methods['p3lim:player'] = function(unit)
 end
 
 tags.Methods['p3lim:hostile'] = function(unit)
-	if(_TAGS['p3lim:status'](unit)) then return end
+	if(Status(unit)) then return end
+
 	if(UnitCanAttack('player', unit)) then
 		return ('%s (%s)'):format(ShortValue(UnitHealth(unit)), _TAGS['p3lim:percent'](unit))
 	end
 end
 
 tags.Methods['p3lim:friendly'] = function(unit)
-	if(_TAGS['p3lim:status'](unit)) then return end
+	if(Status(unit)) then return end
 
 	if(not UnitCanAttack('player', unit)) then
 		local maxHealth = _TAGS['p3lim:health'](unit)
@@ -112,8 +115,8 @@ tags.Methods['p3lim:leader'] = function(unit)
 end
 
 tags.Events['p3lim:unbuffed'] = 'UNIT_AURA'
-tags.Methods['p3lim:unbuffed'] = function(unit)
-	if(not UnitAura(unit, 'Mark of the Wild') and not UnitAura(unit, 'Blessing of Kings') and not UnitAura(unit, 'Legacy of the Emperor')) then
+tags.Methods['p3lim:unbuffed'] = function(unit, real)
+	if(not UnitAura(real or unit, 'Mark of the Wild') and not UnitAura(real or unit, 'Blessing of Kings') and not UnitAura(real or unit, 'Legacy of the Emperor')) then
 		return '|cffff00ff!|r'
 	end
 end
