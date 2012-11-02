@@ -331,6 +331,11 @@ local UnitSpecific = {
 		RoleIcon:SetAlpha(0)
 		self.LFDRole = RoleIcon
 
+		local ReadyCheck = self:CreateTexture(nil, 'OVERLAY')
+		ReadyCheck:SetPoint('LEFT', self, 'RIGHT', 3, 0)
+		ReadyCheck:SetSize(14, 14)
+		self.ReadyCheck = ReadyCheck
+
 		self:HookScript('OnEnter', function() RoleIcon:SetAlpha(1) end)
 		self:HookScript('OnLeave', function() RoleIcon:SetAlpha(0) end)
 
