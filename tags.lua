@@ -1,3 +1,5 @@
+local _, oUF = ...
+local tags = oUF.Tags
 
 local function ShortValue(value)
 	if(value >= 1e6) then
@@ -8,8 +10,6 @@ local function ShortValue(value)
 		return value
 	end
 end
-
-local tags = oUF.Tags
 
 local function Status(unit)
 	if(not UnitIsConnected(unit)) then
