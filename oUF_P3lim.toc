@@ -3,8 +3,9 @@
 ## Version: @project-version@
 ## Title: oUF P3lim
 ## Notes: Minimalistic layout
-## RequiredDeps: oUF
-## OptionalDeps: oUF_Experience
+
+embeds\oUF\oUF.xml
+embeds\oUF_Experience\oUF_Experience.lua
 
 tags.lua
 oUF_P3lim.lua

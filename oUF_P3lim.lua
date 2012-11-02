@@ -5,6 +5,8 @@
 
 --]]
 
+local _, oUF = ...
+
 local FONT = [=[Interface\AddOns\oUF_P3lim\semplice.ttf]=]
 local TEXTURE = [=[Interface\ChatFrame\ChatFrameBackground]=]
 local BACKDROP = {
