@@ -203,16 +203,27 @@ end
 
 local FilterTargetDebuffs
 do
-	local spells = {
+	local show = {
 		[1490] = true, -- Curse of Elements (Magic Vulnerability)
 		[58410] = true, -- Master Poisoner (Magic Vulnerability)
 		[81326] = true, -- Physical Vulnerability (Shared)
 		[113746] = true, -- Weakened Armor (Shared)
 	}
 
+	local hide = {
+		[770] = true, -- Faerie Fire
+		[58180] = true, -- Infected Wounds
+		[115798] = true, -- Weakened Blows
+	}
+
 	function FilterTargetDebuffs(...)
 		local _, unit, _, _, _, _, _, _, _, _, owner, _, _, id = ...
-		return owner == 'player' or owner == 'vehicle' or UnitIsFriend('player', unit) or spells[id]
+
+		if(owner == 'player' and hide[id]) then
+			return false
+		elseif(owner == 'player' or owner == 'vehicle' or UnitIsFriend('player', unit) or show[id] or not owner) then
+			return true
+		end
 	end
 end
 
