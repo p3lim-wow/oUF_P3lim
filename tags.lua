@@ -80,7 +80,7 @@ end
 tags.Methods['p3lim:power'] = function(unit)
 	local power = UnitPower(unit)
 	if(power > 0 and not UnitIsDeadOrGhost(unit)) then
-		local __, type = UnitPowerType(unit)
+		local _, type = UnitPowerType(unit)
 		local colors = _COLORS.power
 		return ('%s%d|r'):format(Hex(colors[type] or colors['RUNES']), power)
 	end
