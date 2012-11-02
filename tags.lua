@@ -1,5 +1,5 @@
-local _, oUF = ...
-local tags = oUF.Tags
+local _, ns = ...
+local tags = ns.oUF.Tags
 
 local function ShortValue(value)
 	if(value >= 1e6) then

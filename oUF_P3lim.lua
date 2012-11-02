@@ -5,7 +5,8 @@
 
 --]]
 
-local _, oUF = ...
+local _, ns = ...
+local oUF = ns.oUF
 
 local FONT = [=[Interface\AddOns\oUF_P3lim\semplice.ttf]=]
 local TEXTURE = [=[Interface\ChatFrame\ChatFrameBackground]=]
