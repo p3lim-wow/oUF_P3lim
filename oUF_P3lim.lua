@@ -121,12 +121,44 @@ local function PostUpdateCast(element, unit)
 	end
 end
 
+local function UpdateAura(self, elapsed)
+	if(self.expiration) then
+		if(self.expiration < 60) then
+			self.remaining:SetFormattedText('%d', self.expiration)
+		else
+			self.remaining:SetText()
+		end
+
+		self.expiration = self.expiration - elapsed
+	end
+end
+
 local function PostCreateAura(element, button)
 	button:SetBackdrop(BACKDROP)
 	button:SetBackdropColor(0, 0, 0)
 	button.cd:SetReverse()
 	button.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 	button.icon:SetDrawLayer('ARTWORK')
+
+	button.count:SetPoint('BOTTOMRIGHT', 2, 1)
+	button.count:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
+
+	local remaining = button:CreateFontString(nil, 'OVERLAY')
+	remaining:SetPoint('TOPLEFT', 0, -1)
+	remaining:SetFont(FONT, 8, 'OUTLINEMONOCROME')
+	button.remaining = remaining
+
+	button:HookScript('OnUpdate', UpdateAura)
+end
+
+local function PostUpdateBuff(element, unit, button, index)
+	local _, _, _, _, _, duration, expiration = UnitAura(unit, index, button.filter)
+
+	if(duration and duration > 0) then
+		button.expiration = expiration - GetTime()
+	else
+		button.expiration = math.huge
+	end
 end
 
 local function PostUpdateDebuff(element, unit, button, index)
@@ -140,6 +172,8 @@ local function PostUpdateDebuff(element, unit, button, index)
 		button:SetBackdropColor(0, 0, 0)
 		button.icon:SetDesaturated(true)
 	end
+
+	PostUpdateBuff(element, unit, button, index)
 end
 
 local FilterPlayerBuffs
@@ -241,6 +275,8 @@ local UnitSpecific = {
 
 		self.Debuffs.size = 22
 		self.Debuffs:SetSize(230, 22)
+		self.Debuffs.PostUpdateIcon = PostUpdateBuff
+		self.Buffs.PostUpdateIcon = PostUpdateBuff
 		self.Buffs.CustomFilter = FilterPlayerBuffs
 
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:player]')
