@@ -228,6 +228,21 @@ local UnitSpecific = {
 		ExperienceBG:SetAllPoints()
 		ExperienceBG:SetTexture(1/3, 1/3, 1/3)
 
+		local AltPower = CreateFrame('StatusBar', nil, self)
+		AltPower:SetPoint('BOTTOM', 0, -10)
+		AltPower:SetSize(230, 6)
+		AltPower:SetStatusBarTexture(TEXTURE)
+		AltPower:SetStatusBarColor(0.15, 0.7, 0.1)
+		AltPower:SetBackdrop(BACKDROP)
+		AltPower:SetBackdropColor(0, 0, 0)
+		AltPower:EnableMouse(true)
+		AltPower.colorTexture = true
+		self.AltPowerBar = AltPower
+
+		local AltPowerBG = AltPower:CreateTexture(nil, 'BORDER')
+		AltPowerBG:SetAllPoints()
+		AltPowerBG:SetTexture(1/3, 1/3, 1/3)
+
 		self.Debuffs.size = 22
 		self.Debuffs:SetSize(230, 22)
 		self.Debuffs.PostUpdateIcon = PostUpdateBuff
