@@ -34,35 +34,6 @@ local function OnUpdateSavage(self, elapsed)
 	end
 end
 
-local function UpdateSavage(self, event)
-	local Savage = self.Savage
-	if(event == 'SPELL_UPDATE_CHARGES') then
-		local charges, total, start = GetSpellCharges(62606)
-		if(charges ~= total) then
-			local elapsed
-
-			local next = Savage[charges + 1]
-			if(next) then
-				elapsed = next.elapsed
-				next.elapsed = nil
-				next:SetValue(0)
-			end
-
-			Savage[charges].elapsed = elapsed or start - GetTime()
-		end
-	else
-		local show = (event == 'PLAYER_REGEN_DISABLED' and GetSpecialization() == 3)
-		for index = 0, 2 do
-			local bar = Savage[index]
-			if(show) then
-				bar:Show()
-			else
-				bar:Hide()
-			end
-		end
-	end
-end
-
 local UpdateComboPoints
 do
 	local spells = {
@@ -256,34 +227,6 @@ local UnitSpecific = {
 		local ExperienceBG = Rested:CreateTexture(nil, 'BORDER')
 		ExperienceBG:SetAllPoints()
 		ExperienceBG:SetTexture(1/3, 1/3, 1/3)
-
-		if(select(3, UnitClass('player')) == 11) then
-			local Savage = {}
-			for index = 0, 2 do
-				local Bar = CreateFrame('StatusBar', nil, self.Health)
-				Bar:SetSize(8, 8)
-				Bar:SetBackdrop(BACKDROP)
-				Bar:SetBackdropColor(0, 0, 0)
-				Bar:SetStatusBarTexture(TEXTURE)
-				Bar:SetStatusBarColor(3/5, 1/5, 1/5)
-				Bar:SetOrientation('VERTICAL')
-				Bar:SetMinMaxValues(0, 9)
-				Bar:SetValue(9)
-				Bar:SetScript('OnUpdate', OnUpdateSavage)
-				Bar:Hide()
-
-				Savage[index] = Bar
-			end
-
-			self.Savage = Savage
-			Savage[1]:SetPoint('CENTER')
-			Savage[0]:SetPoint('LEFT', Savage[1], -20, 0)
-			Savage[2]:SetPoint('RIGHT', Savage[1], 20, 0)
-
-			self:RegisterEvent('SPELL_UPDATE_CHARGES', UpdateSavage, true)
-			self:RegisterEvent('PLAYER_REGEN_ENABLED', UpdateSavage, true)
-			self:RegisterEvent('PLAYER_REGEN_DISABLED', UpdateSavage, true)
-		end
 
 		self.Debuffs.size = 22
 		self.Debuffs:SetSize(230, 22)
