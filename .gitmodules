@@ -1,7 +1,0 @@
-[submodule "oUF"]
-	path = embeds/oUF
-	url = git://github.com/haste/oUF.git
-
-[submodule "oUF_Experience"]
-	path = embeds/oUF_Experience
-	url = git://github.com/p3lim/oUF_Experience.git
