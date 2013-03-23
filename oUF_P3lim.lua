@@ -14,13 +14,6 @@ local BACKDROP = {
 	bgFile = TEXTURE, insets = {top = -1, bottom = -1, left = -1, right = -1}
 }
 
-local function SpawnMenu(self)
-	local dropdown = _G[string.gsub(self.unit, '^.', string.upper)..'FrameDropDown']
-	if(dropdown) then
-		ToggleDropDownMenu(1, nil, dropdown, 'cursor')
-	end
-end
-
 local function OnUpdateSavage(self, elapsed)
 	if(self.elapsed) then
 		self.elapsed = self.elapsed + elapsed
@@ -401,7 +394,6 @@ local function Shared(self, unit)
 		Health:SetPoint('TOPRIGHT')
 		Health:SetPoint('TOPLEFT')
 
-		self.menu = SpawnMenu
 		self:SetHeight(22)
 	end
 
