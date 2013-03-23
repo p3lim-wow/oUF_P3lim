@@ -14,19 +14,6 @@ local BACKDROP = {
 	bgFile = TEXTURE, insets = {top = -1, bottom = -1, left = -1, right = -1}
 }
 
-local function OnUpdateSavage(self, elapsed)
-	if(self.elapsed) then
-		self.elapsed = self.elapsed + elapsed
-
-		if(elapsed > 9) then
-			self.elapsed = nil
-			self:SetValue(9)
-		else
-			self:SetValue(self.elapsed)
-		end
-	end
-end
-
 local UpdateComboPoints
 do
 	local spells = {
