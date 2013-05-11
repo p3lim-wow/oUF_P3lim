@@ -148,6 +148,11 @@ do
 		[121471] = true, -- Shadow Blades
 		[115189] = true, -- Anticipation
 
+		-- Death Knight
+		[57330] = true, -- Horn of Winter
+		[48707] = true, -- Anti-Magic Shell
+		[51271] = true, -- Pillar of Frost
+
 		-- Shared
 		[32182] = true, -- Heroism
 		[57933] = true, -- Tricks of the Trade
