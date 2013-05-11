@@ -230,6 +230,31 @@ local UnitSpecific = {
 		AltPowerBG:SetAllPoints()
 		AltPowerBG:SetTexture(1/3, 1/3, 1/3)
 
+		local playerClass = select(3, UnitClass('player'))
+		if(playerClass == 6) then
+			local Runes = {}
+			for index = 1, 6 do
+				local Rune = CreateFrame('StatusBar', nil, self)
+				Rune:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', (index - 1) * 230 / 6 + (index > 1 and 1 or 0), -4)
+				Rune:SetSize(230 / 6 - (index == 1 and 0 or 1), 6)
+				Rune:SetStatusBarTexture(TEXTURE)
+				Rune:SetBackdrop(BACKDROP)
+				Rune:SetBackdropColor(0, 0, 0)
+
+				local RuneBG = Rune:CreateTexture(nil, 'BORDER')
+				RuneBG:SetAllPoints()
+				RuneBG:SetTexture(1/3, 1/3, 1/3)
+
+				Runes[index] = Rune
+			end
+
+			self.Runes = Runes
+
+			self.colors.runes[1] = {4/5, 0, 0}
+			self.colors.runes[3] = {0, 2/5, 2/3}
+			self.colors.runes[4] = {4/5, 1/5, 1/5}
+		end
+
 		self.Debuffs.size = 22
 		self.Debuffs:SetSize(230, 22)
 		self.Debuffs.PostUpdateIcon = PostUpdateBuff
