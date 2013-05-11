@@ -141,6 +141,13 @@ do
 		[132402] = true, -- Savage Defense
 		[109864] = true, -- Kiril, Fury of Beasts (Heroic)
 
+		-- Rogue
+		[5171] = true, -- Slice and Dice
+		[31224] = true, -- Cloak of Shadows
+		[73651] = true, -- Recuperate
+		[121471] = true, -- Shadow Blades
+		[115189] = true, -- Anticipation
+
 		-- Shared
 		[32182] = true, -- Heroism
 		[57933] = true, -- Tricks of the Trade
