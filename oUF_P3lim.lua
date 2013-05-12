@@ -202,7 +202,6 @@ do
 		[124974] = true, -- Nature's Vigil
 		[132158] = true, -- Nature's Swiftness
 		[132402] = true, -- Savage Defense
-		[109864] = true, -- Kiril, Fury of Beasts (Heroic)
 
 		-- Rogue
 		[5171] = true, -- Slice and Dice
@@ -215,6 +214,7 @@ do
 		[57330] = true, -- Horn of Winter
 		[48707] = true, -- Anti-Magic Shell
 		[51271] = true, -- Pillar of Frost
+		[53365] = true, -- Rune of the Fallen Crusader
 
 		-- Shared
 		[32182] = true, -- Heroism
