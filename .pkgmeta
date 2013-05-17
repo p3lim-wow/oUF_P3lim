@@ -1,0 +1,6 @@
+externals:
+	embeds/oUF:
+		url: git://github.com/haste/oUF.git
+	embeds/oUF_Experience:
+		url: git://github.com/p3lim/oUF_Experience.git
+		tag: latest
