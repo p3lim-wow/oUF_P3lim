@@ -212,7 +212,6 @@ do
 		[115189] = true, -- Anticipation
 
 		-- Death Knight
-		[57330] = true, -- Horn of Winter
 		[48707] = true, -- Anti-Magic Shell
 		[51271] = true, -- Pillar of Frost
 		[53365] = true, -- Rune of the Fallen Crusader
@@ -222,6 +221,10 @@ do
 		[57933] = true, -- Tricks of the Trade
 		[80353] = true, -- Time Warp
 	}
+
+	if(select(2, UnitClass('player')) == 'DEATHKNIGHT') then
+		spells[57330] = true -- Horn of Winter
+	end
 
 	function FilterPlayerBuffs(...)
 		local _, _, _, _, _, _, _, _, _, _, _, _, _, id = ...
