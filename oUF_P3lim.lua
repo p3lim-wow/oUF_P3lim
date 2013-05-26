@@ -206,6 +206,7 @@ do
 		-- Rogue
 		[5171] = true, -- Slice and Dice
 		[31224] = true, -- Cloak of Shadows
+		[32645] = true, -- Envenom
 		[73651] = true, -- Recuperate
 		[121471] = true, -- Shadow Blades
 		[115189] = true, -- Anticipation
