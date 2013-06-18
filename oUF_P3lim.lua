@@ -428,12 +428,17 @@ local UnitSpecific = {
 		self:SetSize(126, 19)
 		self.Health:SetAllPoints()
 		self:Tag(self.HealthValue, '[p3lim:percent]')
+	end,
+	arena = function(self)
+		self:SetSize(126, 19)
+		self:Tag(self.HealthValue, '[p3lim:percent]')
+		self.Health:SetHeight(17)
 	end
 }
 UnitSpecific.raid = UnitSpecific.party
 
 local function Shared(self, unit)
-	unit = unit:match('(boss)%d?$') or unit
+	unit = unit:match('(boss)%d?$') or unit:match('(arena)%d?$') or unit
 
 	self.colors.power.MANA = {0, 144/255, 1}
 
@@ -461,7 +466,7 @@ local function Shared(self, unit)
 	HealthValue.frequentUpdates = 1/4
 	self.HealthValue = HealthValue
 
-	if(unit == 'player' or unit == 'target') then
+	if(unit == 'player' or unit == 'target' or unit == 'arena') then
 		local Power = CreateFrame('StatusBar', nil, self)
 		Power:SetPoint('BOTTOMRIGHT')
 		Power:SetPoint('BOTTOMLEFT')
@@ -481,16 +486,21 @@ local function Shared(self, unit)
 		PowerBG.multiplier = 1/3
 		Power.bg = PowerBG
 
-		local Buffs = CreateFrame('Frame', nil, self)
-		Buffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
-		Buffs:SetSize(236, 44)
-		Buffs.num = 20
-		Buffs.size = 22
-		Buffs.spacing = 4
-		Buffs.initialAnchor = 'TOPLEFT'
-		Buffs['growth-y'] = 'DOWN'
-		Buffs.PostCreateIcon = PostCreateAura
-		self.Buffs = Buffs
+		if(unit ~= 'arena') then
+			local Buffs = CreateFrame('Frame', nil, self)
+			Buffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
+			Buffs:SetSize(236, 44)
+			Buffs.num = 20
+			Buffs.size = 22
+			Buffs.spacing = 4
+			Buffs.initialAnchor = 'TOPLEFT'
+			Buffs['growth-y'] = 'DOWN'
+			Buffs.PostCreateIcon = PostCreateAura
+			self.Buffs = Buffs
+
+			self:SetHeight(22)
+			Health:SetHeight(20)
+		end
 
 		local Castbar = CreateFrame('StatusBar', nil, self)
 		Castbar:SetAllPoints(Health)
@@ -509,11 +519,8 @@ local function Shared(self, unit)
 		RaidIcon:SetSize(16, 16)
 		self.RaidIcon = RaidIcon
 
-		Health:SetHeight(20)
 		Health:SetPoint('TOPRIGHT')
 		Health:SetPoint('TOPLEFT')
-
-		self:SetHeight(22)
 	end
 
 	if(unit ~= 'player' and unit ~= 'party' and unit ~= 'raid') then
@@ -572,12 +579,16 @@ oUF:Factory(function(self)
 		]]
 	):SetPoint('TOP', Minimap, 'BOTTOM', 0, -10)
 
-	for index = 1, MAX_BOSS_FRAMES do
+	for index = 1, 5 do
 		local boss = self:Spawn('boss' .. index)
+		local arena = self:Spawn('arena' .. index)
+
 		if(index == 1) then
 			boss:SetPoint('TOP', oUF_P3limRaid or Minimap, 'BOTTOM', 0, -20)
+			arena:SetPoint('TOP', oUF_P3limRaid or Minimap, 'BOTTOM', 0, -20)
 		else
 			boss:SetPoint('TOP', _G['oUF_P3limBoss' .. index - 1], 'BOTTOM', 0, -6)
+			arena:SetPoint('TOP', _G['oUF_P3limArena' .. index - 1], 'BOTTOM', 0, -6)
 		end
 
 		local blizz = _G['Boss' .. index .. 'TargetFrame']
