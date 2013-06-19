@@ -596,3 +596,68 @@ oUF:Factory(function(self)
 		blizz:Hide()
 	end
 end)
+
+local preperationFrames = {}
+for index = 1, 5 do
+	local Frame = CreateFrame('Frame', 'oUF_P3limArenaPreperation' .. index, UIParent)
+	Frame:SetSize(126, 19)
+	Frame:SetBackdrop(BACKDROP)
+	Frame:SetBackdropColor(0, 0, 0)
+	Frame:Hide()
+
+	local Health = Frame:CreateTexture(nil, 'BACKGROUND')
+	Health:SetPoint('TOPRIGHT')
+	Health:SetPoint('TOPLEFT')
+	Health:SetHeight(17)
+	Health:SetTexture(1/6, 1/6, 2/7)
+
+	local Power = Frame:CreateTexture(nil, 'BACKGROUND')
+	Power:SetPoint('BOTTOMRIGHT')
+	Power:SetPoint('BOTTOMLEFT')
+	Power:SetPoint('TOP', Health, 'BOTTOM', 0, -1)
+	Frame.Power = Power
+
+	local Spec = Frame:CreateFontString(nil, 'OVERLAY')
+	Spec:SetPoint('LEFT', Health, 2, 0)
+	Spec:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
+	Spec:SetJustifyH('LEFT')
+	Frame.Spec = Spec
+
+	preperationFrames[index] = Frame
+end
+
+local PreperationHandler = CreateFrame('Frame')
+PreperationHandler:RegisterEvent('PLAYER_LOGIN')
+PreperationHandler:RegisterEvent('ARENA_OPPONENT_UPDATE')
+PreperationHandler:RegisterEvent('ARENA_PREP_OPPONENT_SPECIALIZATIONS')
+PreperationHandler:SetScript('OnEvent', function(self, event)
+	if(event == 'PLAYER_LOGIN') then
+		for index = 1, 5 do
+			if(index == 1) then
+				preperationFrames[index]:SetPoint('TOP', oUF_P3limRaid or Minimap, 'BOTTOM', 0, -20)
+			else
+				preperationFrames[index]:SetPoint('TOP', preperationFrames[index - 1], 'BOTTOM', 0, -6)
+			end
+		end
+	elseif(event == 'ARENA_OPPONENT_UPDATE') then
+		for index = 1, 5 do
+			preperationFrames[index]:Hide()
+		end
+	else
+		for index = 1, GetNumArenaOpponentSpecs() do
+			local specID = GetArenaOpponentSpec(index)
+			if(specID and specID > 0) then
+				local _, name, _, _, _, _, class = GetSpecializationInfoByID(specID)
+				local r, g, b, colorStr = RAID_CLASS_COLORS[class]
+
+				Frame.Spec:SetFormattedText('|c%s%s|r', colorStr, name)
+				Frame.Power:SetTexture(r, g, b)
+			else
+				Frame.Spec:SetText('Unknown')
+				Frame.Power:SetTexture(1, 1, 1)
+			end
+
+			Frame:Show()
+		end
+	end
+end)
