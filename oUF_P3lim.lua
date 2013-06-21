@@ -645,6 +645,8 @@ PreperationHandler:SetScript('OnEvent', function(self, event)
 		end
 	else
 		for index = 1, GetNumArenaOpponentSpecs() do
+			local Frame = preperationFrames[index]
+
 			local specID = GetArenaOpponentSpec(index)
 			if(specID and specID > 0) then
 				local _, name, _, _, _, _, class = GetSpecializationInfoByID(specID)
