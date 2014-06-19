@@ -328,7 +328,7 @@ local UnitSpecific = {
 	end,
 	target = function(self)
 		local ComboPoints = self:CreateFontString(nil, 'OVERLAY', 'SubZoneTextFont')
-		ComboPoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
+		ComboPoints:SetPoint('RIGHT', self, 'LEFT', -9, -2)
 		ComboPoints:SetJustifyH('RIGHT')
 		ComboPoints:SetTextColor(1, 1, 1)
 		self:Tag(ComboPoints, '[cpoints]')
