@@ -124,3 +124,13 @@ end
 tags.Methods['p3lim:spell'] = function(unit)
 	return UnitCastingInfo(unit) or UnitChannelInfo(unit)
 end
+
+tags.Events['p3lim:shards'] = 'UNIT_POWER SPELLS_CHANGED'
+tags.Methods['p3lim:shards'] = function(unit)
+	if(GetSpecialization() ~= SPEC_WARLOCK_AFFLICTION) then return end
+
+	local cur = UnitPower(unit, SPELL_POWER_SOUL_SHARDS)
+	if(cur > 0) then
+		return cur
+	end
+end
