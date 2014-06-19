@@ -279,7 +279,7 @@ local UnitSpecific = {
 		self.Buffs.PostUpdateIcon = PostUpdateBuff
 		self.Buffs.CustomFilter = FilterPlayerBuffs
 
-		self:Tag(self.HealthValue, '[p3lim:status][p3lim:player]')
+		self:Tag(self.HealthValue, '[p3lim:pet< : ][p3lim:status][p3lim:player]')
 		self:SetWidth(230)
 	end,
 	target = function(self)

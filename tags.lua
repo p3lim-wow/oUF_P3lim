@@ -144,3 +144,11 @@ tags.Methods['p3lim:shards'] = function(unit)
 		return cur
 	end
 end
+
+tags.Methods['p3lim:pet'] = function()
+	local cur = UnitHealth('pet')
+	if(cur > 0) then
+		local max = UnitHealthMax('pet')
+		return ('%s%d%%|r'):format(Hex(ColorGradient(cur, max, 1, 0, 0, 1, 1, 0, 1, 1, 1)), cur / max * 100)
+	end
+end
