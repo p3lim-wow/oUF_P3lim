@@ -86,10 +86,10 @@ tags.Methods['p3lim:power'] = function(unit)
 	end
 end
 
-tags.Methods['p3lim:druid'] = function(unit)
+tags.Methods['p3lim:mana'] = function(unit)
 	local min, max = UnitPower(unit, 0), UnitPowerMax(unit, 0)
 	if(UnitPowerType(unit) ~= 0 and min ~= max) then
-		return ('|cff0090ff%d%%|r'):format(min / max * 100)
+		return ('%d%%'):format(min / max * 100)
 	end
 end
 

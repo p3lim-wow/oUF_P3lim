@@ -119,7 +119,6 @@ local function PostCreateAura(element, button)
 
 	button:HookScript('OnUpdate', UpdateAura)
 end
-
 local function PostUpdateBuff(element, unit, button, index)
 	local _, _, _, _, _, duration, expiration = UnitAura(unit, index, button.filter)
 
@@ -185,7 +184,7 @@ local UnitSpecific = {
 		PowerValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		PowerValue:SetJustifyH('LEFT')
 		PowerValue.frequentUpdates = 0.1
-		self:Tag(PowerValue, '[|cffffff00>holypower<|r ][p3lim:power][ >p3lim:druid][ | >p3lim:spell]')
+		self:Tag(PowerValue, '[p3lim:power][ |cff00ff96>chi][ |cfffff568>holypower][ |cff7b68ee>shadoworbs][ |cffba55d3>soulshards][ |cff0090ff>p3lim:mana<|r][ | >p3lim:spell]')
 
 		local Experience = CreateFrame('StatusBar', nil, self)
 		Experience:SetPoint('BOTTOM', 0, -20)
@@ -221,8 +220,8 @@ local UnitSpecific = {
 		AltPowerBG:SetAllPoints()
 		AltPowerBG:SetTexture(1/3, 1/3, 1/3)
 
-		local playerClass = select(3, UnitClass('player'))
-		if(playerClass == 6) then
+		local _, playerClass = UnitClass('player')
+		if(playerClass == 'DEATHKNIGHT') then
 			local Parent = CreateFrame('Frame', nil, UIParent)
 			Parent:SetPoint('CENTER', 0, -230)
 			Parent:SetSize(82, 40)
