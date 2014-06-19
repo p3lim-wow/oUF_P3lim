@@ -14,52 +14,6 @@ local BACKDROP = {
 	bgFile = TEXTURE, insets = {top = -1, bottom = -1, left = -1, right = -1}
 }
 
-local UpdateComboPoints
-do
-	local spells = {
-		[1822] = true, -- Rake
-		[5221] = true, -- Shred
-		[6785] = true, -- Ravage
-		[33876] = true, -- Mangle
-		[102545] = true, -- Ravage!
-		[114236] = true, -- Shred!
-	}
-
-	local min = math.min
-	local count, form = 0
-	local playerGUID
-
-	function UpdateCombo(self, event, ...)
-		if(event == 'COMBAT_LOG_EVENT_UNFILTERED') then
-			local _, param, _, source, _, _, _, destination, _, _, _, spell, _, _, _, _, _, _, _, _, crit = ...
-			if(form and param == 'SPELL_DAMAGE' and source == playerGUID and destination == UnitGUID('target')) then
-				if(spells[spell] and crit) then
-					count = min(count + 1, 5)
-				end
-			end
-		elseif(event == 'UPDATE_SHAPESHIFT_FORM') then
-			if(not playerGUID) then
-				playerGUID = UnitGUID('player')
-			end
-
-			form = GetShapeshiftForm() == 3
-		else
-			if(UnitHasVehicleUI('player')) then
-				count = GetComboPoints('vehicle', 'target')
-			else
-				count = GetComboPoints('player', 'target')
-			end
-		end
-
-		local element = self.ComboPoints
-		if(count > 0) then
-			element:SetText(count)
-		else
-			element:SetText()
-		end
-	end
-end
-
 local function PostUpdatePower(element, unit, min, max)
 	element:GetParent().Health:SetHeight(max ~= 0 and 20 or 22)
 end
@@ -194,37 +148,10 @@ end
 local FilterPlayerBuffs
 do
 	local spells = {
-		-- Druid
-		[5217] = true, -- Tiger's Fury
-		[52610] = true, -- Savage Roar
-		[106951] = true, -- Berserk
-		[127538] = true, -- Savage Roar (glyphed)
-		[124974] = true, -- Nature's Vigil
-		[132158] = true, -- Nature's Swiftness
-		[132402] = true, -- Savage Defense
-
-		-- Rogue
-		[5171] = true, -- Slice and Dice
-		[31224] = true, -- Cloak of Shadows
-		[32645] = true, -- Envenom
-		[73651] = true, -- Recuperate
-		[121471] = true, -- Shadow Blades
-		[115189] = true, -- Anticipation
-
-		-- Death Knight
-		[48707] = true, -- Anti-Magic Shell
-		[51271] = true, -- Pillar of Frost
-		[53365] = true, -- Rune of the Fallen Crusader
-
 		-- Shared
 		[32182] = true, -- Heroism
-		[57933] = true, -- Tricks of the Trade
 		[80353] = true, -- Time Warp
 	}
-
-	if(select(2, UnitClass('player')) == 'DEATHKNIGHT') then
-		spells[57330] = true -- Horn of Winter
-	end
 
 	function FilterPlayerBuffs(...)
 		local _, _, _, _, _, _, _, _, _, _, _, _, _, id = ...
@@ -234,25 +161,17 @@ end
 
 local FilterTargetDebuffs
 do
-	local show = {
+	local spells = {
 		[1490] = true, -- Curse of Elements (Magic Vulnerability)
 		[58410] = true, -- Master Poisoner (Magic Vulnerability)
 		[81326] = true, -- Physical Vulnerability (Shared)
 		[113746] = true, -- Weakened Armor (Shared)
 	}
 
-	local hide = {
-		[770] = true, -- Faerie Fire
-		[58180] = true, -- Infected Wounds
-		[115798] = true, -- Weakened Blows
-	}
-
 	function FilterTargetDebuffs(...)
 		local _, unit, _, _, _, _, _, _, _, _, owner, _, _, id = ...
 
-		if(owner == 'player' and hide[id]) then
-			return false
-		elseif(owner == 'player' or owner == 'vehicle' or UnitIsFriend('player', unit) or show[id] or not owner) then
+		if(owner == 'player' or owner == 'vehicle' or UnitIsFriend('player', unit) or spells[id] or not owner) then
 			return true
 		end
 	end
@@ -369,19 +288,7 @@ local UnitSpecific = {
 		ComboPoints:SetPoint('RIGHT', self, 'LEFT', -9, 0)
 		ComboPoints:SetJustifyH('RIGHT')
 		ComboPoints:SetTextColor(1, 1, 1)
-
-		if(select(3, UnitClass('player')) == 11) then
-			self.ComboPoints = ComboPoints
-
-			self:RegisterEvent('COMBAT_LOG_EVENT_UNFILTERED', UpdateCombo, true)
-			self:RegisterEvent('UPDATE_SHAPESHIFT_FORM', UpdateCombo, true)
-			self:RegisterEvent('PLAYER_TARGET_CHANGED', UpdateCombo, true)
-			self:RegisterEvent('UNIT_COMBO_POINTS', UpdateCombo, true)
-
-			table.insert(self.__elements, UpdateCombo)
-		else
-			self:Tag(ComboPoints, '[cpoints]')
-		end
+		self:Tag(ComboPoints, '[cpoints]')
 
 		self.Castbar.PostCastStart = PostUpdateCast
 		self.Castbar.PostCastInterruptible = PostUpdateCast
