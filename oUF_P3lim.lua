@@ -184,7 +184,7 @@ local UnitSpecific = {
 		PowerValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		PowerValue:SetJustifyH('LEFT')
 		PowerValue.frequentUpdates = 0.1
-		self:Tag(PowerValue, '[p3lim:power][ |cff00ff96>chi][ |cfffff568>holypower][ |cff7b68ee>shadoworbs][ |cffba55d3>p3lim:shards][ |cff0090ff>p3lim:mana<|r][ | >p3lim:spell]')
+		self:Tag(PowerValue, '[p3lim:power][ |cff00ff96>chi][ |cfffff568>holypower][ |cff7b68ee>shadoworbs][ |cffba55d3>p3lim:shards][ |cff997fcc>p3lim:fury<|r][ |cff0090ff>p3lim:mana<|r][ | >p3lim:spell]')
 
 		local Experience = CreateFrame('StatusBar', nil, self)
 		Experience:SetPoint('BOTTOM', 0, -20)
