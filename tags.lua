@@ -78,18 +78,18 @@ tags.Methods['p3lim:friendly'] = function(unit)
 end
 
 tags.Methods['p3lim:power'] = function(unit)
-	local power = UnitPower(unit)
-	if(power > 0 and not UnitIsDeadOrGhost(unit)) then
+	local cur = UnitPower(unit)
+	if(cur > 0 and not UnitIsDeadOrGhost(unit)) then
 		local _, type = UnitPowerType(unit)
 		local colors = _COLORS.power
-		return ('%s%d|r'):format(Hex(colors[type] or colors['RUNES']), power)
+		return ('%s%d|r'):format(Hex(colors[type] or colors['RUNES']), cur)
 	end
 end
 
 tags.Methods['p3lim:mana'] = function(unit)
-	local min, max = UnitPower(unit, 0), UnitPowerMax(unit, 0)
-	if(UnitPowerType(unit) ~= 0 and min ~= max) then
-		return ('%d%%'):format(min / max * 100)
+	local cur, max = UnitPower(unit, 0), UnitPowerMax(unit, 0)
+	if(UnitPowerType(unit) ~= 0 and cur ~= max) then
+		return ('%d%%'):format(cur / max * 100)
 	end
 end
 
