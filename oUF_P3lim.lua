@@ -90,6 +90,32 @@ local function PostUpdateRuneType(element, Rune)
 	Rune.Overlay:SetStatusBarColor(r, g, b)
 end
 
+local function UpdateEmbers(self, event, unit, powerType)
+	if(not self:IsShown()) then return end
+	if(powerType ~= 'BURNING_EMBERS') then return end
+
+	local cur = UnitPower(unit, SPELL_POWER_BURNING_EMBERS, true)
+	local max = UnitPowerMax(unit, SPELL_POWER_BURNING_EMBERS, true)
+
+	for index = 1, 4 do
+		local Ember = self[index]
+		Ember:SetMinMaxValues(0, 10)
+		Ember:SetValue(cur)
+
+		cur = cur - 10
+	end
+end
+
+local function UpdateEmbersVisibility(self)
+	if(GetSpecialization() == SPEC_WARLOCK_DESTRUCTION and UnitLevel('player') >= 42 and not (UnitHasVehicleUI('player') or UnitIsDeadOrGhost('player'))) then
+		self.BurningEmbers:Show()
+
+		UpdateEmbers(self.BurningEmbers, nil, 'player', 'BURNING_EMBERS')
+	else
+		self.BurningEmbers:Hide()
+	end
+end
+
 local function UpdateAura(self, elapsed)
 	if(self.expiration) then
 		if(self.expiration < 60) then
@@ -271,6 +297,39 @@ local UnitSpecific = {
 			self.colors.runes[2] = {0.4, 0.9, 0.3}
 			self.colors.runes[3] = {0, 0.7, 0.9}
 			self.colors.runes[4] = {0.5, 0.27, 0.68}
+		elseif(playerClass == 'WARLOCK') then
+			local BurningEmbers = CreateFrame('Frame', nil, self)
+			BurningEmbers:SetPoint('BOTTOM', 0, -10)
+			BurningEmbers:SetSize(230, 6)
+			BurningEmbers:SetBackdrop(BACKDROP)
+			BurningEmbers:SetBackdropColor(0, 0, 0)
+			BurningEmbers:RegisterUnitEvent('UNIT_POWER_FREQUENT', 'player')
+			BurningEmbers:RegisterUnitEvent('UNIT_DISPLAYPOWER', 'player')
+			BurningEmbers:SetScript('OnEvent', UpdateEmbers)
+			self.BurningEmbers = BurningEmbers
+
+			for index = 1, 4 do
+				local Ember = CreateFrame('StatusBar', nil, BurningEmbers)
+				Ember:SetPoint('BOTTOMLEFT', (index - 1) * 58, 0)
+				Ember:SetSize(index == 4 and 56 or 57, 6)
+				Ember:SetStatusBarTexture(TEXTURE)
+				BurningEmbers[index] = Ember
+
+				local EmberBG = Ember:CreateTexture(nil, 'BORDER')
+				EmberBG:SetAllPoints()
+
+				if(IsSpellKnown(101508)) then
+					Ember:SetStatusBarColor(1/2, 3/4, 0.1)
+					EmberBG:SetTexture(1/5, 1/4, 0)
+				else
+					Ember:SetStatusBarColor(2/3, 1/5, 0)
+					EmberBG:SetTexture(1/7, 0.1, 0.1)
+				end
+			end
+
+			self:RegisterEvent('UNIT_EXITED_VEHICLE', UpdateEmbersVisibility)
+			self:RegisterEvent('UNIT_ENTERED_VEHICLE', UpdateEmbersVisibility)
+			self:RegisterEvent('SPELLS_CHANGED', UpdateEmbersVisibility)
 		end
 
 		self.Debuffs.size = 22
