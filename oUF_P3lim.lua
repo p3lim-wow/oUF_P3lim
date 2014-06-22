@@ -116,6 +116,20 @@ local function UpdateEmbersVisibility(self)
 	end
 end
 
+local function PostUpdateEclipse(element)
+	local direction = GetEclipseDirection()
+	if(direction == 'sun') then
+		element.SolarBar:SetStatusBarColor(1/4, 2/5, 5/6)
+		element.LunarBar:SetStatusBarColor(1/3, 1/3, 1/3)
+	elseif(direction == 'moon') then
+		element.LunarBar:SetStatusBarColor(4/5, 3/5, 0)
+		element.SolarBar:SetStatusBarColor(1/3, 1/3, 1/3)
+	else
+		element.LunarBar:SetStatusBarColor(4/5, 3/5, 0)
+		element.SolarBar:SetStatusBarColor(1/4, 2/5, 5/6)
+	end
+end
+
 local function UpdateAura(self, elapsed)
 	if(self.expiration) then
 		if(self.expiration < 60) then
@@ -282,6 +296,26 @@ local UnitSpecific = {
 			self.colors.runes[2] = {0.4, 0.9, 0.3}
 			self.colors.runes[3] = {0, 0.7, 0.9}
 			self.colors.runes[4] = {0.5, 0.27, 0.68}
+		elseif(playerClass == 'DRUID') then
+			local EclipseBar = CreateFrame('Frame', nil, self)
+			EclipseBar:SetPoint('BOTTOM', 0, -10)
+			EclipseBar:SetSize(230, 6)
+			EclipseBar:SetBackdrop(BACKDROP)
+			EclipseBar:SetBackdropColor(0, 0, 0)
+			EclipseBar.PostDirectionChange = PostUpdateEclipse
+			self.EclipseBar = EclipseBar
+
+			local LunarBar = CreateFrame('StatusBar', nil, EclipseBar)
+			LunarBar:SetPoint('LEFT')
+			LunarBar:SetSize(230, 6)
+			LunarBar:SetStatusBarTexture(TEXTURE)
+			EclipseBar.LunarBar = LunarBar
+
+			local SolarBar = CreateFrame('StatusBar', nil, EclipseBar)
+			SolarBar:SetPoint('LEFT', LunarBar:GetStatusBarTexture(), 'RIGHT')
+			SolarBar:SetSize(230, 6)
+			SolarBar:SetStatusBarTexture(TEXTURE)
+			EclipseBar.SolarBar = SolarBar
 		elseif(playerClass == 'WARLOCK') then
 			local BurningEmbers = CreateFrame('Frame', nil, self)
 			BurningEmbers:SetPoint('BOTTOM', 0, -10)
