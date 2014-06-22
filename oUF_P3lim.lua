@@ -130,6 +130,14 @@ local function PostUpdateEclipse(element)
 	end
 end
 
+local function UpdateEclipseVisibility(self)
+	if(UnitHasVehicleUI('player') or UnitIsDeadOrGhost('player')) then
+		self.EclipseBar:Hide()
+	else
+		self.EclipseBar:ForceUpdate()
+	end
+end
+
 local function UpdateAura(self, elapsed)
 	if(self.expiration) then
 		if(self.expiration < 60) then
@@ -316,6 +324,9 @@ local UnitSpecific = {
 			SolarBar:SetSize(230, 6)
 			SolarBar:SetStatusBarTexture(TEXTURE)
 			EclipseBar.SolarBar = SolarBar
+
+			self:RegisterEvent('UNIT_EXITED_VEHICLE', UpdateEclipseVisibility)
+			self:RegisterEvent('UNIT_ENTERED_VEHICLE', UpdateEclipseVisibility)
 		elseif(playerClass == 'WARLOCK') then
 			local BurningEmbers = CreateFrame('Frame', nil, self)
 			BurningEmbers:SetPoint('BOTTOM', 0, -10)
