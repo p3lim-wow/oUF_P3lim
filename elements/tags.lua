@@ -142,7 +142,14 @@ tags.Methods['p3lim:pet'] = function()
 	end
 end
 
-tags.Events['p3lim:cpoints'] = 'UNIT_COMBO_POINTS PLAYER_TARGET_CHANGED'
+local isRogue = (select(2, UnitClass('player'))) == 'ROGUE'
+if(isRogue) then
+	tags.SharedEvents.UNIT_AURA = true
+	tags.Events['p3lim:cpoints'] = 'UNIT_COMBO_POINTS PLAYER_TARGET_CHANGED UNIT_AURA'
+else
+	tags.Events['p3lim:cpoints'] = 'UNIT_COMBO_POINTS PLAYER_TARGET_CHANGED'
+end
+
 tags.Methods['p3lim:cpoints'] = function()
 	local points
 	if(UnitHasVehicleUI('player')) then
@@ -151,11 +158,31 @@ tags.Methods['p3lim:cpoints'] = function()
 		points = GetComboPoints('player', 'target')
 	end
 
-	if(points == 5) then
-		return '|cffcc3333' .. points .. '|r'
-	elseif(points == 4) then
-		return '|cffff6600' .. points .. '|r'
-	elseif(points > 0) then
-		return '|cffffcc00' .. points .. '|r'
+	local anticipation
+	if(isRogue) then
+		for index = 1, 40 do
+			local _, _, _, count, _, _, _, _, _, _, spellID = UnitAura('player', index, 'HELPFUL')
+			if(spellID and spellID == 115189 and count and count > 0) then
+				anticipation = count
+				break
+			elseif(not spellID) then
+				break
+			end
+		end
+	end
+
+	local prefix = ''
+	if(anticipation) then
+		prefix = anticipation .. ' '
+	end
+
+	if(points > 0 or anticipation) then
+		if(points == 5) then
+			return prefix .. '|cffcc3333' .. points .. '|r'
+		elseif(points == 4) then
+			return prefix .. '|cffff6600' .. points .. '|r'
+		else
+			return prefix .. '|cffffcc00' .. points .. '|r'
+		end
 	end
 end
