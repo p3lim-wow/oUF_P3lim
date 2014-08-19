@@ -1,10 +1,3 @@
---[[
-
-  Adrian L Lange grants anyone the right to use this work for any purpose,
-  without any conditions, unless such conditions are required by law.
-
---]]
-
 local WoD = select(4, GetBuildInfo()) >= 6e4
 
 local _, ns = ...
