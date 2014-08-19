@@ -45,7 +45,7 @@ tags.Methods['p3lim:percent'] = function(unit)
 	return ('%d|cff0090ff%%|r'):format(UnitHealth(unit) / UnitHealthMax(unit) * 100)
 end
 
-tags.Methods['p3lim:player'] = function(unit)
+tags.Methods['p3lim:phealth'] = function(unit)
 	if(Status(unit)) then return end
 
 	local maxHealth = _TAGS['p3lim:health'](unit)
@@ -56,18 +56,12 @@ tags.Methods['p3lim:player'] = function(unit)
 	end
 end
 
-tags.Methods['p3lim:hostile'] = function(unit)
+tags.Methods['p3lim:thealth'] = function(unit)
 	if(Status(unit)) then return end
 
 	if(UnitCanAttack('player', unit)) then
 		return ('%s (%s)'):format(ShortValue(UnitHealth(unit)), _TAGS['p3lim:percent'](unit))
-	end
-end
-
-tags.Methods['p3lim:friendly'] = function(unit)
-	if(Status(unit)) then return end
-
-	if(not UnitCanAttack('player', unit)) then
+	else
 		local maxHealth = _TAGS['p3lim:health'](unit)
 		if(maxHealth) then
 			return maxHealth
