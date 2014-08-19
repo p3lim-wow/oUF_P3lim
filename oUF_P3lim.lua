@@ -28,32 +28,6 @@ local function PostUpdateCast(element, unit)
 	end
 end
 
-local function UpdateEmbers(self, event, unit, powerType)
-	if(not self:IsShown()) then return end
-	if(powerType ~= 'BURNING_EMBERS') then return end
-
-	local cur = UnitPower(unit, SPELL_POWER_BURNING_EMBERS, true)
-	local max = UnitPowerMax(unit, SPELL_POWER_BURNING_EMBERS, true)
-
-	for index = 1, 4 do
-		local Ember = self[index]
-		Ember:SetMinMaxValues(0, 10)
-		Ember:SetValue(cur)
-
-		cur = cur - 10
-	end
-end
-
-local function UpdateEmbersVisibility(self)
-	if(GetSpecialization() == SPEC_WARLOCK_DESTRUCTION and UnitLevel('player') >= 42 and not (UnitHasVehicleUI('player') or UnitIsDeadOrGhost('player'))) then
-		self.BurningEmbers:Show()
-
-		UpdateEmbers(self.BurningEmbers, nil, 'player', 'BURNING_EMBERS')
-	else
-		self.BurningEmbers:Hide()
-	end
-end
-
 local function UpdateAura(self, elapsed)
 	if(self.expiration) then
 		if(self.expiration < 60) then
@@ -218,38 +192,34 @@ local UnitSpecific = {
 			SolarBar:SetAllPoints()
 			SolarBar:SetTexture(1/4, 2/5, 5/6)
 		elseif(playerClass == 'WARLOCK') then
-			local BurningEmbers = CreateFrame('Frame', nil, self)
-			BurningEmbers:SetPoint('BOTTOM', 0, -10)
-			BurningEmbers:SetSize(230, 6)
-			BurningEmbers:SetBackdrop(BACKDROP)
-			BurningEmbers:SetBackdropColor(0, 0, 0)
-			BurningEmbers:RegisterUnitEvent('UNIT_POWER_FREQUENT', 'player')
-			BurningEmbers:RegisterUnitEvent('UNIT_DISPLAYPOWER', 'player')
-			BurningEmbers:SetScript('OnEvent', UpdateEmbers)
-			self.BurningEmbers = BurningEmbers
-
+			local BurningEmbers = {}
 			for index = 1, 4 do
-				local Ember = CreateFrame('StatusBar', nil, BurningEmbers)
-				Ember:SetPoint('BOTTOMLEFT', (index - 1) * 58, 0)
-				Ember:SetSize(index == 4 and 56 or 57, 6)
+				local Ember = CreateFrame('StatusBar', nil, self)
+				Ember:SetSize(index > 2 and 55 or 54, 6)
 				Ember:SetStatusBarTexture(TEXTURE)
-				BurningEmbers[index] = Ember
+				Ember:SetBackdrop(BACKDROP)
+				Ember:SetBackdropColor(0, 0, 0)
+
+				if(index == 1) then
+					Ember:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -4)
+				else
+					Ember:SetPoint('LEFT', BurningEmbers[index - 1], 'RIGHT', 4, 0)
+				end
 
 				local EmberBG = Ember:CreateTexture(nil, 'BORDER')
 				EmberBG:SetAllPoints()
 
-				if(IsSpellKnown(101508)) then
+				if(IsSpellKnown(WARLOCK_GREEN_FIRE)) then
 					Ember:SetStatusBarColor(1/2, 3/4, 0.1)
 					EmberBG:SetTexture(1/5, 1/4, 0)
 				else
 					Ember:SetStatusBarColor(2/3, 1/5, 0)
 					EmberBG:SetTexture(1/7, 0.1, 0.1)
 				end
-			end
 
-			self:RegisterEvent('UNIT_EXITED_VEHICLE', UpdateEmbersVisibility)
-			self:RegisterEvent('UNIT_ENTERED_VEHICLE', UpdateEmbersVisibility)
-			self:RegisterEvent('SPELLS_CHANGED', UpdateEmbersVisibility)
+				BurningEmbers[index] = Ember
+			end
+			self.BurningEmbers = BurningEmbers
 		end
 
 		self.Debuffs.size = 22

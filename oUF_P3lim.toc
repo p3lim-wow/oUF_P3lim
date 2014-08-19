@@ -8,5 +8,6 @@ embeds\oUF\oUF.xml
 embeds\oUF_Experience\oUF_Experience.lua
 
 elements\tags.lua
+elements\burningembers.lua
 
 oUF_P3lim.lua
