@@ -28,69 +28,6 @@ local function PostUpdateCast(element, unit)
 	end
 end
 
-local function UpdateRuneState(self)
-	local opacity
-	if(UnitHasVehicleUI('player') or UnitIsDeadOrGhost('player')) then
-		opacity = 0
-	elseif(UnitAffectingCombat('player')) then
-		opacity = 1
-	elseif(UnitExists('target') and UnitCanAttack('player', 'target')) then
-		opacity = 0.8
-	else
-		opacity = 0
-
-		for index = 1, 6 do
-			local _, _, ready = GetRuneCooldown(index)
-			if(not ready) then
-				opacity = 0.5
-				break
-			end
-		end
-	end
-
-	local current = self:GetAlpha()
-	if(opacity > current) then
-		UIFrameFadeIn(self, 1/4, current, opacity)
-	elseif(opacity < current) then
-		UIFrameFadeOut(self, 1/4, current, opacity)
-	end
-end
-
-local function UpdateRunes(self, elapsed)
-	local duration = self.duration + elapsed
-	if(duration >= 1) then
-		self:SetScript('OnUpdate', nil)
-	else
-		self.duration = duration
-		self:SetValue(math.max(duration, 0))
-	end
-
-	local Background = self.Background
-	if(Background:GetHeight() <= 2.1) then
-		Background:Hide()
-	else
-		Background:Show()
-	end
-end
-
-local function PostUpdateRune(element, Rune, id, start, duration, ready)
-	local Overlay = Rune.Overlay
-	if(ready) then
-		Overlay:SetValue(1)
-		Overlay:SetScript('OnUpdate', nil)
-		Overlay.Background:Show()
-	else
-		Overlay.duration = GetTime() - (start + duration - 1)
-		Overlay:SetScript('OnUpdate', UpdateRunes)
-	end
-end
-
-local function PostUpdateRuneType(element, Rune)
-	local r, g, b = Rune:GetStatusBarColor()
-	Rune:SetStatusBarColor(r * 0.7, g * 0.7, b * 0.7)
-	Rune.Overlay:SetStatusBarColor(r, g, b)
-end
-
 local function UpdateEmbers(self, event, unit, powerType)
 	if(not self:IsShown()) then return end
 	if(powerType ~= 'BURNING_EMBERS') then return end
@@ -256,49 +193,28 @@ local UnitSpecific = {
 
 		local _, playerClass = UnitClass('player')
 		if(playerClass == 'DEATHKNIGHT') then
-			local Parent = CreateFrame('Frame', nil, UIParent)
-			Parent:SetPoint('CENTER', 0, -230)
-			Parent:SetSize(82, 40)
-
-			Parent:RegisterEvent('UNIT_EXITED_VEHICLE')
-			Parent:RegisterEvent('UNIT_ENTERED_VEHICLE')
-			Parent:RegisterEvent('PLAYER_ENTERING_WORLD')
-			Parent:RegisterEvent('PLAYER_TARGET_CHANGED')
-			Parent:RegisterEvent('PLAYER_REGEN_DISABLED')
-			Parent:RegisterEvent('PLAYER_REGEN_ENABLED')
-			Parent:RegisterEvent('RUNE_POWER_UPDATE')
-			Parent:SetScript('OnEvent', UpdateRuneState)
-
 			local Runes = {}
 			for index = 1, 6 do
-				local Rune = CreateFrame('StatusBar', nil, Parent)
-				Rune:SetPoint('BOTTOMLEFT', 3 + (index - 1) * 13, 0)
-				Rune:SetSize(10, 38)
-				Rune:SetOrientation('VERTICAL')
+				local Rune = CreateFrame('StatusBar', nil, self)
+				Rune:SetSize(35, 6)
 				Rune:SetStatusBarTexture(TEXTURE)
-				Rune:SetAlpha(0.7)
+				Rune:SetBackdrop(BACKDROP)
+				Rune:SetBackdropColor(0, 0, 0)
 
-				local Overlay = CreateFrame('StatusBar', nil, Parent)
-				Overlay:SetAllPoints(Rune)
-				Overlay:SetOrientation('VERTICAL')
-				Overlay:SetStatusBarTexture(TEXTURE)
-				Overlay:SetMinMaxValues(0, 1)
-				Overlay:SetFrameLevel(3)
-				Rune.Overlay = Overlay
+				if(index == 1) then
+					Rune:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -4)
+				else
+					Rune:SetPoint('LEFT', Runes[index - 1], 'RIGHT', 4, 0)
+				end
 
-				local RuneBG = Parent:CreateTexture(nil, 'BORDER')
-				RuneBG:SetPoint('BOTTOM', Rune, 0, -1)
-				RuneBG:SetPoint('TOP', Rune:GetStatusBarTexture(), 0, 1)
-				RuneBG:SetSize(12, 40)
-				RuneBG:SetTexture(0, 0, 0)
-				Overlay.Background = RuneBG
+				local RuneBG = Rune:CreateTexture(nil, 'BACKGROUND')
+				RuneBG:SetAllPoints()
+				RuneBG:SetTexture(TEXTURE)
+				RuneBG.multiplier = 1/3
+				Rune.bg = RuneBG
 
 				Runes[index] = Rune
 			end
-
-			Runes.PostUpdateRune = PostUpdateRune
-			Runes.PostUpdateType = PostUpdateRuneType
-
 			self.Runes = Runes
 
 			self.colors.runes[1] = {0.9, 0.15, 0.15}
