@@ -28,6 +28,21 @@ local function PostUpdateCast(element, unit)
 	end
 end
 
+local function PostUpdateClassIcon(element, cur, max, diff)
+	if(diff) then
+		for index = 1, max do
+			local ClassIcon = element[index]
+			if(max == 3) then
+				ClassIcon:SetWidth(74)
+			elseif(max == 4) then
+				ClassIcon:SetWidth(index > 2 and 55 or 54)
+			elseif(max == 5) then
+				ClassIcon:SetWidth(index == 5 and 42 or 43)
+			end
+		end
+	end
+end
+
 local function UpdateAura(self, elapsed)
 	if(self.expiration) then
 		if(self.expiration < 60) then
@@ -122,7 +137,7 @@ local UnitSpecific = {
 		PowerValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		PowerValue:SetJustifyH('LEFT')
 		PowerValue.frequentUpdates = 0.1
-		self:Tag(PowerValue, '[p3lim:power][ |cff00ff96>chi][ |cfffff568>holypower][ |cff7b68ee>shadoworbs][ |cffba55d3>p3lim:shards][ |cff997fcc>demonicfury<|r][ |cff0090ff>p3lim:mana<|r][ | >p3lim:spell]')
+		self:Tag(PowerValue, '[p3lim:power][ |cff997fcc>demonicfury<|r][ |cff0090ff>p3lim:mana<|r][ | >p3lim:spell]')
 
 		local Experience = CreateFrame('StatusBar', nil, self)
 		Experience:SetPoint('BOTTOM', 0, -20)
@@ -144,6 +159,42 @@ local UnitSpecific = {
 		ExperienceBG:SetTexture(1/3, 1/3, 1/3)
 
 		local _, playerClass = UnitClass('player')
+
+		local ClassIcons = {}
+		ClassIcons.UpdateTexture = function() end
+		ClassIcons.PostUpdate = PostUpdateClassIcon
+
+		local r, g, b
+		if(playerClass == 'MONK') then
+			r, g, b = 0, 4/5, 3/5
+		elseif(playerClass == 'WARLOCK') then
+			r, g, b = 2/3, 1/3, 2/3
+		elseif(playerClass == 'PRIEST') then
+			r, g, b = 2/3, 1/4, 2/3
+		elseif(playerClass == 'PALADIN') then
+			r, g, b = 1, 1, 2/5
+		end
+
+		for index = 1, 5 do
+			local ClassIcon = CreateFrame('Frame', nil, self)
+			ClassIcon:SetHeight(6)
+			ClassIcon:SetBackdrop(BACKDROP)
+			ClassIcon:SetBackdropColor(0, 0, 0)
+
+			if(index == 1) then
+				ClassIcon:SetPoint('TOPLEFT', self, 'BOTTOMRIGHT', 0, -4)
+			else
+				ClassIcon:SetPoint('LEFT', ClassIcons[index - 1], 'RIGHT', 4, 0)
+			end
+
+			local Texture = ClassIcon:CreateTexture(nil, 'BORDER')
+			Texture:SetAllPoints()
+			Texture:SetTexture(r, g, b)
+
+			ClassIcons[index] = ClassIcon
+		end
+		self.ClassIcons = ClassIcons
+
 		if(playerClass == 'DEATHKNIGHT') then
 			local Runes = {}
 			for index = 1, 6 do
