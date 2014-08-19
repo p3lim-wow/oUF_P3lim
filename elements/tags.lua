@@ -35,7 +35,7 @@ tags.Methods['p3lim:deficit'] = function(unit)
 
 	local cur, max = UnitHealth(unit), UnitHealthMax(unit)
 	if(cur ~= max) then
-		return ('|cffff8080%d|r'):format(cur - max)
+		return ('|cffff8080-%s|r'):format(ShortValue(max - cur))
 	end
 end
 
@@ -50,7 +50,7 @@ tags.Methods['p3lim:phealth'] = function(unit)
 
 	local maxHealth = _TAGS['p3lim:health'](unit)
 	if(maxHealth) then
-		return maxHealth
+		return ShortValue(maxHealth)
 	else
 		return ('%s %s'):format(_TAGS['p3lim:deficit'](unit), _TAGS['p3lim:percent'](unit))
 	end
@@ -64,7 +64,7 @@ tags.Methods['p3lim:thealth'] = function(unit)
 	else
 		local maxHealth = _TAGS['p3lim:health'](unit)
 		if(maxHealth) then
-			return maxHealth
+			return ShortValue(maxHealth)
 		else
 			return ('%s |cff0090ff/|r %s'):format(ShortValue(UnitHealth(unit)), ShortValue(UnitHealthMax(unit)))
 		end
