@@ -15,7 +15,7 @@ local BACKDROP = {
 	insets = {top = -1, bottom = -1, left = -1, right = -1}
 }
 
-local function PostUpdatePower(element, unit, min, max)
+local function PostUpdatePower(element, unit, cur, max)
 	element.__owner.Health:SetHeight(max ~= 0 and 20 or 22)
 end
 
