@@ -141,3 +141,21 @@ tags.Methods['p3lim:pet'] = function()
 		return [[|TInterface\RaidFrame\Raid-Icon-DebuffDisease:26|t]]
 	end
 end
+
+tags.Events['p3lim:cpoints'] = 'UNIT_COMBO_POINTS PLAYER_TARGET_CHANGED'
+tags.Methods['p3lim:cpoints'] = function()
+	local points
+	if(UnitHasVehicleUI('player')) then
+		points = GetComboPoints('vehicle', 'target')
+	else
+		points = GetComboPoints('player', 'target')
+	end
+
+	if(points == 5) then
+		return '|cffcc3333' .. points .. '|r'
+	elseif(points == 4) then
+		return '|cffff6600' .. points .. '|r'
+	elseif(points > 0) then
+		return '|cffffcc00' .. points .. '|r'
+	end
+end

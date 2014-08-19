@@ -300,7 +300,7 @@ local UnitSpecific = {
 		ComboPoints:SetPoint('RIGHT', self, 'LEFT', -9, -2)
 		ComboPoints:SetJustifyH('RIGHT')
 		ComboPoints:SetTextColor(1, 1, 1)
-		self:Tag(ComboPoints, '[cpoints]')
+		self:Tag(ComboPoints, '[p3lim:cpoints]')
 
 		self.Castbar.PostCastStart = PostUpdateCast
 		self.Castbar.PostCastInterruptible = PostUpdateCast
