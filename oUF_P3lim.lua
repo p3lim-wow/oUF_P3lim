@@ -43,6 +43,35 @@ local function PostUpdateClassIcon(element, cur, max, diff)
 	end
 end
 
+local function PostUpdateResurrect(element)
+	if(not element.__owner) then
+		element = element.ResurrectIcon
+	end
+
+	local unit = element.__owner.unit
+
+	local hasResurrectDebuff
+	for index = 1, 40 do
+		local _, _, _, _, _, _, _, _, _, _, spellID = UnitAura(unit, index, 'HARMFUL')
+		if(spellID and spellID == 160029) then
+			hasResurrectDebuff = true
+			break
+		elseif(not spellID) then
+			break
+		end
+	end
+
+	if(hasResurrectDebuff) then
+		element:Show()
+		element:SetVertexColor(1, 0, 0)
+	elseif(not UnitHasIncomingResurrection(unit)) then
+		element:Hide()
+		element:SetVertexColor(1, 1, 1)
+	else
+		element:SetVertexColor(1, 1, 1)
+	end
+end
+
 local function UpdateAura(self, elapsed)
 	if(self.expiration) then
 		if(self.expiration < 60) then
@@ -481,7 +510,10 @@ local function Shared(self, unit)
 		local Resurrect = Health:CreateTexture(nil, 'OVERLAY')
 		Resurrect:SetPoint('CENTER', 0, -1)
 		Resurrect:SetSize(16, 16)
+		Resurrect.PostUpdate = PostUpdateResurrect
 		self.ResurrectIcon = Resurrect
+
+		self:RegisterEvent('UNIT_AURA', PostUpdateResurrect)
 	end
 
 	if(UnitSpecific[unit]) then
