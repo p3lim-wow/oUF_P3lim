@@ -5,6 +5,8 @@
 
 --]]
 
+local WoD = select(4, GetBuildInfo()) >= 6e4
+
 local _, ns = ...
 local oUF = ns.oUF
 
@@ -102,6 +104,10 @@ local function PostCreateAura(element, button)
 	button.cd:SetReverse()
 	button.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 	button.icon:SetDrawLayer('ARTWORK')
+
+	if(WoD) then
+		button.cd:SetHideCountdownNumbers(true)
+	end
 
 	button.count:SetPoint('BOTTOMRIGHT', 2, 1)
 	button.count:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
