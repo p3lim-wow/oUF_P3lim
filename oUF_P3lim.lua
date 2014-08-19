@@ -22,6 +22,10 @@ end
 local function PostUpdateHealth(element, unit, cur, max)
 	local ScrollFrame = element.__owner.Portrait.scrollFrame
 
+	if(element.disconnected) then
+		cur = 0
+	end
+
 	local offset = -(230 * (1 - cur / max))
 	ScrollFrame:SetPoint('LEFT', offset, 0)
 	ScrollFrame:SetHorizontalScroll(offset)
