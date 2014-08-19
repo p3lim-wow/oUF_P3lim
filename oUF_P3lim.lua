@@ -446,6 +446,11 @@ local function Shared(self, unit)
 			Buffs.PostCreateIcon = PostCreateAura
 			self.Buffs = Buffs
 
+			local Portrait = CreateFrame('PlayerModel', nil, Health)
+			Portrait:SetAllPoints()
+			Portrait:SetAlpha(0.1)
+			self.Portrait = Portrait
+
 			self:SetHeight(22)
 			Health:SetHeight(20)
 		end
