@@ -16,7 +16,7 @@ local BACKDROP = {
 }
 
 local function PostUpdatePower(element, unit, min, max)
-	element:GetParent().Health:SetHeight(max ~= 0 and 20 or 22)
+	element.__owner.Health:SetHeight(max ~= 0 and 20 or 22)
 end
 
 local function PostUpdateCast(element, unit)
