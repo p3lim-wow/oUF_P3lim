@@ -7,5 +7,6 @@
 embeds\oUF\oUF.xml
 embeds\oUF_Experience\oUF_Experience.lua
 
-tags.lua
+elements\tags.lua
+
 oUF_P3lim.lua
