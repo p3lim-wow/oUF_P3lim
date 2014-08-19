@@ -122,7 +122,7 @@ local UnitSpecific = {
 		PowerValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		PowerValue:SetJustifyH('LEFT')
 		PowerValue.frequentUpdates = 0.1
-		self:Tag(PowerValue, '[p3lim:power][ |cff00ff96>chi][ |cfffff568>holypower][ |cff7b68ee>shadoworbs][ |cffba55d3>p3lim:shards][ |cff997fcc>p3lim:fury<|r][ |cff0090ff>p3lim:mana<|r][ | >p3lim:spell]')
+		self:Tag(PowerValue, '[p3lim:power][ |cff00ff96>chi][ |cfffff568>holypower][ |cff7b68ee>shadoworbs][ |cffba55d3>p3lim:shards][ |cff997fcc>demonicfury<|r][ |cff0090ff>p3lim:mana<|r][ | >p3lim:spell]')
 
 		local Experience = CreateFrame('StatusBar', nil, self)
 		Experience:SetPoint('BOTTOM', 0, -20)
@@ -220,6 +220,19 @@ local UnitSpecific = {
 				BurningEmbers[index] = Ember
 			end
 			self.BurningEmbers = BurningEmbers
+
+			local DemonicFury = CreateFrame('StatusBar', nil, self)
+			DemonicFury:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -4)
+			DemonicFury:SetSize(230, 6)
+			DemonicFury:SetStatusBarTexture(TEXTURE)
+			DemonicFury:SetStatusBarColor(3/5, 1/2, 4/5)
+			DemonicFury:SetBackdrop(BACKDROP)
+			DemonicFury:SetBackdropColor(0, 0, 0)
+			self.DemonicFury = DemonicFury
+
+			local DemonicFuryBG = DemonicFury:CreateTexture(nil, 'BORDER')
+			DemonicFuryBG:SetAllPoints()
+			DemonicFuryBG:SetTexture(1/5, 1/6, 1/4)
 		end
 
 		self.Debuffs.size = 22
