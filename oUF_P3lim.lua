@@ -400,7 +400,7 @@ local UnitSpecific = {
 		Name:SetPoint('RIGHT', self.HealthValue, 'LEFT')
 		Name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		Name:SetJustifyH('LEFT')
-		self:Tag(Name, '[p3lim:unbuffed< ][p3lim:leader][raidcolor][name]')
+		self:Tag(Name, '[p3lim:leader][raidcolor][name]')
 
 		local RoleIcon = self:CreateTexture(nil, 'ARTWORK')
 		RoleIcon:SetPoint('LEFT', self, 'RIGHT', 3, 0)

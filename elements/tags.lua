@@ -114,13 +114,6 @@ tags.Methods['p3lim:leader'] = function(unit)
 	end
 end
 
-tags.Events['p3lim:unbuffed'] = 'UNIT_AURA'
-tags.Methods['p3lim:unbuffed'] = function(unit, real)
-	if(not UnitAura(real or unit, 'Mark of the Wild') and not UnitAura(real or unit, 'Blessing of Kings') and not UnitAura(real or unit, 'Legacy of the Emperor')) then
-		return '|cffff00ff!|r'
-	end
-end
-
 tags.Methods['p3lim:spell'] = function(unit)
 	return UnitCastingInfo(unit) or UnitChannelInfo(unit)
 end
