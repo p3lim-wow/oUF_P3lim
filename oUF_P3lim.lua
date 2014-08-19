@@ -477,6 +477,13 @@ local function Shared(self, unit)
 		end
 	end
 
+	if(unit == 'party' or unit == 'raid' or unit == 'arena') then
+		local Resurrect = Health:CreateTexture(nil, 'OVERLAY')
+		Resurrect:SetPoint('CENTER', 0, -1)
+		Resurrect:SetSize(16, 16)
+		self.ResurrectIcon = Resurrect
+	end
+
 	if(UnitSpecific[unit]) then
 		return UnitSpecific[unit](self)
 	end
