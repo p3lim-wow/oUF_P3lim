@@ -8,10 +8,11 @@
 local _, ns = ...
 local oUF = ns.oUF
 
-local FONT = [=[Interface\AddOns\oUF_P3lim\semplice.ttf]=]
-local TEXTURE = [=[Interface\ChatFrame\ChatFrameBackground]=]
+local FONT = [[Interface\AddOns\oUF_P3lim\semplice.ttf]]
+local TEXTURE = [[Interface\ChatFrame\ChatFrameBackground]]
 local BACKDROP = {
-	bgFile = TEXTURE, insets = {top = -1, bottom = -1, left = -1, right = -1}
+	bgFile = TEXTURE,
+	insets = {top = -1, bottom = -1, left = -1, right = -1}
 }
 
 local function PostUpdatePower(element, unit, min, max)

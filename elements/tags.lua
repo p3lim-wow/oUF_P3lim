@@ -144,6 +144,6 @@ tags.Methods['p3lim:pet'] = function()
 		local max = UnitHealthMax('pet')
 		return ('%s%d%%|r'):format(Hex(ColorGradient(cur, max, 1, 0, 0, 1, 1, 0, 1, 1, 1)), cur / max * 100)
 	elseif(UnitIsDead('pet')) then
-		return '|TInterface\\RaidFrame\\Raid-Icon-DebuffDisease:26|t'
+		return [[|TInterface\RaidFrame\Raid-Icon-DebuffDisease:26|t]]
 	end
 end
