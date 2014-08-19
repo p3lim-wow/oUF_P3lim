@@ -19,6 +19,14 @@ local function PostUpdatePower(element, unit, cur, max)
 	element.__owner.Health:SetHeight(max ~= 0 and 20 or 22)
 end
 
+local function PostUpdateHealth(element, unit, cur, max)
+	local ScrollFrame = element.__owner.Portrait.scrollFrame
+
+	local offset = -(230 * (1 - cur / max))
+	ScrollFrame:SetPoint('LEFT', offset, 0)
+	ScrollFrame:SetHorizontalScroll(offset)
+end
+
 local function PostUpdateCast(element, unit)
 	local Spark = element.Spark
 	if(not element.interrupt and UnitCanAttack('player', unit)) then
@@ -446,13 +454,23 @@ local function Shared(self, unit)
 			Buffs.PostCreateIcon = PostCreateAura
 			self.Buffs = Buffs
 
-			local Portrait = CreateFrame('PlayerModel', nil, Health)
+			local ScrollFrame = CreateFrame('ScrollFrame', nil, Health)
+			ScrollFrame:SetPoint('LEFT')
+			ScrollFrame:SetSize(230, 20)
+
+			local ScrollChild = CreateFrame('Frame')
+			ScrollChild:SetSize(ScrollFrame:GetSize())
+			ScrollFrame:SetScrollChild(ScrollChild)
+
+			local Portrait = CreateFrame('PlayerModel', nil, ScrollChild)
 			Portrait:SetAllPoints()
 			Portrait:SetAlpha(0.1)
+			Portrait.scrollFrame = ScrollFrame
 			self.Portrait = Portrait
 
-			self:SetHeight(22)
+			Health.PostUpdate = PostUpdateHealth
 			Health:SetHeight(20)
+			self:SetHeight(22)
 		end
 
 		local Castbar = CreateFrame('StatusBar', nil, self)
