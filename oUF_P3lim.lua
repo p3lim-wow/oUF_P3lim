@@ -15,7 +15,11 @@ local GLOW = {
 }
 
 local function PostUpdatePower(element, unit, cur, max)
-	element.__owner.Health:SetHeight(max ~= 0 and 20 or 22)
+	local parent = element.__owner
+	local height = max ~= 0 and 20 or 22
+	parent.Health:SetHeight(height)
+	parent.Portrait.scrollFrame:SetHeight(height)
+	parent.Portrait.scrollFrame:GetScrollChild():SetHeight(height)
 end
 
 local function PostUpdateHealth(element, unit, cur, max)
