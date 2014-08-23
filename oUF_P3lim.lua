@@ -10,6 +10,10 @@ local BACKDROP = {
 	insets = {top = -1, bottom = -1, left = -1, right = -1}
 }
 
+local GLOW = {
+	edgeFile = [[Interface\AddOns\oUF_P3lim\glow]], edgeSize = 3
+}
+
 local function PostUpdatePower(element, unit, cur, max)
 	element.__owner.Health:SetHeight(max ~= 0 and 20 or 22)
 end
@@ -79,6 +83,20 @@ local function PostUpdateResurrect(element)
 	end
 end
 
+local function UpdateThreat(self, event, unit)
+	if(unit ~= self.unit) then
+		return
+	end
+
+	local situation = UnitThreatSituation(unit)
+	if(situation and situation > 0) then
+		local r, g, b = GetThreatStatusColor(situation)
+		self.Threat:SetBackdropBorderColor(r, g, b, 1)
+	else
+		self.Threat:SetBackdropBorderColor(0, 0, 0, 0)
+	end
+end
+
 local function UpdateAura(self, elapsed)
 	if(self.expiration) then
 		if(self.expiration < 60) then
@@ -112,6 +130,7 @@ local function PostCreateAura(element, button)
 
 	button:HookScript('OnUpdate', UpdateAura)
 end
+
 local function PostUpdateBuff(element, unit, button, index)
 	local _, _, _, _, _, duration, expiration = UnitAura(unit, index, button.filter)
 
@@ -504,6 +523,14 @@ local function Shared(self, unit)
 		Name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		Name:SetJustifyH('LEFT')
 		self:Tag(Name, '[p3lim:color][name][ |cff0090ff>rare<|r]')
+	else
+		local Threat = CreateFrame('Frame', nil, self)
+		Threat:SetPoint('TOPRIGHT', 3, 3)
+		Threat:SetPoint('BOTTOMLEFT', -3, -3)
+		Threat:SetFrameStrata('LOW')
+		Threat:SetBackdrop(GLOW)
+		Threat.Override = UpdateThreat
+		self.Threat = Threat
 	end
 
 	if(unit ~= 'party' and unit ~= 'raid' and unit ~= 'boss') then
