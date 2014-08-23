@@ -389,7 +389,7 @@ local UnitSpecific = {
 		Name:SetJustifyH('LEFT')
 		self:Tag(Name, '[p3lim:leader][raidcolor][name]')
 
-		local RoleIcon = self:CreateTexture(nil, 'ARTWORK')
+		local RoleIcon = self:CreateTexture()
 		RoleIcon:SetPoint('LEFT', self, 'RIGHT', 3, 0)
 		RoleIcon:SetSize(14, 14)
 		RoleIcon:SetAlpha(0)
