@@ -302,7 +302,7 @@ local UnitSpecific = {
 			LunarBar:SetStatusBarColor(4/5, 3/5, 0)
 			EclipseBar.LunarBar = LunarBar
 
-			local SolarBar = Eclipse:CreateTexture(nil, 'BORDER')
+			local SolarBar = EclipseBar:CreateTexture(nil, 'BORDER')
 			SolarBar:SetAllPoints()
 			SolarBar:SetTexture(1/4, 2/5, 5/6)
 		elseif(playerClass == 'WARLOCK') then
