@@ -245,7 +245,7 @@ local UnitSpecific = {
 			ClassIcon:SetBackdropColor(0, 0, 0)
 
 			if(index == 1) then
-				ClassIcon:SetPoint('TOPLEFT', self, 'BOTTOMRIGHT', 0, -4)
+				ClassIcon:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -4)
 			else
 				ClassIcon:SetPoint('LEFT', ClassIcons[index - 1], 'RIGHT', 4, 0)
 			end
