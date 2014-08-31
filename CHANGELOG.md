@@ -1,3 +1,22 @@
+## Changes in 50400.20-Release:
+
+- Added: Support for "Warlords of Draenor" expansion
+- Added: Support for Portraits element
+- Added: Support for ClassIcons element
+- Added: Support for ResurrectIcon element
+- Added: Support for Threat element
+- Added: Custom demonic fury element
+- Added: Custom cpoints tag with colors
+- Added: Support for the rogue talent "Anticipation"
+- Added: Metadata file for the curseforge packager
+- Added: License
+- Changed: Update oUF embed
+- Changed: Update Experience embed
+- Changed: EclipseBar and Runes element simplified
+- Changed: Use short values on health tags
+- Removed: Unbuffed tag on party and raid
+- Removed: Almost all class power tags from player
+
 ## Changes in 50400.19-Release:
 
 - Added: Support for EclipseBar element
