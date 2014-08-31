@@ -7,5 +7,9 @@ externals:
         url: git://github.com/p3lim/oUF_Experience.git
         tag: latest
 
+manual-changelog:
+    filename: CHANGELOG.md
+    markup-type: markdown
+
 ignore:
     - embeds/oUF/utils
