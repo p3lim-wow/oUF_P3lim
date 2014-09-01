@@ -656,9 +656,9 @@ oUF:Factory(function(self)
 	end
 end)
 
-local preperationFrames = {}
+local preparationFrames = {}
 for index = 1, 5 do
-	local Frame = CreateFrame('Frame', 'oUF_P3limArenaPreperation' .. index, UIParent)
+	local Frame = CreateFrame('Frame', 'oUF_P3limArenaPreparation' .. index, UIParent)
 	Frame:SetSize(126, 19)
 	Frame:SetBackdrop(BACKDROP)
 	Frame:SetBackdropColor(0, 0, 0)
@@ -682,29 +682,29 @@ for index = 1, 5 do
 	Spec:SetJustifyH('LEFT')
 	Frame.Spec = Spec
 
-	preperationFrames[index] = Frame
+	preparationFrames[index] = Frame
 end
 
-local PreperationHandler = CreateFrame('Frame')
-PreperationHandler:RegisterEvent('PLAYER_LOGIN')
-PreperationHandler:RegisterEvent('ARENA_OPPONENT_UPDATE')
-PreperationHandler:RegisterEvent('ARENA_PREP_OPPONENT_SPECIALIZATIONS')
-PreperationHandler:SetScript('OnEvent', function(self, event)
+local PreparationHandler = CreateFrame('Frame')
+PreparationHandler:RegisterEvent('PLAYER_LOGIN')
+PreparationHandler:RegisterEvent('ARENA_OPPONENT_UPDATE')
+PreparationHandler:RegisterEvent('ARENA_PREP_OPPONENT_SPECIALIZATIONS')
+PreparationHandler:SetScript('OnEvent', function(self, event)
 	if(event == 'PLAYER_LOGIN') then
 		for index = 1, 5 do
 			if(index == 1) then
-				preperationFrames[index]:SetPoint('TOP', oUF_P3limRaid or Minimap, 'BOTTOM', 0, -20)
+				preparationFrames[index]:SetPoint('TOP', oUF_P3limRaid or Minimap, 'BOTTOM', 0, -20)
 			else
-				preperationFrames[index]:SetPoint('TOP', preperationFrames[index - 1], 'BOTTOM', 0, -6)
+				preparationFrames[index]:SetPoint('TOP', preparationFrames[index - 1], 'BOTTOM', 0, -6)
 			end
 		end
 	elseif(event == 'ARENA_OPPONENT_UPDATE') then
 		for index = 1, 5 do
-			preperationFrames[index]:Hide()
+			preparationFrames[index]:Hide()
 		end
 	else
 		for index = 1, GetNumArenaOpponentSpecs() do
-			local Frame = preperationFrames[index]
+			local Frame = preparationFrames[index]
 
 			local specID = GetArenaOpponentSpec(index)
 			if(specID and specID > 0) then
