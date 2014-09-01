@@ -664,13 +664,13 @@ for index = 1, 5 do
 	Frame:SetBackdropColor(0, 0, 0)
 	Frame:Hide()
 
-	local Health = Frame:CreateTexture(nil, 'BACKGROUND')
+	local Health = Frame:CreateTexture()
 	Health:SetPoint('TOPRIGHT')
 	Health:SetPoint('TOPLEFT')
 	Health:SetHeight(17)
 	Health:SetTexture(1/6, 1/6, 2/7)
 
-	local Power = Frame:CreateTexture(nil, 'BACKGROUND')
+	local Power = Frame:CreateTexture()
 	Power:SetPoint('BOTTOMRIGHT')
 	Power:SetPoint('BOTTOMLEFT')
 	Power:SetPoint('TOP', Health, 'BOTTOM', 0, -1)
