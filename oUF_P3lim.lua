@@ -88,16 +88,16 @@ local function PostUpdateResurrect(element)
 end
 
 local function UpdateEclipse(self, event, unit, powerType)
-	if(self.unit ~= unit or (event == 'UNIT_POWER' and powerType ~= 'ECLIPSE')) then return end
-	local element = self.EclipseBar
+	if(self.unit ~= unit or (event == 'UNIT_POWER_FREQUENT' and powerType ~= 'ECLIPSE')) then return end
+	local lunar = self.Eclipse.LunarBar
 
 	local max = UnitPowerMax('player', SPELL_POWER_ECLIPSE)
-	element.LunarBar:SetMinMaxValues(-max, max)
-	element.LunarBar:SetValue(UnitPower('player', SPELL_POWER_ECLIPSE))
+	lunar:SetMinMaxValues(-max, max)
+	lunar:SetValue(UnitPower('player', SPELL_POWER_ECLIPSE))
 end
 
 local function UpdateEclipseVisibility(self)
-	local element = self.EclipseBar
+	local element = self.Eclipse
 
 	local showBar
 	local form = GetShapeshiftFormID()
@@ -327,7 +327,6 @@ local UnitSpecific = {
 			EclipseBar:SetSize(230, 6)
 			EclipseBar:SetBackdrop(BACKDROP)
 			EclipseBar:SetBackdropColor(0, 0, 0)
-			self.EclipseBar = EclipseBar
 
 			local LunarBar = CreateFrame('StatusBar', nil, EclipseBar)
 			LunarBar:SetPoint('LEFT')
@@ -341,9 +340,12 @@ local UnitSpecific = {
 			SolarBar:SetTexture(1/4, 2/5, 5/6)
 
 			if(WoD) then
+				self.Eclipse = EclipseBar
 				self:RegisterEvent('PLAYER_TALENT_UPDATE', UpdateEclipseVisibility, true)
 				self:RegisterEvent('UPDATE_SHAPESHIFT_FORM', UpdateEclipseVisibility, true)
-				self:RegisterEvent('UNIT_POWER', UpdateEclipse)
+				self:RegisterEvent('UNIT_POWER_FREQUENT', UpdateEclipse)
+				UpdateEclipseVisibility(self)
+				UpdateEclipse(self, nil, 'player')
 			else
 				self.EclipseBar = EclipseBar
 			end
