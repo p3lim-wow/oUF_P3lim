@@ -702,23 +702,25 @@ PreparationHandler:SetScript('OnEvent', function(self, event)
 		for index = 1, 5 do
 			preparationFrames[index]:Hide()
 		end
-	else
-		for index = 1, GetNumArenaOpponentSpecs() do
-			local Frame = preparationFrames[index]
 
-			local specID = GetArenaOpponentSpec(index)
-			if(specID and specID > 0) then
-				local _, name, _, _, _, _, class = GetSpecializationInfoByID(specID)
-				local r, g, b, colorStr = RAID_CLASS_COLORS[class]
+		return
+	end
 
-				Frame.Spec:SetFormattedText('|c%s%s|r', colorStr, name)
-				Frame.Power:SetTexture(r, g, b)
-			else
-				Frame.Spec:SetText('Unknown')
-				Frame.Power:SetTexture(1, 1, 1)
-			end
+	for index = 1, GetNumArenaOpponentSpecs() do
+		local Frame = preparationFrames[index]
 
-			Frame:Show()
+		local specID = GetArenaOpponentSpec(index)
+		if(specID and specID > 0) then
+			local _, name, _, _, _, _, class = GetSpecializationInfoByID(specID)
+			local r, g, b, colorStr = RAID_CLASS_COLORS[class]
+
+			Frame.Spec:SetFormattedText('|c%s%s|r', colorStr, name)
+			Frame.Power:SetTexture(r, g, b)
+		else
+			Frame.Spec:SetText('Unknown')
+			Frame.Power:SetTexture(1, 1, 1)
 		end
+
+		Frame:Show()
 	end
 end)
