@@ -426,13 +426,6 @@ local UnitSpecific = {
 		self:SetWidth(230)
 	end,
 	party = function(self)
-		local Name = self.Health:CreateFontString(nil, 'OVERLAY')
-		Name:SetPoint('LEFT', 3, 0)
-		Name:SetPoint('RIGHT', self.HealthValue, 'LEFT')
-		Name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
-		Name:SetJustifyH('LEFT')
-		self:Tag(Name, '[p3lim:leader][raidcolor][name]')
-
 		local RoleIcon = self:CreateTexture()
 		RoleIcon:SetPoint('LEFT', self, 'RIGHT', 3, 0)
 		RoleIcon:SetSize(14, 14)
@@ -448,6 +441,7 @@ local UnitSpecific = {
 		self:HookScript('OnLeave', function() RoleIcon:SetAlpha(0) end)
 
 		self.Health:SetAllPoints()
+		self:Tag(self.Name, '[p3lim:leader][raidcolor][name]')
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:percent]')
 	end,
 	boss = function(self)
@@ -457,6 +451,7 @@ local UnitSpecific = {
 	end,
 	arena = function(self)
 		self:SetSize(126, 19)
+		self:Tag(self.Name, '[raidcolor][name]')
 		self:Tag(self.HealthValue, '[p3lim:percent]')
 		self.Health:SetHeight(17)
 	end
@@ -564,14 +559,14 @@ local function Shared(self, unit)
 		Health:SetPoint('TOPLEFT')
 	end
 
-	if(unit ~= 'player' and unit ~= 'party' and unit ~= 'raid') then
+	if(unit == 'target' or unit == 'focus' or unit == 'targettarget' or unit == 'boss') then
 		local Name = Health:CreateFontString(nil, 'OVERLAY')
 		Name:SetPoint('LEFT', 2, 0)
 		Name:SetPoint('RIGHT', HealthValue, 'LEFT')
 		Name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		Name:SetJustifyH('LEFT')
 		self:Tag(Name, '[p3lim:color][name][ |cff0090ff>rare<|r]')
-	else
+	elseif(unit ~= 'arena') then
 		local Threat = CreateFrame('Frame', nil, self)
 		Threat:SetPoint('TOPRIGHT', 3, 3)
 		Threat:SetPoint('BOTTOMLEFT', -3, -3)
@@ -608,6 +603,13 @@ local function Shared(self, unit)
 	end
 
 	if(unit == 'party' or unit == 'raid' or unit == 'arena') then
+		local Name = self.Health:CreateFontString(nil, 'OVERLAY')
+		Name:SetPoint('LEFT', 3, 0)
+		Name:SetPoint('RIGHT', self.HealthValue, 'LEFT')
+		Name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
+		Name:SetJustifyH('LEFT')
+		self.Name = Name
+
 		local Resurrect = Health:CreateTexture(nil, 'OVERLAY')
 		Resurrect:SetPoint('CENTER', 0, -1)
 		Resurrect:SetSize(16, 16)
