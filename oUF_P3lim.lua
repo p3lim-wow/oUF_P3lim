@@ -709,9 +709,9 @@ PreparationHandler:SetScript('OnEvent', function(self, event)
 	for index = 1, GetNumArenaOpponentSpecs() do
 		local Frame = preparationFrames[index]
 
-		local specID = GetArenaOpponentSpec(index)
+		local specID, gender = GetArenaOpponentSpec(index)
 		if(specID and specID > 0) then
-			local _, name, _, _, _, _, class = GetSpecializationInfoByID(specID)
+			local _, name, _, _, _, _, class = GetSpecializationInfoByID(specID, gender)
 			local color = RAID_CLASS_COLORS[class]
 
 			Frame.Spec:SetFormattedText('|c%s%s|r', color.colorStr, name)
