@@ -712,10 +712,10 @@ PreparationHandler:SetScript('OnEvent', function(self, event)
 		local specID = GetArenaOpponentSpec(index)
 		if(specID and specID > 0) then
 			local _, name, _, _, _, _, class = GetSpecializationInfoByID(specID)
-			local r, g, b, colorStr = RAID_CLASS_COLORS[class]
+			local color = RAID_CLASS_COLORS[class]
 
-			Frame.Spec:SetFormattedText('|c%s%s|r', colorStr, name)
-			Frame.Power:SetTexture(r, g, b)
+			Frame.Spec:SetFormattedText('|c%s%s|r', color.colorStr, name)
+			Frame.Power:SetTexture(color.r, color.g, color.b)
 		else
 			Frame.Spec:SetText('Unknown')
 			Frame.Power:SetTexture(1, 1, 1)
