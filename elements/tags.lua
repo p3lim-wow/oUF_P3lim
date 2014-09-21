@@ -1,11 +1,16 @@
-local _, ns = ...
-local tags = ns.oUF.Tags
+local tags = select(2, ...).oUF.Tags
 
-local function ShortValue(value)
+local gsub = string.gsub
+local format = string.format
+local floor = math.floor
+
+local DEAD_TEXTURE = [[|TInterface\RaidFrame\Raid-Icon-DebuffDisease:26|t]]
+
+local function Short(value)
 	if(value >= 1e6) then
-		return ('%.2fm'):format(value / 1e6):gsub('%.?0+([km])$', '%1')
+		return gsub(format('%.2fm', value / 1e6), '%.?0+([km])$', '%1')
 	elseif(value >= 1e4) then
-		return ('%.1fk'):format(value / 1e3):gsub('%.?0+([km])$', '%1')
+		return gsub(format('%.1fk', value / 1e3), '%.?0+([km])$', '%1')
 	else
 		return value
 	end
@@ -21,148 +26,142 @@ local function Status(unit)
 	end
 end
 
-tags.Methods['p3lim:status'] = Status
+local events = {
+	curhp = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH',
+	defhp = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH',
+	maxhp = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH',
+	perhp = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH',
+	pethp = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH',
+	targethp = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH',
+	curpp = 'UNIT_POWER_FREQUENT UNIT_MAXPOWER',
+	altpp = 'UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_DISPLAYPOWER',
+	ptype = 'UNIT_DISPLAYPOWER',
+	leader = 'PARTY_LEADER_CHANGED',
+	combo = 'UNIT_COMBO_POINTS PLAYER_TARGET_CHANGED',
+	anticipation = 'UNIT_AURA',
+	spell = 'UNIT_SPELLCAST_START UNIT_SPELLCAST_STOP UNIT_SPELLCAST_CHANNEL_START UNIT_SPELLCAST_CHANNEL_STOP',
+	color = 'UNIT_REACTION UNIT_FACTION',
+	status = 'UNIT_CONNECTION UNIT_HEALTH'
+}
 
-tags.Methods['p3lim:health'] = function(unit)
-	local max = UnitHealthMax(unit)
-	if(UnitHealth(unit) == max) then
-		return max
-	end
-end
+for tag, func in next, {
+	curhp = function(unit)
+		if(Status(unit)) then return end
+		return Short(UnitHealth(unit))
+	end,
+	defhp = function(unit)
+		if(Status(unit)) then return end
 
-tags.Methods['p3lim:deficit'] = function(unit)
-	if(Status(unit)) then return end
-
-	local cur, max = UnitHealth(unit), UnitHealthMax(unit)
-	if(cur ~= max) then
-		return ('|cffff8080-%s|r'):format(ShortValue(max - cur))
-	end
-end
-
-tags.Methods['p3lim:percent'] = function(unit)
-	if(Status(unit)) then return end
-
-	return ('%d|cff0090ff%%|r'):format(UnitHealth(unit) / UnitHealthMax(unit) * 100)
-end
-
-tags.Methods['p3lim:phealth'] = function(unit)
-	if(Status(unit)) then return end
-
-	local maxHealth = _TAGS['p3lim:health'](unit)
-	if(maxHealth) then
-		return ShortValue(maxHealth)
-	else
-		return ('%s %s'):format(_TAGS['p3lim:deficit'](unit), _TAGS['p3lim:percent'](unit))
-	end
-end
-
-tags.Methods['p3lim:thealth'] = function(unit)
-	if(Status(unit)) then return end
-
-	if(UnitCanAttack('player', unit)) then
-		return ('%s (%s)'):format(ShortValue(UnitHealth(unit)), _TAGS['p3lim:percent'](unit))
-	else
-		local maxHealth = _TAGS['p3lim:health'](unit)
-		if(maxHealth) then
-			return ShortValue(maxHealth)
-		else
-			return ('%s |cff0090ff/|r %s'):format(ShortValue(UnitHealth(unit)), ShortValue(UnitHealthMax(unit)))
+		local cur = UnitHealth(unit)
+		local max = UnitHealthMax(unit)
+		if(cur ~= max) then
+			return Short(max - cur)
 		end
-	end
-end
+	end,
+	maxhp = function(unit)
+		if(Status(unit)) then return end
 
-tags.Methods['p3lim:power'] = function(unit)
-	local cur = UnitPower(unit)
-	if(cur > 0 and not UnitIsDeadOrGhost(unit)) then
-		local _, type = UnitPowerType(unit)
-		local colors = _COLORS.power
-		return ('%s%d|r'):format(Hex(colors[type] or colors['RUNES']), cur)
-	end
-end
+		local max = UnitHealthMax(unit)
+		if(max == UnitHealth(unit)) then
+			return Short(max)
+		end
+	end,
+	perhp = function(unit)
+		if(Status(unit)) then return end
 
-tags.Methods['p3lim:mana'] = function(unit)
-	local cur, max = UnitPower(unit, 0), UnitPowerMax(unit, 0)
-	if(UnitPowerType(unit) ~= 0 and cur ~= max) then
-		return ('%d%%'):format(cur / max * 100)
-	end
-end
+		local cur = UnitHealth(unit)
+		local max = UnitHealthMax(unit)
+		if(cur ~= max) then
+			return floor(cur / max * 100)
+		end
+	end,
+	pethp = function()
+		if(UnitIsUnit('pet', 'vehicle')) then return end
 
-tags.Events['p3lim:color'] = 'UNIT_REACTION UNIT_FACTION'
-tags.Methods['p3lim:color'] = function(unit)
-	local reaction = UnitReaction(unit, 'player')
-	if((UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) or not UnitIsConnected(unit)) then
-		return Hex(3/5, 3/5, 3/5)
-	elseif(not UnitIsPlayer(unit) and reaction) then
-		return Hex(_COLORS.reaction[reaction])
-	elseif(UnitFactionGroup(unit) and UnitIsEnemy(unit, 'player') and UnitIsPVP(unit)) then
-		return Hex(1, 0, 0)
-	else
-		return Hex(1, 1, 1)
-	end
-end
-
-tags.Events['p3lim:leader'] = 'PARTY_LEADER_CHANGED'
-tags.Methods['p3lim:leader'] = function(unit)
-	if(UnitIsGroupLeader(unit)) then
-		return '|cffffff00!|r'
-	end
-end
-
-tags.Methods['p3lim:spell'] = function(unit)
-	return UnitCastingInfo(unit) or UnitChannelInfo(unit)
-end
-
-tags.Methods['p3lim:pet'] = function()
-	local cur = UnitHealth('pet')
-	if(cur > 0) then
+		local cur = UnitHealth('pet')
 		local max = UnitHealthMax('pet')
-		return ('%s%d%%|r'):format(Hex(ColorGradient(cur, max, 1, 0, 0, 1, 1, 0, 1, 1, 1)), cur / max * 100)
-	elseif(UnitIsDead('pet')) then
-		return [[|TInterface\RaidFrame\Raid-Icon-DebuffDisease:26|t]]
-	end
-end
+		if(cur > 0) then
+			return format('%s%d%%|r', Hex(ColorGradient(cur, max, 1, 0, 0, 1, 1, 0, 1, 1, 1)), cur / max * 100)
+		elseif(UnitIsDead('pet')) then
+			return DEAD_TEXTURE
+		end
+	end,
+	targethp = function(unit)
+		if(Status(unit)) then return end
 
-local isRogue = (select(2, UnitClass('player'))) == 'ROGUE'
-if(isRogue) then
-	tags.SharedEvents.UNIT_AURA = true
-	tags.Events['p3lim:cpoints'] = 'UNIT_COMBO_POINTS PLAYER_TARGET_CHANGED UNIT_AURA'
-else
-	tags.Events['p3lim:cpoints'] = 'UNIT_COMBO_POINTS PLAYER_TARGET_CHANGED'
-end
+		local cur = UnitHealth(unit)
+		local max = UnitHealthMax(unit)
+		if(UnitCanAttack('player', unit)) then
+			return format('(%d|cff0090ff%%|r)', cur / max * 100)
+		elseif(cur ~= max) then
+			return format('|cff0090ff/|r %s', Short(max))
+		end
+	end,
+	curpp = function(unit)
+		if(Status(unit)) then return end
 
-tags.Methods['p3lim:cpoints'] = function()
-	local points
-	if(UnitHasVehicleUI('player')) then
-		points = GetComboPoints('vehicle', 'target')
-	else
-		points = GetComboPoints('player', 'target')
-	end
+		local cur = UnitPower(unit)
+		if(cur > 0) then
+			return Short(cur)
+		end
+	end,
+	altpp = function(unit)
+		local cur = UnitPower(unit, 0)
+		local max = UnitPowerMax(unit, 0)
+		if(UnitPowerType(unit) ~= 0 and cur ~= max) then
+			return floor(cur / max * 100)
+		end
+	end,
+	ptype = function(unit)
+		local _, type = UnitPowerType(unit)
+		return Hex(_COLORS.power[type])
+	end,
+	leader = function(unit)
+		return UnitIsGroupLeader(unit) and '|cffffff00!|r'
+	end,
+	spell = function(unit)
+		return UnitCastingInfo(unit) or UnitChannelInfo(unit)
+	end,
+	combo = function(unit)
+		if(not UnitExists('target')) then return end
 
-	local anticipation
-	if(isRogue) then
-		for index = 1, 40 do
-			local _, _, _, count, _, _, _, _, _, _, spellID = UnitAura('player', index, 'HELPFUL')
-			if(spellID and spellID == 115189 and count and count > 0) then
-				anticipation = count
-				break
-			elseif(not spellID) then
+		local points = GetComboPoints(unit, 'target')
+		if(points == 5) then
+			return format('|cffcc3333%d|r', points)
+		elseif(points == 4) then
+			return format('|cffff6600%d|r', points)
+		elseif(points > 0) then
+			return format('|cffffcc00%d|r', points)
+		end
+	end,
+	anticipation = function(unit)
+		if(not UnitExists('target')) then return end
+
+		local index, points = 1
+		repeat
+			local _, _, _, count, _, _, _, _, _, _, spellID = UnitAura(unit, index, 'HELPFUL')
+			if(spellID == 115189) then
+				points = count
 				break
 			end
-		end
-	end
 
-	local prefix = ''
-	if(anticipation) then
-		prefix = anticipation .. ' '
-	end
+			index = index + 1
+		until(not spellID)
 
-	if(points > 0 or anticipation) then
-		if(points == 5) then
-			return prefix .. '|cffcc3333' .. points .. '|r'
-		elseif(points == 4) then
-			return prefix .. '|cffff6600' .. points .. '|r'
-		else
-			return prefix .. '|cffffcc00' .. points .. '|r'
+		return points
+	end,
+	color = function(unit)
+		local reaction = UnitReaction(unit, 'player')
+		if((UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) or not UnitIsConnected(unit)) then
+			return '|cff999999'
+		elseif(not UnitIsPlayer(unit) and reaction) then
+			return Hex(_COLORS.reaction[reaction])
+		elseif(UnitFactionGroup(unit) and UnitIsEnemy(unit, 'player') and UnitIsPVP(unit)) then
+			return '|cffff0000'
 		end
-	end
+	end,
+	status = Status
+} do
+	tags.Methods['p3lim:' .. tag] = func
+	tags.Events['p3lim:' .. tag] = events[tag]
 end

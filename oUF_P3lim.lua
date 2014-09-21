@@ -233,8 +233,7 @@ local UnitSpecific = {
 		PowerValue:SetPoint('RIGHT', self.HealthValue, 'LEFT', -3)
 		PowerValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		PowerValue:SetJustifyH('LEFT')
-		PowerValue.frequentUpdates = 0.1
-		self:Tag(PowerValue, '[p3lim:power][ |cff997fcc>demonicfury<|r][ |cff0090ff>p3lim:mana<|r][ | >p3lim:spell]')
+		self:Tag(PowerValue, '[p3lim:ptype][p3lim:curpp]|r[ |cff997fcc>demonicfury<|r][ |cff0090ff>p3lim:altpp<%|r][ | >p3lim:spell]')
 
 		local Experience = CreateFrame('StatusBar', nil, self)
 		Experience:SetPoint('BOTTOM', 0, -20)
@@ -256,6 +255,17 @@ local UnitSpecific = {
 		ExperienceBG:SetTexture(1/3, 1/3, 1/3)
 
 		local _, playerClass = UnitClass('player')
+
+		local ComboPoints = self:CreateFontString(nil, 'OVERLAY', 'SubZoneTextFont')
+		ComboPoints:SetPoint('RIGHT', self, 'LEFT', 590, -2)
+		ComboPoints:SetJustifyH('RIGHT')
+		ComboPoints:SetTextColor(1, 1, 1)
+
+		if(playerClass == 'ROGUE') then
+			self:Tag(ComboPoints, '[p3lim:anticipation< ][p3lim:combo]')
+		else
+			self:Tag(ComboPoints, '[p3lim:combo]')
+		end
 
 		local ClassIcons = {}
 		ClassIcons.UpdateTexture = function() end
@@ -399,16 +409,10 @@ local UnitSpecific = {
 		self.Buffs.PostUpdateIcon = PostUpdateBuff
 		self.Buffs.CustomFilter = FilterPlayerBuffs
 
-		self:Tag(self.HealthValue, '[p3lim:pet< : ][p3lim:status][p3lim:phealth]')
+		self:Tag(self.HealthValue, '[p3lim:pethp< : ][p3lim:status][p3lim:maxhp][|cffff8080->p3lim:defhp<|r][ >p3lim:perhp<|cff0090ff%|r]')
 		self:SetWidth(230)
 	end,
 	target = function(self)
-		local ComboPoints = self:CreateFontString(nil, 'OVERLAY', 'SubZoneTextFont')
-		ComboPoints:SetPoint('RIGHT', self, 'LEFT', -9, -2)
-		ComboPoints:SetJustifyH('RIGHT')
-		ComboPoints:SetTextColor(1, 1, 1)
-		self:Tag(ComboPoints, '[p3lim:cpoints]')
-
 		self.Castbar.PostCastStart = PostUpdateCast
 		self.Castbar.PostCastInterruptible = PostUpdateCast
 		self.Castbar.PostCastNotInterruptible = PostUpdateCast
@@ -422,7 +426,7 @@ local UnitSpecific = {
 		self.Debuffs.PostUpdateIcon = PostUpdateDebuff
 
 		self.Power.PostUpdate = PostUpdatePower
-		self:Tag(self.HealthValue, '[p3lim:status][p3lim:thealth]')
+		self:Tag(self.HealthValue, '[p3lim:status][p3lim:curhp][ >p3lim:targethp]')
 		self:SetWidth(230)
 	end,
 	party = function(self)
@@ -442,17 +446,17 @@ local UnitSpecific = {
 
 		self.Health:SetAllPoints()
 		self:Tag(self.Name, '[p3lim:leader][raidcolor][name]')
-		self:Tag(self.HealthValue, '[p3lim:status][p3lim:percent]')
+		self:Tag(self.HealthValue, '[p3lim:status][p3lim:perhp<|cff0090ff%|r]')
 	end,
 	boss = function(self)
 		self:SetSize(126, 19)
 		self.Health:SetAllPoints()
-		self:Tag(self.HealthValue, '[p3lim:percent]')
+		self:Tag(self.HealthValue, '[p3lim:perhp<|cff0090ff%|r]')
 	end,
 	arena = function(self)
 		self:SetSize(126, 19)
 		self:Tag(self.Name, '[raidcolor][name]')
-		self:Tag(self.HealthValue, '[p3lim:percent]')
+		self:Tag(self.HealthValue, '[p3lim:perhp<|cff0090ff%|r]')
 		self.Health:SetHeight(17)
 	end
 }
@@ -484,7 +488,6 @@ local function Shared(self, unit)
 	HealthValue:SetPoint('RIGHT', -2, 0)
 	HealthValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 	HealthValue:SetJustifyH('RIGHT')
-	HealthValue.frequentUpdates = 1/4
 	self.HealthValue = HealthValue
 
 	if(unit == 'player' or unit == 'target' or unit == 'arena') then
