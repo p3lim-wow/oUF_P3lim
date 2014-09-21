@@ -430,16 +430,16 @@ local UnitSpecific = {
 		self:SetWidth(230)
 	end,
 	party = function(self)
-		local RoleIcon = self:CreateTexture()
+		local ReadyCheck = self:CreateTexture()
+		ReadyCheck:SetPoint('LEFT', self, 'RIGHT', 3, 0)
+		ReadyCheck:SetSize(14, 14)
+		self.ReadyCheck = ReadyCheck
+
+		local RoleIcon = self:CreateTexture(nil, 'OVERLAY')
 		RoleIcon:SetPoint('LEFT', self, 'RIGHT', 3, 0)
 		RoleIcon:SetSize(14, 14)
 		RoleIcon:SetAlpha(0)
 		self.LFDRole = RoleIcon
-
-		local ReadyCheck = self:CreateTexture(nil, 'OVERLAY')
-		ReadyCheck:SetPoint('LEFT', self, 'RIGHT', 3, 0)
-		ReadyCheck:SetSize(14, 14)
-		self.ReadyCheck = ReadyCheck
 
 		self:HookScript('OnEnter', function() RoleIcon:SetAlpha(1) end)
 		self:HookScript('OnLeave', function() RoleIcon:SetAlpha(0) end)
