@@ -26,7 +26,7 @@ local function PostUpdateHealth(element, unit, cur, max)
 	local ScrollFrame = element.__owner.Portrait.scrollFrame
 
 	if(element.disconnected) then
-		cur = 0
+		cur, max = 0, 1
 	end
 
 	local offset = -(230 * (1 - cur / max))
