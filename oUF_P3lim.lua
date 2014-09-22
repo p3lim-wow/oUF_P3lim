@@ -263,6 +263,8 @@ local UnitSpecific = {
 
 		if(playerClass == 'ROGUE') then
 			self:Tag(ComboPoints, '[p3lim:anticipation< ][p3lim:combo]')
+		elseif(playerClass == 'SHAMAN') then
+			self:Tag(ComboPoints, '[|cffd577e6>p3lim:maelstrom<|r][p3lim:combo]')
 		else
 			self:Tag(ComboPoints, '[p3lim:combo]')
 		end

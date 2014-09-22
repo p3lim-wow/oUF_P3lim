@@ -39,6 +39,7 @@ local events = {
 	leader = 'PARTY_LEADER_CHANGED',
 	combo = 'UNIT_COMBO_POINTS PLAYER_TARGET_CHANGED',
 	anticipation = 'UNIT_AURA',
+	maelstrom = 'UNIT_AURA',
 	spell = 'UNIT_SPELLCAST_START UNIT_SPELLCAST_STOP UNIT_SPELLCAST_CHANNEL_START UNIT_SPELLCAST_CHANNEL_STOP',
 	color = 'UNIT_REACTION UNIT_FACTION',
 	status = 'UNIT_CONNECTION UNIT_HEALTH'
@@ -149,6 +150,22 @@ for tag, func in next, {
 		until(not spellID)
 
 		return points
+	end,
+	maelstrom = function(unit)
+		if(not UnitExists('target')) then return end
+
+		local index, charges = 1
+		repeat
+			local _, _, _, count, _, _, _, _, _, _, spellID = UnitAura(unit, index, 'HELPFUL')
+			if(spellID == 53817) then
+				charges = count
+				break
+			end
+
+			index = index + 1
+		until(not spellID)
+
+		return charges
 	end,
 	color = function(unit)
 		local reaction = UnitReaction(unit, 'player')
