@@ -16,10 +16,6 @@ local function UNIT_POWER(self, event, unit, powerType)
 		element[index]:SetValue(cur)
 		cur = cur - 10
 	end
-
-	if(element.PostUpdatePower) then
-		return element:PostUpdatePower(unit, total, max)
-	end
 end
 
 local function UPDATE_VISIBILITY(self)
@@ -42,10 +38,6 @@ local function UPDATE_VISIBILITY(self)
 		for index = 1, 4 do
 			element[index]:Hide()
 		end
-	end
-
-	if(element.PostUpdateVisibility) then
-		return element:PostUpdateVisibility(self.unit)
 	end
 end
 
@@ -70,13 +62,6 @@ local function Enable(self, unit)
 
 		self:RegisterEvent('SPELLS_CHANGED', UPDATE_VISIBILITY, true)
 		self:RegisterEvent('UNIT_POWER_FREQUENT', UNIT_POWER)
-
-		for index = 1, 4 do
-			local Ember = element[index]
-			if(Ember:GetObjectType() == 'StatusBar' and not Ember:GetStatusBarTexture()) then
-				Ember:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar]])
-			end
-		end
 
 		return true
 	end

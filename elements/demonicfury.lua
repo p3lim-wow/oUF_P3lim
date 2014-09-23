@@ -23,10 +23,6 @@ local function UNIT_POWER(self, event, unit, powerType)
 
 	element:SetMinMaxValues(0, max)
 	element:SetValue(cur)
-
-	if(element.PostUpdatePower) then
-		return element:PostUpdatePower(unit, cur, max)
-	end
 end
 
 local function UPDATE_VISIBILITY(self)
@@ -45,10 +41,6 @@ local function UPDATE_VISIBILITY(self)
 		element:Show()
 	else
 		element:Hide()
-	end
-
-	if(element.PostUpdateVisibility) then
-		return element:PostUpdateVisibility(self.unit)
 	end
 end
 
@@ -69,10 +61,6 @@ local function Enable(self, unit)
 
 		self:RegisterEvent('SPELLS_CHANGED', UPDATE_VISIBILITY, true)
 		self:RegisterEvent('UNIT_POWER_FREQUENT', UNIT_POWER)
-
-		if(element:GetObjectType() == 'StatusBar' and not element:GetStatusBarTexture()) then
-			element:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar]])
-		end
 
 		return true
 	end
