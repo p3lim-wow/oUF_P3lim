@@ -26,6 +26,18 @@ local function Status(unit)
 	end
 end
 
+local function GetAuraCount(unit, id)
+	local index = 1
+	repeat
+		local _, _, _, count, _, _, _, _, _, _, spellID = UnitAura(unit, index, 'HELPFUL')
+		if(spellID == id) then
+			return count
+		end
+
+		index = index + 1
+	until(not spellID)
+end
+
 local events = {
 	curhp = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH',
 	defhp = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH',
@@ -136,36 +148,10 @@ for tag, func in next, {
 		end
 	end,
 	anticipation = function(unit)
-		if(not UnitExists('target')) then return end
-
-		local index, points = 1
-		repeat
-			local _, _, _, count, _, _, _, _, _, _, spellID = UnitAura(unit, index, 'HELPFUL')
-			if(spellID == 115189) then
-				points = count
-				break
-			end
-
-			index = index + 1
-		until(not spellID)
-
-		return points
+		return UnitExists('target') and GetAuraCount(unit, 115189)
 	end,
 	maelstrom = function(unit)
-		if(not UnitExists('target')) then return end
-
-		local index, charges = 1
-		repeat
-			local _, _, _, count, _, _, _, _, _, _, spellID = UnitAura(unit, index, 'HELPFUL')
-			if(spellID == 53817) then
-				charges = count
-				break
-			end
-
-			index = index + 1
-		until(not spellID)
-
-		return charges
+		return UnitExists('target') and GetAuraCount(unit, 53817)
 	end,
 	color = function(unit)
 		local reaction = UnitReaction(unit, 'player')
