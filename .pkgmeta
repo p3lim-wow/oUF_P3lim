@@ -12,4 +12,5 @@ manual-changelog:
     markup-type: markdown
 
 ignore:
+    - .gitmodules
     - embeds/oUF/utils
