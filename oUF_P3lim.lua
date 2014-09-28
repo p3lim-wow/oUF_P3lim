@@ -228,8 +228,8 @@ end
 
 local UnitSpecific = {
 	player = function(self)
-		local PowerValue = self.Health:CreateFontString(nil, 'OVERLAY')
-		PowerValue:SetPoint('LEFT', 2, 0)
+		local PowerValue = self.StringParent:CreateFontString(nil, 'OVERLAY')
+		PowerValue:SetPoint('LEFT', self.Health, 2, 0)
 		PowerValue:SetPoint('RIGHT', self.HealthValue, 'LEFT', -3)
 		PowerValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		PowerValue:SetJustifyH('LEFT')
@@ -486,8 +486,12 @@ local function Shared(self, unit)
 	HealthBG:SetAllPoints()
 	HealthBG:SetTexture(1/3, 1/3, 1/3)
 
-	local HealthValue = Health:CreateFontString(nil, 'OVERLAY')
-	HealthValue:SetPoint('RIGHT', -2, 0)
+	local StringParent = CreateFrame('Frame', nil, self)
+	StringParent:SetFrameLevel(20)
+	self.StringParent = StringParent
+
+	local HealthValue = StringParent:CreateFontString(nil, 'OVERLAY')
+	HealthValue:SetPoint('RIGHT', Health, -2, 0)
 	HealthValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 	HealthValue:SetJustifyH('RIGHT')
 	self.HealthValue = HealthValue
