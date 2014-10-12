@@ -1,6 +1,9 @@
 [submodule "oUF"]
 	path = embeds/oUF
 	url = git://github.com/haste/oUF.git
+[submodule "oUF_MovableFrames"]
+	path = embeds/oUF_MovableFrames
+	url = git://github.com/haste/oUF_MovableFrames.git
 [submodule "oUF_Experience"]
 	path = embeds/oUF_Experience
 	url = git://github.com/p3lim-wow/oUF_Experience.git
