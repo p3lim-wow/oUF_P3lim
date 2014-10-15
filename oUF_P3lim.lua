@@ -1,5 +1,3 @@
-local WoD = select(4, GetBuildInfo()) >= 6e4
-
 local _, ns = ...
 local oUF = ns.oUF
 
@@ -151,13 +149,9 @@ local function PostCreateAura(element, button)
 	button:SetBackdrop(BACKDROP)
 	button:SetBackdropColor(0, 0, 0)
 	button.cd:SetReverse()
+	button.cd:SetHideCountdownNumbers(true)
 	button.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 	button.icon:SetDrawLayer('ARTWORK')
-
-	if(WoD) then
-		button.cd:SetHideCountdownNumbers(true)
-	end
-
 	button.count:SetPoint('BOTTOMRIGHT', 2, 1)
 	button.count:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 
@@ -351,16 +345,12 @@ local UnitSpecific = {
 			SolarBar:SetAllPoints()
 			SolarBar:SetTexture(1/4, 2/5, 5/6)
 
-			if(WoD) then
-				self.Eclipse = EclipseBar
-				self:RegisterEvent('PLAYER_TALENT_UPDATE', UpdateEclipseVisibility, true)
-				self:RegisterEvent('UPDATE_SHAPESHIFT_FORM', UpdateEclipseVisibility, true)
-				self:RegisterEvent('UNIT_POWER_FREQUENT', UpdateEclipse)
-				UpdateEclipseVisibility(self)
-				UpdateEclipse(self, nil, 'player')
-			else
-				self.EclipseBar = EclipseBar
-			end
+			self.Eclipse = EclipseBar
+			self:RegisterEvent('PLAYER_TALENT_UPDATE', UpdateEclipseVisibility, true)
+			self:RegisterEvent('UPDATE_SHAPESHIFT_FORM', UpdateEclipseVisibility, true)
+			self:RegisterEvent('UNIT_POWER_FREQUENT', UpdateEclipse)
+			UpdateEclipseVisibility(self)
+			UpdateEclipse(self, nil, 'player')
 		elseif(playerClass == 'WARLOCK') then
 			local BurningEmbers = {}
 			for index = 1, 4 do
