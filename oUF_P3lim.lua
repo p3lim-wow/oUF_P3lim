@@ -85,40 +85,6 @@ local function PostUpdateResurrect(element)
 	end
 end
 
-local function UpdateEclipse(self, event, unit, powerType)
-	if(self.unit ~= unit or (event == 'UNIT_POWER_FREQUENT' and powerType ~= 'ECLIPSE')) then return end
-	local lunar = self.Eclipse.LunarBar
-
-	local max = UnitPowerMax('player', SPELL_POWER_ECLIPSE)
-	lunar:SetMinMaxValues(-max, max)
-	lunar:SetValue(UnitPower('player', SPELL_POWER_ECLIPSE))
-end
-
-local function UpdateEclipseVisibility(self)
-	local element = self.Eclipse
-
-	local showBar
-	local form = GetShapeshiftFormID()
-	if(not form) then
-		local specialization = GetSpecialization()
-		if(specialization and specialization == 1) then
-			showBar = true
-		end
-	elseif(form == MOONKIN_FORM) then
-		showBar = true
-	end
-
-	if(UnitHasVehicleUI('player')) then
-		showBar = false
-	end
-
-	if(showBar) then
-		element:Show()
-	else
-		element:Hide()
-	end
-end
-
 local function UpdateThreat(self, event, unit)
 	if(unit ~= self.unit) then
 		return
@@ -345,12 +311,7 @@ local UnitSpecific = {
 			SolarBar:SetAllPoints()
 			SolarBar:SetTexture(1/4, 2/5, 5/6)
 
-			self.Eclipse = EclipseBar
-			self:RegisterEvent('PLAYER_TALENT_UPDATE', UpdateEclipseVisibility, true)
-			self:RegisterEvent('UPDATE_SHAPESHIFT_FORM', UpdateEclipseVisibility, true)
-			self:RegisterEvent('UNIT_POWER_FREQUENT', UpdateEclipse)
-			UpdateEclipseVisibility(self)
-			UpdateEclipse(self, nil, 'player')
+			self.EclipseBar = EclipseBar
 		elseif(playerClass == 'WARLOCK') then
 			local BurningEmbers = {}
 			for index = 1, 4 do
