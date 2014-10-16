@@ -1,3 +1,19 @@
+## Changes in 60000.21-Release:
+
+- Added: Support for MovableFrames plugin
+- Added: Support for Shaman's Maelstrom Weapon (same as combo points)
+- Changed: Update Interface version
+- Changed: Update oUF embed
+- Changed: Update Experience embed
+- Changed: Tags rewritten for performance and readability
+- Fixed: EclipseBar issues
+- Fixed: Arena preparation frames
+- Fixed: Tags rendering behind the portrait
+- Fixed: Role icons rendering behind the ready check icons
+- Fixed: Divide by zero bug
+- Removed: Unintentional debuffs on arena frames
+- Removed: Compatability code for "Mists of Pandaria" expansion
+
 ## Changes in 50400.20-Release:
 
 - Added: Support for "Warlords of Draenor" expansion
