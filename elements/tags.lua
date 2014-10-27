@@ -127,7 +127,7 @@ for tag, func in next, {
 	end,
 	ptype = function(unit)
 		local _, type = UnitPowerType(unit)
-		return Hex(_COLORS.power[type])
+		return Hex(_COLORS.power[type] or _COLORS.power.MANA)
 	end,
 	leader = function(unit)
 		return UnitIsGroupLeader(unit) and '|cffffff00!|r'
