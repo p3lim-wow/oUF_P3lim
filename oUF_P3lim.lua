@@ -383,6 +383,7 @@ local UnitSpecific = {
 		self.Debuffs:SetSize(230, 19.4)
 		self.Debuffs.CustomFilter = FilterTargetDebuffs
 		self.Debuffs.PostUpdateIcon = PostUpdateDebuff
+		self.Buffs.PostUpdateIcon = PostUpdateBuff
 
 		self.Power.PostUpdate = PostUpdatePower
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:curhp][ >p3lim:targethp]')
