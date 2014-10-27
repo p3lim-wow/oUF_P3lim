@@ -101,7 +101,7 @@ end
 
 local function UpdateAura(self, elapsed)
 	if(self.expiration) then
-		self.expiration = self.expiration - elapsed
+		self.expiration = math.max(self.expiration - elapsed, 0)
 
 		if(self.expiration > 0 and self.expiration < 60) then
 			self.Duration:SetFormattedText('%d', self.expiration)
