@@ -285,7 +285,7 @@ local UnitSpecific = {
 					Rune:SetPoint('LEFT', Runes[index - 1], 'RIGHT', 4, 0)
 				end
 
-				local RuneBG = Rune:CreateTexture(nil, 'BACKGROUND')
+				local RuneBG = Rune:CreateTexture(nil, 'BORDER')
 				RuneBG:SetAllPoints()
 				RuneBG:SetTexture(TEXTURE)
 				RuneBG.multiplier = 1/3
