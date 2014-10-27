@@ -101,13 +101,13 @@ end
 
 local function UpdateAura(self, elapsed)
 	if(self.expiration) then
-		if(self.expiration < 60) then
-			self.remaining:SetFormattedText('%d', self.expiration)
-		else
-			self.remaining:SetText()
-		end
-
 		self.expiration = self.expiration - elapsed
+
+		if(self.expiration > 0 and self.expiration < 60) then
+			self.Duration:SetFormattedText('%d', self.expiration)
+		else
+			self.Duration:SetText()
+		end
 	end
 end
 
@@ -118,13 +118,19 @@ local function PostCreateAura(element, button)
 	button.cd:SetHideCountdownNumbers(true)
 	button.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 	button.icon:SetDrawLayer('ARTWORK')
-	button.count:SetPoint('BOTTOMRIGHT', 2, 1)
+
+	local StringParent = CreateFrame('Frame', nil, button)
+	StringParent:SetFrameLevel(20)
+
+	button.count:SetParent(StringParent)
+	button.count:ClearAllPoints()
+	button.count:SetPoint('BOTTOMRIGHT', button, 2, 1)
 	button.count:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 
-	local remaining = button:CreateFontString(nil, 'OVERLAY')
-	remaining:SetPoint('TOPLEFT', 0, -1)
-	remaining:SetFont(FONT, 8, 'OUTLINEMONOCROME')
-	button.remaining = remaining
+	local Duration = StringParent:CreateFontString(nil, 'OVERLAY')
+	Duration:SetPoint('TOPLEFT', button, 0, -1)
+	Duration:SetFont(FONT, 8, 'OUTLINEMONOCROME')
+	button.Duration = Duration
 
 	button:HookScript('OnUpdate', UpdateAura)
 end
