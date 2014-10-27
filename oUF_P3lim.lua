@@ -56,35 +56,6 @@ local function PostUpdateClassIcon(element, cur, max, diff)
 	end
 end
 
-local function PostUpdateResurrect(element)
-	if(not element.__owner) then
-		element = element.ResurrectIcon
-	end
-
-	local unit = element.__owner.unit
-
-	local hasResurrectDebuff
-	for index = 1, 40 do
-		local _, _, _, _, _, _, _, _, _, _, spellID = UnitAura(unit, index, 'HARMFUL')
-		if(spellID and spellID == 160029) then
-			hasResurrectDebuff = true
-			break
-		elseif(not spellID) then
-			break
-		end
-	end
-
-	if(hasResurrectDebuff) then
-		element:Show()
-		element:SetVertexColor(1, 0, 0)
-	elseif(not UnitHasIncomingResurrection(unit)) then
-		element:Hide()
-		element:SetVertexColor(1, 1, 1)
-	else
-		element:SetVertexColor(1, 1, 1)
-	end
-end
-
 local function UpdateThreat(self, event, unit)
 	if(unit ~= self.unit) then
 		return
@@ -190,6 +161,11 @@ do
 			return true
 		end
 	end
+end
+
+local function FilterGroupDebuffs(...)
+	local _, _, _, _, _, _, _, _, _, _, _, _, _, id = ...
+	return id == 160029
 end
 
 local UnitSpecific = {
@@ -406,6 +382,10 @@ local UnitSpecific = {
 		self:HookScript('OnEnter', function() RoleIcon:SetAlpha(1) end)
 		self:HookScript('OnLeave', function() RoleIcon:SetAlpha(0) end)
 
+		self.Debuffs.size = 16
+		self.Debuffs:SetSize(100, 16)
+		self.Debuffs.CustomFilter = FilterGroupDebuffs
+
 		self.Health:SetAllPoints()
 		self:Tag(self.Name, '[p3lim:leader][raidcolor][name]')
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:perhp<|cff0090ff%|r]')
@@ -556,11 +536,10 @@ local function Shared(self, unit)
 		local Resurrect = Health:CreateTexture(nil, 'OVERLAY')
 		Resurrect:SetPoint('CENTER', 0, -1)
 		Resurrect:SetSize(16, 16)
-		Resurrect.PostUpdate = PostUpdateResurrect
 		self.ResurrectIcon = Resurrect
+	end
 
-		self:RegisterEvent('UNIT_AURA', PostUpdateResurrect)
-	elseif(unit ~= 'boss') then
+	if(unit ~= 'boss' and unit ~= 'arena') then
 		local Debuffs = CreateFrame('Frame', nil, self)
 		Debuffs.spacing = 4
 		Debuffs.initialAnchor = 'TOPLEFT'
