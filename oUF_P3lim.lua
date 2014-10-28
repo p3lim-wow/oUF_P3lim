@@ -597,10 +597,6 @@ oUF:Factory(function(self)
 			boss:SetPoint('TOP', _G['oUF_P3limBoss' .. index - 1], 'BOTTOM', 0, -6)
 			arena:SetPoint('TOP', _G['oUF_P3limArena' .. index - 1], 'BOTTOM', 0, -6)
 		end
-
-		local blizz = _G['Boss' .. index .. 'TargetFrame']
-		blizz:UnregisterAllEvents()
-		blizz:Hide()
 	end
 end)
 
