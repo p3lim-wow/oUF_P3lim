@@ -170,9 +170,15 @@ end
 
 local UnitSpecific = {
 	player = function(self)
+		local PetHealth = self.StringParent:CreateFontString(nil, 'OVERLAY')
+		PetHealth:SetPoint('RIGHT', self.HealthValue, 'LEFT', -2, 0)
+		PetHealth:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
+		PetHealth:SetJustifyH('RIGHT')
+		self:Tag(PetHealth, '[p3lim:pethp< :]')
+
 		local PowerValue = self.StringParent:CreateFontString(nil, 'OVERLAY')
 		PowerValue:SetPoint('LEFT', self.Health, 2, 0)
-		PowerValue:SetPoint('RIGHT', self.HealthValue, 'LEFT', -3)
+		PowerValue:SetPoint('RIGHT', PetHealth, 'LEFT', -3, 0)
 		PowerValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		PowerValue:SetJustifyH('LEFT')
 		self:Tag(PowerValue, '[p3lim:ptype][p3lim:curpp]|r[ |cff997fcc>demonicfury<|r][ |cff0090ff>p3lim:altpp<%|r][ | >p3lim:spell]')
@@ -346,7 +352,7 @@ local UnitSpecific = {
 		self.Buffs.PostUpdateIcon = PostUpdateBuff
 		self.Buffs.CustomFilter = FilterPlayerBuffs
 
-		self:Tag(self.HealthValue, '[p3lim:pethp< : ][p3lim:status][p3lim:maxhp][|cffff8080->p3lim:defhp<|r][ >p3lim:perhp<|cff0090ff%|r]')
+		self:Tag(self.HealthValue, '[p3lim:status][p3lim:maxhp][|cffff8080->p3lim:defhp<|r][ >p3lim:perhp<|cff0090ff%|r]')
 		self:SetWidth(230)
 	end,
 	target = function(self)
