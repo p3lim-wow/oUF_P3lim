@@ -43,7 +43,7 @@ local events = {
 	defhp = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH',
 	maxhp = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH',
 	perhp = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH',
-	pethp = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH',
+	pethp = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_PET',
 	targethp = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH',
 	curpp = 'UNIT_POWER_FREQUENT UNIT_MAXPOWER',
 	altpp = 'UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_DISPLAYPOWER',
@@ -168,3 +168,7 @@ for tag, func in next, {
 	tags.Methods['p3lim:' .. tag] = func
 	tags.Events['p3lim:' .. tag] = events[tag]
 end
+
+-- This is really bad haste
+tags.SharedEvents.UNIT_HEALTH_FREQUENT = true
+tags.SharedEvents.UNIT_MAXHEALTH = true
