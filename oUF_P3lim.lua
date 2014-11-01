@@ -41,8 +41,8 @@ local function PostUpdateCast(element, unit)
 	end
 end
 
-local function PostUpdateClassIcon(element, cur, max, diff)
-	if(diff) then
+local function PostUpdateClassIcon(element, cur, max, diff, event)
+	if(diff or event == 'ClassPowerEnable') then
 		for index = 1, max do
 			local ClassIcon = element[index]
 			if(max == 3) then
