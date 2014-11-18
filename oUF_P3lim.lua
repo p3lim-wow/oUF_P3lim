@@ -51,6 +51,8 @@ local function PostUpdateClassIcon(element, cur, max, diff, event)
 				ClassIcon:SetWidth(index > 2 and 55 or 54)
 			elseif(max == 5) then
 				ClassIcon:SetWidth(index == 5 and 42 or 43)
+			elseif(max == 6) then
+				ClassIcon:SetWidth(35)
 			end
 		end
 	end
@@ -234,7 +236,7 @@ local UnitSpecific = {
 			r, g, b = 1, 1, 2/5
 		end
 
-		for index = 1, 5 do
+		for index = 1, 6 do
 			local ClassIcon = CreateFrame('Frame', nil, self)
 			ClassIcon:SetHeight(6)
 			ClassIcon:SetBackdrop(BACKDROP)
