@@ -1,3 +1,21 @@
+## Changes in 60000.22-Release:
+
+- Added: Duration for target's buffs
+- Added: Simple tooltip for the experience bar
+- Changed: Update oUF embed
+- Changed: Update Experience embed
+- Fixed: Errors when entering a vehicle
+- Fixed: Text rendered below the cooldown spiral
+- Fixed: Cooldown/durations showing negative values during bad connection
+- Fixed: Runes rendering issue
+- Fixed: Combat resurrect icon on party/raid frames
+- Fixed: Class icons sometimes incorrectly sized (or hidden)
+- Fixed: Pet health on the player frame not updating correctly
+- Fixed: Not showing the 6th chi for monks
+- Fixed: Incorrect outline on the buff/debuff durations
+- Fixed: Issues regarding the name/cast info on target
+- Removed: Buffs on the player frame
+
 ## Changes in 60000.21-Release:
 
 - Added: Support for MovableFrames plugin
