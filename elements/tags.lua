@@ -53,6 +53,7 @@ local events = {
 	anticipation = 'UNIT_AURA',
 	maelstrom = 'UNIT_AURA',
 	spell = 'UNIT_SPELLCAST_START UNIT_SPELLCAST_STOP UNIT_SPELLCAST_CHANNEL_START UNIT_SPELLCAST_CHANNEL_STOP',
+	name = 'UNIT_SPELLCAST_START UNIT_SPELLCAST_STOP UNIT_SPELLCAST_CHANNEL_START UNIT_SPELLCAST_CHANNEL_STOP UNIT_NAME_UPDATE UNIT_REACTION UNIT_FACTION UNIT_CLASSIFICATION_CHANGED',
 	color = 'UNIT_REACTION UNIT_FACTION',
 	status = 'UNIT_CONNECTION UNIT_HEALTH'
 }
@@ -134,6 +135,27 @@ for tag, func in next, {
 	end,
 	spell = function(unit)
 		return UnitCastingInfo(unit) or UnitChannelInfo(unit)
+	end,
+	name = function(unit)
+		local name, _, _, _, _, _, _, _, notInterruptible = UnitCastingInfo(unit)
+		if(name) then
+			local color = notInterruptible and 'ff9000' or 'ff0000'
+			return format('|cff%s%s|r', color, name)
+		end
+
+		name, _, _, _, _, _, _, notInterruptible = UnitChannelInfo(unit)
+		if(name) then
+			local color = notInterruptible and 'ff9000' or 'ff0000'
+			return format('|cff%s%s|r', color, name)
+		end
+
+		name = UnitName(unit)
+
+		local color = _TAGS['p3lim:color'](unit)
+		name = color and format('%s%s|r', color, name) or name
+
+		local rare = _TAGS['rare'](unit)
+		return rare and format('%s |cff0090ff%s|r', name, rare) or name
 	end,
 	combo = function(unit)
 		if(not UnitExists('target')) then return end

@@ -342,6 +342,13 @@ local UnitSpecific = {
 		self:SetWidth(230)
 	end,
 	target = function(self)
+		local Name = self.Health:CreateFontString(nil, 'OVERLAY')
+		Name:SetPoint('LEFT', 2, 0)
+		Name:SetPoint('RIGHT', self.HealthValue, 'LEFT')
+		Name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
+		Name:SetJustifyH('LEFT')
+		self:Tag(Name, '[p3lim:name]')
+
 		local Buffs = CreateFrame('Frame', nil, self)
 		Buffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
 		Buffs:SetSize(236, 44)
@@ -500,13 +507,13 @@ local function Shared(self, unit)
 		Health:SetPoint('TOPLEFT')
 	end
 
-	if(unit == 'target' or unit == 'focus' or unit == 'targettarget' or unit == 'boss') then
+	if(unit == 'focus' or unit == 'targettarget' or unit == 'boss') then
 		local Name = Health:CreateFontString(nil, 'OVERLAY')
 		Name:SetPoint('LEFT', 2, 0)
 		Name:SetPoint('RIGHT', HealthValue, 'LEFT')
 		Name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		Name:SetJustifyH('LEFT')
-		self:Tag(Name, '[p3lim:color][name][ |cff0090ff>rare<|r]')
+		self:Tag(Name, '[p3lim:color][name]')
 	elseif(unit ~= 'arena') then
 		local Threat = CreateFrame('Frame', nil, self)
 		Threat:SetPoint('TOPRIGHT', 3, 3)
