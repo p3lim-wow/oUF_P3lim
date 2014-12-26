@@ -169,7 +169,7 @@ local UnitSpecific = {
 		PowerValue:SetPoint('RIGHT', PetHealth, 'LEFT', -3, 0)
 		PowerValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		PowerValue:SetJustifyH('LEFT')
-		self:Tag(PowerValue, '[p3lim:ptype][p3lim:curpp]|r[ |cff997fcc>demonicfury<|r][ |cff0090ff>p3lim:altpp<%|r][ | >p3lim:spell]')
+		self:Tag(PowerValue, '[p3lim:ptype][p3lim:curpp]|r[ |cff997fcc>demonicfury<|r][ |cff0090ff>p3lim:altpp<%|r][ : >p3lim:cast]')
 
 		local Experience = CreateFrame('StatusBar', nil, self)
 		Experience:SetPoint('BOTTOM', 0, -20)
@@ -527,7 +527,7 @@ local function Shared(self, unit)
 	if(unit == 'party' or unit == 'raid' or unit == 'arena') then
 		local Name = self.Health:CreateFontString(nil, 'OVERLAY')
 		Name:SetPoint('LEFT', 3, 0)
-		Name:SetPoint('RIGHT', self.HealthValue, 'LEFT')
+		Name:SetPoint('RIGHT', HealthValue, 'LEFT')
 		Name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		Name:SetJustifyH('LEFT')
 		self.Name = Name

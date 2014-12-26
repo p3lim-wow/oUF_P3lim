@@ -52,7 +52,7 @@ local events = {
 	combo = 'UNIT_COMBO_POINTS PLAYER_TARGET_CHANGED',
 	anticipation = 'UNIT_AURA',
 	maelstrom = 'UNIT_AURA',
-	spell = 'UNIT_SPELLCAST_START UNIT_SPELLCAST_STOP UNIT_SPELLCAST_CHANNEL_START UNIT_SPELLCAST_CHANNEL_STOP',
+	cast = 'UNIT_SPELLCAST_START UNIT_SPELLCAST_STOP UNIT_SPELLCAST_CHANNEL_START UNIT_SPELLCAST_CHANNEL_STOP',
 	name = 'UNIT_SPELLCAST_START UNIT_SPELLCAST_STOP UNIT_SPELLCAST_CHANNEL_START UNIT_SPELLCAST_CHANNEL_STOP UNIT_NAME_UPDATE UNIT_REACTION UNIT_FACTION UNIT_CLASSIFICATION_CHANGED',
 	color = 'UNIT_REACTION UNIT_FACTION',
 	status = 'UNIT_CONNECTION UNIT_HEALTH'
@@ -133,7 +133,7 @@ for tag, func in next, {
 	leader = function(unit)
 		return UnitIsGroupLeader(unit) and '|cffffff00!|r'
 	end,
-	spell = function(unit)
+	cast = function(unit)
 		return UnitCastingInfo(unit) or UnitChannelInfo(unit)
 	end,
 	name = function(unit)
