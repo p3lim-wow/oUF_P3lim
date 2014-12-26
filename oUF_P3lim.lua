@@ -162,7 +162,8 @@ local UnitSpecific = {
 		PetHealth:SetPoint('RIGHT', self.HealthValue, 'LEFT', -2, 0)
 		PetHealth:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		PetHealth:SetJustifyH('RIGHT')
-		self:Tag(PetHealth, '[p3lim:pethp< :]')
+		PetHealth.overrideUnit = 'pet'
+		self:CustomTag(PetHealth, '[p3lim:pethp< :]')
 
 		local PowerValue = self.StringParent:CreateFontString(nil, 'OVERLAY')
 		PowerValue:SetPoint('LEFT', self.Health, 2, 0)
