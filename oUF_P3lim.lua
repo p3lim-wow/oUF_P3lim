@@ -102,7 +102,7 @@ local function PostCreateAura(element, button)
 
 	local Duration = StringParent:CreateFontString(nil, 'OVERLAY')
 	Duration:SetPoint('TOPLEFT', button, 0, -1)
-	Duration:SetFont(FONT, 8, 'OUTLINEMONOCROME')
+	Duration:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 	button.Duration = Duration
 
 	button:HookScript('OnUpdate', UpdateAura)
