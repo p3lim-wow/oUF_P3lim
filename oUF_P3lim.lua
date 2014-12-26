@@ -133,20 +133,6 @@ local function PostUpdateDebuff(element, unit, button, index)
 	PostUpdateBuff(element, unit, button, index)
 end
 
-local FilterPlayerBuffs
-do
-	local spells = {
-		-- Shared
-		[32182] = true, -- Heroism
-		[80353] = true, -- Time Warp
-	}
-
-	function FilterPlayerBuffs(...)
-		local _, _, _, _, _, _, _, _, _, _, _, _, _, id = ...
-		return spells[id]
-	end
-end
-
 local FilterTargetDebuffs
 do
 	local spells = {
@@ -351,13 +337,23 @@ local UnitSpecific = {
 		self.Debuffs.size = 22
 		self.Debuffs:SetSize(230, 22)
 		self.Debuffs.PostUpdateIcon = PostUpdateBuff
-		self.Buffs.PostUpdateIcon = PostUpdateBuff
-		self.Buffs.CustomFilter = FilterPlayerBuffs
 
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:maxhp][|cffff8080->p3lim:defhp<|r][ >p3lim:perhp<|cff0090ff%|r]')
 		self:SetWidth(230)
 	end,
 	target = function(self)
+		local Buffs = CreateFrame('Frame', nil, self)
+		Buffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
+		Buffs:SetSize(236, 44)
+		Buffs.num = 20
+		Buffs.size = 22
+		Buffs.spacing = 4
+		Buffs.initialAnchor = 'TOPLEFT'
+		Buffs['growth-y'] = 'DOWN'
+		Buffs.PostCreateIcon = PostCreateAura
+		Buffs.PostUpdateIcon = PostUpdateBuff
+		self.Buffs = Buffs
+
 		self.Castbar.PostCastStart = PostUpdateCast
 		self.Castbar.PostCastInterruptible = PostUpdateCast
 		self.Castbar.PostCastNotInterruptible = PostUpdateCast
@@ -369,7 +365,6 @@ local UnitSpecific = {
 		self.Debuffs:SetSize(230, 19.4)
 		self.Debuffs.CustomFilter = FilterTargetDebuffs
 		self.Debuffs.PostUpdateIcon = PostUpdateDebuff
-		self.Buffs.PostUpdateIcon = PostUpdateBuff
 
 		self.Power.PostUpdate = PostUpdatePower
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:curhp][ >p3lim:targethp]')
@@ -465,17 +460,6 @@ local function Shared(self, unit)
 		Power.bg = PowerBG
 
 		if(unit ~= 'arena') then
-			local Buffs = CreateFrame('Frame', nil, self)
-			Buffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
-			Buffs:SetSize(236, 44)
-			Buffs.num = 20
-			Buffs.size = 22
-			Buffs.spacing = 4
-			Buffs.initialAnchor = 'TOPLEFT'
-			Buffs['growth-y'] = 'DOWN'
-			Buffs.PostCreateIcon = PostCreateAura
-			self.Buffs = Buffs
-
 			local ScrollFrame = CreateFrame('ScrollFrame', nil, Health)
 			ScrollFrame:SetPoint('LEFT')
 			ScrollFrame:SetSize(230, 20)
