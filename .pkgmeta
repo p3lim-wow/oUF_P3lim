@@ -15,5 +15,6 @@ manual-changelog:
 
 ignore:
     - .gitmodules
+    - README.md
     - CONTRIBUTING.md
     - embeds/oUF/utils
