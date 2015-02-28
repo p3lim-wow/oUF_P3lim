@@ -1,4 +1,4 @@
-## Changes in 60000.22-Release:
+### Changes in 60000.22-Release:
 
 - Added: Duration for target's buffs
 - Added: Simple tooltip for the experience bar
@@ -16,7 +16,7 @@
 - Fixed: Issues regarding the name/cast info on target
 - Removed: Buffs on the player frame
 
-## Changes in 60000.21-Release:
+### Changes in 60000.21-Release:
 
 - Added: Support for MovableFrames plugin
 - Added: Support for Shaman's Maelstrom Weapon (same as combo points)
@@ -32,7 +32,7 @@
 - Removed: Unintentional debuffs on arena frames
 - Removed: Compatability code for "Mists of Pandaria" expansion
 
-## Changes in 50400.20-Release:
+### Changes in 50400.20-Release:
 
 - Added: Support for "Warlords of Draenor" expansion
 - Added: Support for Portraits element
@@ -51,7 +51,7 @@
 - Removed: Unbuffed tag on party and raid
 - Removed: Almost all class power tags from player
 
-## Changes in 50400.19-Release:
+### Changes in 50400.19-Release:
 
 - Added: Support for EclipseBar element
 - Added: Custom soulshards tag to player
@@ -61,7 +61,7 @@
 - Fixed: Combo points position
 - Removed: Support for AltPowerBar element
 
-## Changes in 50400.18-Release:
+### Changes in 50400.18-Release:
 
 - Added: Arena frames
 - Added: Arena preparation frames
@@ -71,31 +71,31 @@
 - Removed: Fancy CLEU tracking for combo points
 - Removed: Buff filters
 
-## Changes in 50300.17-Release:
+### Changes in 50300.17-Release:
 
 - Added: Support for Runes element
 - Changed: Update Interface version
 - Changed: Update oUF embed
 - Changed: Update buff and debuff filter
 
-## Changes in 50200.16-Release:
+### Changes in 50200.16-Release:
 
 - Changed: Update Interface version
 - Changed: Update oUF embed
 - Remove: Dropdown spawning logic (oUF handles this now)
 
-## Changes in 50100.15-Release:
+### Changes in 50100.15-Release:
 
 - Added: Support for AltPowerBar element
 - Changed: Update Interface version
 - Changed: Update oUF embed
 - Removed: Support for "Savage Defense" ability
 
-## Changes in 50001.14-Release:
+### Changes in 50001.14-Release:
 
 - Added: Metadata file for the curseforge packager
 
-## Changes in 50001.13-Release:
+### Changes in 50001.13-Release:
 
 - Added: Support for "Savage Defense" ability
 - Added: Countdown time on buffs and debuffs
@@ -106,7 +106,7 @@
 - Changed: Update buff and debuff filter
 - Fixed: Castbar frame strata
 
-## Changes in 50001.12-Release:
+### Changes in 50001.12-Release:
 
 - Added: Support for "Mists of Pandaria" expansion
 - Added: Support for Experience plugin
@@ -117,7 +117,7 @@
 - Removed: Support for oUF 1.5
 - Removed: Support for Fader plugin
 
-## Changes in 40300.11-Release:
+### Changes in 40300.11-Release:
 
 - Added: Boss frames
 - Added: Support for Fader plugin
@@ -126,7 +126,7 @@
 - Changed: Update buff filter
 - Fixed: Name going off the frame
 
-## Changes in 40300.10-Release:
+### Changes in 40300.10-Release:
 
 - Changed: Update Interface version
 - Changed: Update support for 1.6
@@ -138,13 +138,13 @@
 - Removed: Threat texture
 - Removed: Support for "Glyph of Shred"
 
-## Changes in 40200.9-Release:
+### Changes in 40200.9-Release:
 
 - Added: Threat texture
 - Changed: Update buff filter
 - Fixed: Make sure we have "Glyph of Shred" active
 
-## Changes in 40200.8-Release:
+### Changes in 40200.8-Release:
 
 - Added: Raid frames
 - Added: Castbar in form of a tag and spark on target
@@ -154,7 +154,7 @@
 - Changed: Update Interface version
 - Removed: Pet frame
 
-## Changes in 40100.7-Release:
+### Changes in 40100.7-Release:
 
 - Added: Party frames
 - Added: Castbar in form of a tag and spark on player and pet
@@ -164,17 +164,17 @@
 - Removed: Threat tag
 - Removed: Pet happiness coloring
 
-## Changes in 40000.6-Release:
+### Changes in 40000.6-Release:
 
 - Removed: Temporary fix for clicks
 
-## Changes in 40000.5-Beta:
+### Changes in 40000.5-Beta:
 
 - Changed: Update Interface version
 - Changed: Update support for 1.5
 - Changed: Font flags to "OUTLINEMONOCHROME"
 
-## Changes in 30300.4-Beta:
+### Changes in 30300.4-Beta:
 
 - Added: New font (Semplice Regular)
 - Changed: Update support for 1.4
@@ -185,7 +185,7 @@
 - Removed: Runes element
 - Removed: Custom statusbar texture
 
-## Changes in 30300.3-Beta:
+### Changes in 30300.3-Beta:
 
 - Added: New font (Marke Eigenbau)
 - Added: Support for Runes element
@@ -199,7 +199,7 @@
 - Fixed: Only show [pthreat] if threat percentage is above 0
 - Removed: Countdown time on player buffs
 
-## Changes in 30200.2-Beta:
+### Changes in 30200.2-Beta:
 
 - Added: [druidpower], [pthreat] and [pvptime] tags on player
 - Added: Icon to castbar
