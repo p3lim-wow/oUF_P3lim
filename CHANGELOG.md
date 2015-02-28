@@ -1,3 +1,9 @@
+### Changes in 60100.23-Release:
+
+- Changed: Update Interface version
+- Changed: Update Experience embed
+- Fixed: Words wrapping incorrectly
+
 ### Changes in 60000.22-Release:
 
 - Added: Duration for target's buffs
