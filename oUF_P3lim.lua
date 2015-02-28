@@ -170,6 +170,7 @@ local UnitSpecific = {
 		PowerValue:SetPoint('RIGHT', PetHealth, 'LEFT', -3, 0)
 		PowerValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		PowerValue:SetJustifyH('LEFT')
+		PowerValue:SetWordWrap(false)
 		self:Tag(PowerValue, '[p3lim:ptype][p3lim:curpp]|r[ |cff997fcc>demonicfury<|r][ |cff0090ff>p3lim:altpp<%|r][ : >p3lim:cast]')
 
 		local Experience = CreateFrame('StatusBar', nil, self)
@@ -348,6 +349,7 @@ local UnitSpecific = {
 		Name:SetPoint('RIGHT', self.HealthValue, 'LEFT')
 		Name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		Name:SetJustifyH('LEFT')
+		Name:SetWordWrap(false)
 		self:Tag(Name, '[p3lim:name]')
 
 		local Buffs = CreateFrame('Frame', nil, self)
@@ -514,6 +516,7 @@ local function Shared(self, unit)
 		Name:SetPoint('RIGHT', HealthValue, 'LEFT')
 		Name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		Name:SetJustifyH('LEFT')
+		Name:SetWordWrap(false)
 		self:Tag(Name, '[p3lim:color][name]')
 	elseif(unit ~= 'arena') then
 		local Threat = CreateFrame('Frame', nil, self)
@@ -531,6 +534,7 @@ local function Shared(self, unit)
 		Name:SetPoint('RIGHT', HealthValue, 'LEFT')
 		Name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		Name:SetJustifyH('LEFT')
+		Name:SetWordWrap(false)
 		self.Name = Name
 
 		local Resurrect = Health:CreateTexture(nil, 'OVERLAY')
