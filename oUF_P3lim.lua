@@ -583,7 +583,12 @@ oUF:Factory(function(self)
 	self:Spawn('targettarget'):SetPoint('TOPRIGHT', oUF_P3limTarget, 0, 26)
 
 	self:SpawnHeader(nil, nil, 'custom [group:party] show; [@raid3,exists] show; [@raid26,exists] hide; hide',
-		'showParty', true, 'showRaid', true, 'showPlayer', true, 'yOffset', -6,
+		'showParty', true,
+		'showRaid', true,
+		'showPlayer', true,
+		'yOffset', -6,
+		'groupBy', 'ASSIGNEDROLE',
+		'groupingOrder', 'TANK,HEALER,DAMAGER',
 		'oUF-initialConfigFunction', [[
 			self:SetHeight(16)
 			self:SetWidth(126)
