@@ -344,8 +344,8 @@ local UnitSpecific = {
 		self:SetWidth(230)
 	end,
 	target = function(self)
-		local Name = self.Health:CreateFontString(nil, 'OVERLAY')
-		Name:SetPoint('LEFT', 2, 0)
+		local Name = self.StringParent:CreateFontString(nil, 'OVERLAY')
+		Name:SetPoint('LEFT', self.Health, 2, 0)
 		Name:SetPoint('RIGHT', self.HealthValue, 'LEFT')
 		Name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 		Name:SetJustifyH('LEFT')
