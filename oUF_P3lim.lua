@@ -1,7 +1,6 @@
 local _, ns = ...
 local oUF = ns.oUF
 
-local FONT = [[Interface\AddOns\oUF_P3lim\semplice.ttf]]
 local TEXTURE = [[Interface\ChatFrame\ChatFrameBackground]]
 local BACKDROP = {
 	bgFile = TEXTURE,
@@ -98,11 +97,10 @@ local function PostCreateAura(element, button)
 	button.count:SetParent(StringParent)
 	button.count:ClearAllPoints()
 	button.count:SetPoint('BOTTOMRIGHT', button, 2, 1)
-	button.count:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
+	button.count:SetFontObject('SempliceNormal')
 
-	local Duration = StringParent:CreateFontString(nil, 'OVERLAY')
+	local Duration = StringParent:CreateFontString(nil, 'OVERLAY', 'SempliceNormal')
 	Duration:SetPoint('TOPLEFT', button, 0, -1)
-	Duration:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
 	button.Duration = Duration
 
 	button:HookScript('OnUpdate', UpdateAura)
@@ -158,19 +156,14 @@ end
 
 local UnitSpecific = {
 	player = function(self)
-		local PetHealth = self.StringParent:CreateFontString(nil, 'OVERLAY')
+		local PetHealth = self.StringParent:CreateFontString(nil, 'OVERLAY', 'SempliceRight')
 		PetHealth:SetPoint('RIGHT', self.HealthValue, 'LEFT', -2, 0)
-		PetHealth:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
-		PetHealth:SetJustifyH('RIGHT')
 		PetHealth.overrideUnit = 'pet'
 		self:CustomTag(PetHealth, '[p3lim:pethp< :]')
 
-		local PowerValue = self.StringParent:CreateFontString(nil, 'OVERLAY')
+		local PowerValue = self.StringParent:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
 		PowerValue:SetPoint('LEFT', self.Health, 2, 0)
 		PowerValue:SetPoint('RIGHT', PetHealth, 'LEFT', -3, 0)
-		PowerValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
-		PowerValue:SetJustifyH('LEFT')
-		PowerValue:SetWordWrap(false)
 		self:Tag(PowerValue, '[p3lim:ptype][p3lim:curpp]|r[ |cff997fcc>demonicfury<|r][ |cff0090ff>p3lim:altpp<%|r][ : >p3lim:cast]')
 
 		local Experience = CreateFrame('StatusBar', nil, self)
@@ -344,12 +337,9 @@ local UnitSpecific = {
 		self:SetWidth(230)
 	end,
 	target = function(self)
-		local Name = self.StringParent:CreateFontString(nil, 'OVERLAY')
+		local Name = self.StringParent:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
 		Name:SetPoint('LEFT', self.Health, 2, 0)
 		Name:SetPoint('RIGHT', self.HealthValue, 'LEFT')
-		Name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
-		Name:SetJustifyH('LEFT')
-		Name:SetWordWrap(false)
 		self:Tag(Name, '[p3lim:name]')
 
 		local Buffs = CreateFrame('Frame', nil, self)
@@ -443,10 +433,8 @@ local function Shared(self, unit)
 	StringParent:SetFrameLevel(20)
 	self.StringParent = StringParent
 
-	local HealthValue = StringParent:CreateFontString(nil, 'OVERLAY')
+	local HealthValue = StringParent:CreateFontString(nil, 'OVERLAY', 'SempliceRight')
 	HealthValue:SetPoint('RIGHT', Health, -2, 0)
-	HealthValue:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
-	HealthValue:SetJustifyH('RIGHT')
 	self.HealthValue = HealthValue
 
 	if(unit == 'player' or unit == 'target' or unit == 'arena') then
@@ -511,12 +499,9 @@ local function Shared(self, unit)
 	end
 
 	if(unit == 'focus' or unit == 'targettarget' or unit == 'boss') then
-		local Name = Health:CreateFontString(nil, 'OVERLAY')
+		local Name = Health:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
 		Name:SetPoint('LEFT', 2, 0)
 		Name:SetPoint('RIGHT', HealthValue, 'LEFT')
-		Name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
-		Name:SetJustifyH('LEFT')
-		Name:SetWordWrap(false)
 		self:Tag(Name, '[p3lim:color][name]')
 	elseif(unit ~= 'arena') then
 		local Threat = CreateFrame('Frame', nil, self)
@@ -529,12 +514,9 @@ local function Shared(self, unit)
 	end
 
 	if(unit == 'party' or unit == 'raid' or unit == 'arena') then
-		local Name = self.Health:CreateFontString(nil, 'OVERLAY')
+		local Name = self.Health:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
 		Name:SetPoint('LEFT', 3, 0)
 		Name:SetPoint('RIGHT', HealthValue, 'LEFT')
-		Name:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
-		Name:SetJustifyH('LEFT')
-		Name:SetWordWrap(false)
 		self.Name = Name
 
 		local Resurrect = Health:CreateTexture(nil, 'OVERLAY')
@@ -629,10 +611,8 @@ for index = 1, 5 do
 	Power:SetPoint('TOP', Health, 'BOTTOM', 0, -1)
 	Frame.Power = Power
 
-	local Spec = Frame:CreateFontString(nil, 'OVERLAY')
+	local Spec = Frame:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
 	Spec:SetPoint('LEFT', Health, 2, 0)
-	Spec:SetFont(FONT, 8, 'OUTLINEMONOCHROME')
-	Spec:SetJustifyH('LEFT')
 	Frame.Spec = Spec
 
 	preparationFrames[index] = Frame

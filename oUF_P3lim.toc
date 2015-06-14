@@ -15,4 +15,6 @@ elements\tags.lua
 elements\burningembers.lua
 elements\demonicfury.lua
 
+Fonts.xml
+
 oUF_P3lim.lua

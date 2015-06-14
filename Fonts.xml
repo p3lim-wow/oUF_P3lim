@@ -1,0 +1,21 @@
+<Ui xmlns='http://www.blizzard.com/wow/ui/'>
+	<FontFamily name='SempliceNormal' virtual='true'>
+		<Member alphabet='roman'>
+			<Font font='Interface\AddOns\oUF_P3lim\semplice.ttf' height='8' wordwrap='false' outline='NORMAL' monochrome='true'/>
+		</Member>
+		<Member alphabet='korean'>
+			<Font font='Fonts\2002.ttf' height='11' wordwrap='false' outline='NORMAL' monochrome='true'/>
+		</Member>
+		<Member alphabet='simplifiedchinese'>
+			<Font font='Fonts\ARKai_T.ttf' height='10' wordwrap='false' outline='NORMAL' monochrome='true'/>
+		</Member>
+		<Member alphabet='traditionalchinese'>
+			<Font font='Fonts\blei00d.ttf' height='10' wordwrap='false' outline='NORMAL' monochrome='true'/>
+		</Member>
+		<Member alphabet='russian'>
+			<Font font='Fonts\FRIZQT___CYR.ttf' height='11' wordwrap='false' outline='NORMAL'/>
+		</Member>
+	</FontFamily>
+	<Font name='SempliceLeft' inherits='SempliceNormal' justifyH='LEFT' virtual='true'/>
+	<Font name='SempliceRight' inherits='SempliceNormal' justifyH='RIGHT' virtual='true'/>
+</Ui>
