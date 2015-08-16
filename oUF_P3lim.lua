@@ -133,10 +133,7 @@ end
 
 local function FilterTargetDebuffs(...)
 	local _, unit, _, _, _, _, _, _, _, _, owner, _, _, id = ...
-
-	if(owner == 'player' or owner == 'vehicle' or UnitIsFriend('player', unit) or not owner) then
-		return true
-	end
+	return owner == 'player' or owner == 'vehicle' or UnitIsFriend('player', unit) or not owner
 end
 
 local function FilterGroupDebuffs(...)
