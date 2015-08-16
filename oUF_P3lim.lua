@@ -131,21 +131,11 @@ local function PostUpdateDebuff(element, unit, button, index)
 	PostUpdateBuff(element, unit, button, index)
 end
 
-local FilterTargetDebuffs
-do
-	local spells = {
-		[1490] = true, -- Curse of Elements (Magic Vulnerability)
-		[58410] = true, -- Master Poisoner (Magic Vulnerability)
-		[81326] = true, -- Physical Vulnerability (Shared)
-		[113746] = true, -- Weakened Armor (Shared)
-	}
+local function FilterTargetDebuffs(...)
+	local _, unit, _, _, _, _, _, _, _, _, owner, _, _, id = ...
 
-	function FilterTargetDebuffs(...)
-		local _, unit, _, _, _, _, _, _, _, _, owner, _, _, id = ...
-
-		if(owner == 'player' or owner == 'vehicle' or UnitIsFriend('player', unit) or spells[id] or not owner) then
-			return true
-		end
+	if(owner == 'player' or owner == 'vehicle' or UnitIsFriend('player', unit) or not owner) then
+		return true
 	end
 end
 
