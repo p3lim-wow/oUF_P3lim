@@ -107,12 +107,18 @@ local function PostCreateAura(element, button)
 end
 
 local function PostUpdateBuff(element, unit, button, index)
-	local _, _, _, _, _, duration, expiration = UnitAura(unit, index, button.filter)
+	local _, _, _, _, _, duration, expiration, owner, canStealOrPurge = UnitAura(unit, index, button.filter)
 
 	if(duration and duration > 0) then
 		button.expiration = expiration - GetTime()
 	else
 		button.expiration = math.huge
+	end
+
+	if(unit == 'target' and canStealOrPurge) then
+		button:SetBackdropColor(0, 0.5, 0.5)
+	elseif(owner ~= 'player') then
+		button:SetBackdropColor(0, 0, 0)
 	end
 end
 
