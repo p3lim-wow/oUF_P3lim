@@ -59,7 +59,8 @@ local events = {
 	cast = 'UNIT_SPELLCAST_START UNIT_SPELLCAST_STOP UNIT_SPELLCAST_CHANNEL_START UNIT_SPELLCAST_CHANNEL_STOP',
 	name = 'UNIT_SPELLCAST_START UNIT_SPELLCAST_STOP UNIT_SPELLCAST_CHANNEL_START UNIT_SPELLCAST_CHANNEL_STOP UNIT_NAME_UPDATE UNIT_REACTION UNIT_FACTION UNIT_CLASSIFICATION_CHANGED',
 	color = 'UNIT_REACTION UNIT_FACTION',
-	status = 'UNIT_CONNECTION UNIT_HEALTH'
+	status = 'UNIT_CONNECTION UNIT_HEALTH',
+	pettaunt = 'PET_BAR_UPDATE'
 }
 
 for tag, func in next, {
@@ -187,6 +188,20 @@ for tag, func in next, {
 			return Hex(_COLORS.reaction[reaction])
 		elseif(UnitFactionGroup(unit) and UnitIsEnemy(unit, 'player') and UnitIsPVP(unit)) then
 			return '|cffff0000'
+		end
+	end,
+	pettaunt = function(unit)
+		local numPetSpells = HasPetSpells()
+		if(not numPetSpells) then
+			return
+		end
+
+		for index = 1, numPetSpells do
+			local _, spellID = GetSpellBookItemInfo(index, BOOKTYPE_PET)
+			if(spellID == 2649 or spellID == 112042 or spellID == 134477) then
+				local _, enabled = GetSpellAutocast(index, BOOKTYPE_PET)
+				return enabled and '|cffff0000*|r'
+			end
 		end
 	end,
 	status = Status
