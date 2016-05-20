@@ -53,12 +53,53 @@ local function PostUpdateClassIcon(element, cur, max, diff, event)
 				ClassIcon:SetWidth(74)
 			elseif(max == 4) then
 				ClassIcon:SetWidth(index > 2 and 55 or 54)
-			elseif(max == 5) then
+			elseif(max == 5 or max == 8) then
 				ClassIcon:SetWidth(index == 5 and 42 or 43)
 			elseif(max == 6) then
 				ClassIcon:SetWidth(35)
 			end
+
+			if(max == 8) then
+				-- Rogue anticipation
+				if(index == 6) then
+					ClassIcon:ClearAllPoints()
+					ClassIcon:SetPoint('LEFT', element[index - 5])
+				end
+
+				if(index > 5) then
+					ClassIcon.Texture[textureMethod](ClassIcon.Texture, 1, 0, 0)
+				end
+			else
+				if(index > 1) then
+					ClassIcon:ClearAllPoints()
+					ClassIcon:SetPoint('LEFT', element[index - 1], 'RIGHT', 4, 0)
+				end
+
+				element:UpdateTexture()
+			end
 		end
+	end
+end
+
+local function UpdateClassIconTexture(element)
+	local r, g, b
+	if(playerClass == 'MONK') then
+		r, g, b = 0, 4/5, 3/5
+	elseif(playerClass == 'WARLOCK') then
+		r, g, b = 2/3, 1/3, 2/3
+	elseif(playerClass == 'PRIEST') then
+		r, g, b = 2/3, 1/4, 2/3
+	elseif(playerClass == 'PALADIN') then
+		r, g, b = 1, 1, 2/5
+	elseif(playerClass == 'MAGE') then
+		r, g, b = 5/6, 1/2, 5/6
+	else
+		r, g, b = 1, 1, 2/5
+	end
+
+	for index = 1, 8 do
+		local ClassIcon = element[index]
+		ClassIcon.Texture[textureMethod](ClassIcon.Texture, r, g, b)
 	end
 end
 
@@ -203,6 +244,7 @@ local UnitSpecific = {
 
 			if(playerClass == 'ROGUE') then
 				self:Tag(ComboPoints, '[p3lim:anticipation< ][p3lim:combo]')
+				self:DisableElement('ClassIcons')
 			elseif(playerClass == 'SHAMAN') then
 				self:Tag(ComboPoints, '[|cffd577e6>p3lim:maelstrom<|r][p3lim:combo]')
 			else
@@ -211,35 +253,24 @@ local UnitSpecific = {
 		end
 
 		local ClassIcons = {}
-		ClassIcons.UpdateTexture = function() end
+		ClassIcons.UpdateTexture = UpdateClassIconTexture
 		ClassIcons.PostUpdate = PostUpdateClassIcon
 
-		local r, g, b
-		if(playerClass == 'MONK') then
-			r, g, b = 0, 4/5, 3/5
-		elseif(playerClass == 'WARLOCK') then
-			r, g, b = 2/3, 1/3, 2/3
-		elseif(playerClass == 'PRIEST') then
-			r, g, b = 2/3, 1/4, 2/3
-		elseif(playerClass == 'PALADIN') then
-			r, g, b = 1, 1, 2/5
-		end
-
-		for index = 1, 6 do
+		for index = 1, 8 do
 			local ClassIcon = CreateFrame('Frame', nil, self)
 			ClassIcon:SetHeight(6)
 			ClassIcon:SetBackdrop(BACKDROP)
 			ClassIcon:SetBackdropColor(0, 0, 0)
 
-			if(index == 1) then
-				ClassIcon:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -4)
-			else
+			if(index > 1) then
 				ClassIcon:SetPoint('LEFT', ClassIcons[index - 1], 'RIGHT', 4, 0)
+			else
+				ClassIcon:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -4)
 			end
 
-			local Texture = ClassIcon:CreateTexture(nil, 'BORDER')
+			local Texture = ClassIcon:CreateTexture(nil, 'BORDER', nil, index > 5 and 1 or 0)
 			Texture:SetAllPoints()
-			Texture:SetTexture(r, g, b)
+			ClassIcon.Texture = Texture
 
 			ClassIcons[index] = ClassIcon
 		end
