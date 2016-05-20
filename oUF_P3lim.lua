@@ -260,18 +260,26 @@ local UnitSpecific = {
 
 				local RuneBG = Rune:CreateTexture(nil, 'BORDER')
 				RuneBG:SetAllPoints()
-				RuneBG:SetTexture(TEXTURE)
-				RuneBG.multiplier = 1/3
-				Rune.bg = RuneBG
+
+				if(isBetaClient) then
+					Rune:SetStatusBarColor(1/2, 1/3, 2/3)
+					RuneBG:SetColorTexture(1/6, 1/9, 1/3)
+				else
+					RuneBG:SetTexture(TEXTURE)
+					RuneBG.multiplier = 1/3
+					Rune.bg = RuneBG
+				end
 
 				Runes[index] = Rune
 			end
 			self.Runes = Runes
 
-			self.colors.runes[1] = {0.9, 0.15, 0.15}
-			self.colors.runes[2] = {0.4, 0.9, 0.3}
-			self.colors.runes[3] = {0, 0.7, 0.9}
-			self.colors.runes[4] = {0.5, 0.27, 0.68}
+			if(not isBetaClient) then
+				self.colors.runes[1] = {0.9, 0.15, 0.15}
+				self.colors.runes[2] = {0.4, 0.9, 0.3}
+				self.colors.runes[3] = {0, 0.7, 0.9}
+				self.colors.runes[4] = {0.5, 0.27, 0.68}
+			end
 		elseif(playerClass == 'DRUID' and not isBetaClient) then
 			local EclipseBar = CreateFrame('Frame', nil, self)
 			EclipseBar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -4)
