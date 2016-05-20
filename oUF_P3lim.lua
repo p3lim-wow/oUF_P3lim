@@ -272,7 +272,7 @@ local UnitSpecific = {
 			self.colors.runes[2] = {0.4, 0.9, 0.3}
 			self.colors.runes[3] = {0, 0.7, 0.9}
 			self.colors.runes[4] = {0.5, 0.27, 0.68}
-		elseif(playerClass == 'DRUID') then
+		elseif(playerClass == 'DRUID' and not isBetaClient) then
 			local EclipseBar = CreateFrame('Frame', nil, self)
 			EclipseBar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -4)
 			EclipseBar:SetSize(230, 6)
