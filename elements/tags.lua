@@ -4,6 +4,8 @@ local tagMethods = tags.Methods
 local tagEvents = tags.Events
 local tagSharedEvents = tags.SharedEvents
 
+local isBetaClient = select(4, GetBuildInfo()) >= 70000
+
 local gsub = string.gsub
 local format = string.format
 local floor = math.floor
@@ -182,7 +184,7 @@ for tag, func in next, {
 	end,
 	color = function(unit)
 		local reaction = UnitReaction(unit, 'player')
-		if((UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) or not UnitIsConnected(unit)) then
+		if(isBetaClient and UnitIsTapDenied(unit) or (not isBetaClient and UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit)) or not UnitIsConnected(unit)) then
 			return '|cff999999'
 		elseif(not UnitIsPlayer(unit) and reaction) then
 			return Hex(_COLORS.reaction[reaction])
