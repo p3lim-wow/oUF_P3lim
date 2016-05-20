@@ -2,6 +2,7 @@ local _, ns = ...
 local oUF = ns.oUF
 
 local isBetaClient = select(4, GetBuildInfo()) >= 70000
+local textureMethod = isBetaClient and 'SetColorTexture' or 'SetTexture'
 
 local TEXTURE = [[Interface\ChatFrame\ChatFrameBackground]]
 local BACKDROP = {
@@ -36,9 +37,9 @@ end
 local function PostUpdateCast(element, unit)
 	local Spark = element.Spark
 	if(not element.interrupt and UnitCanAttack('player', unit)) then
-		Spark:SetTexture(1, 0, 0)
+		Spark[textureMethod](Spark, 1, 0, 0)
 	else
-		Spark:SetTexture(1, 1, 1)
+		Spark[textureMethod](Spark, 1, 1, 1)
 	end
 end
 
@@ -118,7 +119,7 @@ local function PostUpdateBuff(element, unit, button, index)
 	end
 
 	if(unit == 'target' and canStealOrPurge) then
-		button:SetBackdropColor(0, 0.5, 0.5)
+		button:SetBackdropColor(0, 1/2, 1/2)
 	elseif(owner ~= 'player') then
 		button:SetBackdropColor(0, 0, 0)
 	end
@@ -190,7 +191,7 @@ local UnitSpecific = {
 
 		local ExperienceBG = Rested:CreateTexture(nil, 'BORDER')
 		ExperienceBG:SetAllPoints()
-		ExperienceBG:SetTexture(1/3, 1/3, 1/3)
+		ExperienceBG[textureMethod](ExperienceBG, 1/3, 1/3, 1/3)
 
 		local _, playerClass = UnitClass('player')
 
@@ -433,7 +434,7 @@ local function Shared(self, unit)
 
 	local HealthBG = Health:CreateTexture(nil, 'BORDER')
 	HealthBG:SetAllPoints()
-	HealthBG:SetTexture(1/3, 1/3, 1/3)
+	HealthBG[textureMethod](HealthBG, 1/3, 1/3, 1/3)
 
 	local StringParent = CreateFrame('Frame', nil, self)
 	StringParent:SetFrameLevel(20)
@@ -492,7 +493,7 @@ local function Shared(self, unit)
 
 		local Spark = Castbar:CreateTexture(nil, 'OVERLAY')
 		Spark:SetSize(2, 20)
-		Spark:SetTexture(1, 1, 1)
+		Spark[textureMethod](Spark, 1, 1, 1)
 		Castbar.Spark = Spark
 
 		local RaidIcon = Health:CreateTexture(nil, 'OVERLAY')
@@ -611,7 +612,7 @@ for index = 1, 5 do
 	Health:SetPoint('TOPRIGHT')
 	Health:SetPoint('TOPLEFT')
 	Health:SetHeight(17)
-	Health:SetTexture(1/6, 1/6, 2/7)
+	Health[textureMethod](Health, 1/6, 1/6, 2/7)
 
 	local Power = Frame:CreateTexture()
 	Power:SetPoint('BOTTOMRIGHT')
@@ -656,10 +657,10 @@ PreparationHandler:SetScript('OnEvent', function(self, event)
 			local color = RAID_CLASS_COLORS[class]
 
 			Frame.Spec:SetFormattedText('|c%s%s|r', color.colorStr, name)
-			Frame.Power:SetTexture(color.r, color.g, color.b)
+			Frame.Power[textureMethod](Frame.Power, color.r, color.g, color.b)
 		else
 			Frame.Spec:SetText('Unknown')
-			Frame.Power:SetTexture(1, 1, 1)
+			Frame.Power[textureMethod](Frame.Power, 1, 1, 1)
 		end
 
 		Frame:Show()
