@@ -418,6 +418,7 @@ local function Shared(self, unit)
 	unit = unit:match('(boss)%d?$') or unit:match('(arena)%d?$') or unit
 
 	self.colors.power.MANA = {0, 144/255, 1}
+	self.colors.power.INSANITY = {4/5, 2/5, 1}
 
 	self:RegisterForClicks('AnyUp')
 	self:SetScript('OnEnter', UnitFrame_OnEnter)
