@@ -1,3 +1,7 @@
+if(select(4, GetBuildInfo()) >= 70000) then
+	return
+end
+
 local parent, ns = ...
 local oUF = ns.oUF
 

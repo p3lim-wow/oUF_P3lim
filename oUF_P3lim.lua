@@ -1,6 +1,8 @@
 local _, ns = ...
 local oUF = ns.oUF
 
+local isBetaClient = select(4, GetBuildInfo()) >= 70000
+
 local TEXTURE = [[Interface\ChatFrame\ChatFrameBackground]]
 local BACKDROP = {
 	bgFile = TEXTURE,
@@ -162,7 +164,12 @@ local UnitSpecific = {
 		PowerValue:SetPoint('LEFT', self.Health, 2, 0)
 		PowerValue:SetPoint('RIGHT', PetTaunt, 'LEFT', -3, 0)
 		PowerValue:SetWordWrap(false)
-		self:Tag(PowerValue, '[p3lim:ptype][p3lim:curpp]|r[ |cff997fcc>demonicfury<|r][ |cff0090ff>p3lim:altpp<%|r][ : >p3lim:cast]')
+
+		if(isBetaClient) then
+			self:Tag(PowerValue, '[p3lim:ptype][p3lim:curpp]|r[ |cff0090ff>p3lim:altpp<%|r][ : >p3lim:cast]')
+		else
+			self:Tag(PowerValue, '[p3lim:ptype][p3lim:curpp]|r[ |cff997fcc>demonicfury<|r][ |cff0090ff>p3lim:altpp<%|r][ : >p3lim:cast]')
+		end
 
 		local Experience = CreateFrame('StatusBar', nil, self)
 		Experience:SetPoint('BOTTOM', 0, -20)
@@ -283,7 +290,7 @@ local UnitSpecific = {
 			SolarBar:SetTexture(1/4, 2/5, 5/6)
 
 			self.EclipseBar = EclipseBar
-		elseif(playerClass == 'WARLOCK') then
+		elseif(playerClass == 'WARLOCK' and not isBetaClient) then
 			local BurningEmbers = {}
 			for index = 1, 4 do
 				local Ember = CreateFrame('StatusBar', nil, self)
