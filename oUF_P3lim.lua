@@ -496,7 +496,7 @@ local function Shared(self, unit)
 		local Power = CreateFrame('StatusBar', nil, self)
 		Power:SetPoint('BOTTOMRIGHT')
 		Power:SetPoint('BOTTOMLEFT')
-		Power:SetPoint('TOP', Health, 'BOTTOM', 0, -1)
+		Power:SetHeight(1)
 		Power:SetStatusBarTexture(TEXTURE)
 		Power.frequentUpdates = true
 		self.Power = Power
