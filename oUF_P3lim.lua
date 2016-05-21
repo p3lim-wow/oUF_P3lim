@@ -21,7 +21,7 @@ local function PostUpdatePower(element, unit, cur, max)
 	local height = max ~= 0 and 20 or 22
 	parent.Health:SetHeight(height)
 	parent.Portrait.scrollFrame:SetHeight(height)
-	parent.Portrait.scrollFrame:GetScrollChild():SetHeight(height)
+	parent.Portrait.scrollChild:SetHeight(height)
 end
 
 local function PostUpdateHealth(element, unit, cur, max)
@@ -31,9 +31,15 @@ local function PostUpdateHealth(element, unit, cur, max)
 		cur, max = 0, 1
 	end
 
-	local offset = -(230 * (1 - cur / max))
+	-- XXX: this is broken in legion beta
+	local offset = -(element:GetWidth() * (1 - cur / max))
 	ScrollFrame:SetPoint('LEFT', offset, 0)
 	ScrollFrame:SetHorizontalScroll(offset)
+end
+
+local function PostUpdatePortrait(element, unit)
+	element:SetModelAlpha(0.1)
+	element:SetDesaturation(1)
 end
 
 local function PostUpdateCast(element, unit)
@@ -517,9 +523,15 @@ local function Shared(self, unit)
 
 			local Portrait = CreateFrame('PlayerModel', nil, ScrollChild)
 			Portrait:SetAllPoints()
-			Portrait:SetAlpha(0.1)
+			Portrait.scrollChild = ScrollChild
 			Portrait.scrollFrame = ScrollFrame
 			self.Portrait = Portrait
+
+			if(isBetaClient) then
+				Portrait.PostUpdate = PostUpdatePortrait
+			else
+				Portrait:SetAlpha(0.1)
+			end
 
 			Health.PostUpdate = PostUpdateHealth
 			Health:SetHeight(20)
