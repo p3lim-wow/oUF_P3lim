@@ -231,6 +231,20 @@ local UnitSpecific = {
 			self:Tag(PowerValue, '[p3lim:ptype][p3lim:curpp]|r[ |cff997fcc>demonicfury<|r][ |cff0090ff>p3lim:altpp<%|r][ : >p3lim:cast]')
 		end
 
+		if(isBetaClient) then
+			local PowerPrediction = CreateFrame('StatusBar', nil, self.Power)
+			PowerPrediction:SetPoint('RIGHT', self.Power:GetStatusBarTexture())
+			PowerPrediction:SetPoint('BOTTOM')
+			PowerPrediction:SetPoint('TOP')
+			PowerPrediction:SetWidth(230)
+			PowerPrediction:SetStatusBarTexture(TEXTURE)
+			PowerPrediction:SetStatusBarColor(1, 0, 0)
+			PowerPrediction:SetReverseFill(true)
+			self.PowerPrediction = {
+				mainBar = PowerPrediction
+			}
+		end
+
 		local Experience = CreateFrame('StatusBar', nil, self)
 		Experience:SetPoint('BOTTOM', 0, -20)
 		Experience:SetSize(230, 6)
