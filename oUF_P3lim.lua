@@ -51,6 +51,20 @@ local function PostUpdateCast(element, unit)
 	end
 end
 
+local function PostUpdateTotem(element)
+	local shown = {}
+	for index = 1, MAX_TOTEMS do
+		local Totem = element[index]
+		if(Totem:IsShown()) then
+			local prevShown = shown[#shown]
+
+			Totem:ClearAllPoints()
+			Totem:SetPoint('TOPLEFT', shown[#shown] or element.__owner, 'TOPRIGHT', 4, 0)
+			table.insert(shown, Totem)
+		end
+	end
+end
+
 local function PostUpdateClassIcon(element, cur, max, diff, event)
 	if(diff or event == 'ClassPowerEnable') then
 		for index = 1, max do
@@ -261,6 +275,31 @@ local UnitSpecific = {
 			ClassIcons[index] = ClassIcon
 		end
 		self.ClassIcons = ClassIcons
+
+		local Totems = {}
+		Totems.PostUpdate = PostUpdateTotem
+
+		for index = 1, MAX_TOTEMS do
+			local Totem = CreateFrame('Button', nil, self)
+			Totem:SetSize(22, 22)
+
+			local Icon = Totem:CreateTexture(nil, 'OVERLAY')
+			Icon:SetAllPoints()
+			Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+			Totem.Icon = Icon
+
+			local Background = Totem:CreateTexture(nil, 'BORDER')
+			Background:SetPoint('TOPLEFT', -1, 1)
+			Background:SetPoint('BOTTOMRIGHT', 1, -1)
+			Background[textureMethod](Background, 0, 0, 0)
+
+			local Cooldown = CreateFrame('Cooldown', nil, Totem, 'CooldownFrameTemplate')
+			Cooldown:SetAllPoints()
+			Totem.Cooldown = Cooldown
+
+			Totems[index] = Totem
+		end
+		self.Totems = Totems
 
 		if(playerClass == 'DEATHKNIGHT') then
 			local Runes = {}
