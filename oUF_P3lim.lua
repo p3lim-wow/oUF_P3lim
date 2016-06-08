@@ -137,6 +137,22 @@ local function UpdateThreat(self, event, unit)
 	end
 end
 
+local function UpdateExperienceTooltip(self)
+	if(isBetaClient and UnitLevel('player') == MAX_PLAYER_LEVEL and IsWatchingHonorAsXP()) then
+	else
+		local cur = UnitXP('player')
+		local max = UnitXPMax('player')
+		local per = math.floor(cur / max * 100 + 0.5)
+		local rested = math.floor((GetXPExhaustion() or 0) / max * 100 + 0.5)
+
+		GameTooltip:SetOwner(self, 'ANCHOR_NONE')
+		GameTooltip:SetPoint('BOTTOMLEFT', self, 'TOPLEFT')
+		GameTooltip:SetText(string.format('%s / %s (%s%%)', BreakUpLargeNumbers(cur), BreakUpLargeNumbers(max), per))
+		GameTooltip:AddLine(string.format('%.1f bars, %s%% rested', cur / max * 20, rested))
+		GameTooltip:Show()
+	end
+end
+
 local function UpdateAura(self, elapsed)
 	if(self.expiration) then
 		self.expiration = math.max(self.expiration - elapsed, 0)
@@ -249,8 +265,8 @@ local UnitSpecific = {
 		Experience:SetPoint('BOTTOM', 0, -20)
 		Experience:SetSize(230, 6)
 		Experience:SetStatusBarTexture(TEXTURE)
-		Experience:SetScript('OnEnter', MainMenuExpBar:GetScript('OnEnter'))
-		Experience:SetScript('OnLeave', MainMenuExpBar:GetScript('OnLeave'))
+		Experience:SetScript('OnEnter', UpdateExperienceTooltip)
+		Experience:SetScript('OnLeave', GameTooltip_Hide)
 		self.Experience = Experience
 
 		local Rested = CreateFrame('StatusBar', nil, Experience)
