@@ -55,9 +55,6 @@ local events = {
 	altpp = 'UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_DISPLAYPOWER',
 	ptype = 'UNIT_DISPLAYPOWER',
 	leader = 'PARTY_LEADER_CHANGED',
-	combo = 'UNIT_COMBO_POINTS PLAYER_TARGET_CHANGED',
-	anticipation = 'UNIT_AURA',
-	maelstrom = 'UNIT_AURA',
 	cast = 'UNIT_SPELLCAST_START UNIT_SPELLCAST_STOP UNIT_SPELLCAST_CHANNEL_START UNIT_SPELLCAST_CHANNEL_STOP',
 	name = 'UNIT_SPELLCAST_START UNIT_SPELLCAST_STOP UNIT_SPELLCAST_CHANNEL_START UNIT_SPELLCAST_CHANNEL_STOP UNIT_NAME_UPDATE UNIT_REACTION UNIT_FACTION UNIT_CLASSIFICATION_CHANGED',
 	color = 'UNIT_REACTION UNIT_FACTION',
@@ -163,24 +160,6 @@ for tag, func in next, {
 
 		local rare = _TAGS['rare'](unit)
 		return rare and format('%s |cff0090ff%s|r', name, rare) or name
-	end,
-	combo = function(unit)
-		if(not UnitExists('target')) then return end
-
-		local points = GetComboPoints(unit, 'target')
-		if(points == 5) then
-			return format('|cffcc3333%d|r', points)
-		elseif(points == 4) then
-			return format('|cffff6600%d|r', points)
-		elseif(points > 0) then
-			return format('|cffffcc00%d|r', points)
-		end
-	end,
-	anticipation = function(unit)
-		return UnitExists('target') and GetAuraCount(unit, 115189)
-	end,
-	maelstrom = function(unit)
-		return UnitExists('target') and GetAuraCount(unit, 53817)
 	end,
 	color = function(unit)
 		local reaction = UnitReaction(unit, 'player')

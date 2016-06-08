@@ -242,22 +242,6 @@ local UnitSpecific = {
 		ExperienceBG:SetAllPoints()
 		ExperienceBG[textureMethod](ExperienceBG, 1/3, 1/3, 1/3)
 
-		if(not isBetaClient) then
-			local ComboPoints = self:CreateFontString(nil, 'OVERLAY', 'SubZoneTextFont')
-			ComboPoints:SetPoint('RIGHT', self, 'LEFT', 590, -2)
-			ComboPoints:SetJustifyH('RIGHT')
-			ComboPoints:SetTextColor(1, 1, 1)
-
-			if(playerClass == 'ROGUE') then
-				self:Tag(ComboPoints, '[p3lim:anticipation< ][p3lim:combo]')
-				self:DisableElement('ClassIcons')
-			elseif(playerClass == 'SHAMAN') then
-				self:Tag(ComboPoints, '[|cffd577e6>p3lim:maelstrom<|r][p3lim:combo]')
-			else
-				self:Tag(ComboPoints, '[p3lim:combo]')
-			end
-		end
-
 		local ClassIcons = {}
 		ClassIcons.UpdateTexture = UpdateClassIconTexture
 		ClassIcons.PostUpdate = PostUpdateClassIcon
