@@ -249,7 +249,6 @@ local UnitSpecific = {
 		Experience:SetPoint('BOTTOM', 0, -20)
 		Experience:SetSize(230, 6)
 		Experience:SetStatusBarTexture(TEXTURE)
-		Experience:SetStatusBarColor(0.15, 0.7, 0.1)
 		Experience:SetScript('OnEnter', MainMenuExpBar:GetScript('OnEnter'))
 		Experience:SetScript('OnLeave', MainMenuExpBar:GetScript('OnLeave'))
 		self.Experience = Experience
@@ -257,7 +256,6 @@ local UnitSpecific = {
 		local Rested = CreateFrame('StatusBar', nil, Experience)
 		Rested:SetAllPoints()
 		Rested:SetStatusBarTexture(TEXTURE)
-		Rested:SetStatusBarColor(0, 0.4, 1, 0.6)
 		Rested:SetBackdrop(BACKDROP)
 		Rested:SetBackdropColor(0, 0, 0)
 		Experience.Rested = Rested
