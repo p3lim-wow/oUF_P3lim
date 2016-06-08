@@ -206,13 +206,9 @@ local UnitSpecific = {
 		PetHealth.overrideUnit = 'pet'
 		self:CustomTag(PetHealth, '[p3lim:pethp< :]')
 
-		local PetTaunt = self.StringParent:CreateFontString(nil, 'OVERLAY', 'SempliceRight')
-		PetTaunt:SetPoint('RIGHT', PetHealth, 'LEFT', -2, 0)
-		self:CustomTag(PetTaunt, '[p3lim:pettaunt]')
-
 		local PowerValue = self.StringParent:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
 		PowerValue:SetPoint('LEFT', self.Health, 2, 0)
-		PowerValue:SetPoint('RIGHT', PetTaunt, 'LEFT', -3, 0)
+		PowerValue:SetPoint('RIGHT', PetHealth, 'LEFT', -2, 0)
 		PowerValue:SetWordWrap(false)
 
 		if(isBetaClient) then
