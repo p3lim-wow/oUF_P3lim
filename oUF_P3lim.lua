@@ -446,7 +446,7 @@ local UnitSpecific = {
 		local Buffs = CreateFrame('Frame', nil, self)
 		Buffs:SetPoint('TOPLEFT', self, 'TOPRIGHT', 4, 0)
 		Buffs:SetSize(236, 44)
-		Buffs.num = 20
+		Buffs.num = 27
 		Buffs.size = 22
 		Buffs.spacing = 4
 		Buffs.initialAnchor = 'TOPLEFT'
