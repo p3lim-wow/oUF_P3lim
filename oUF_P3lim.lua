@@ -94,27 +94,27 @@ local function PostUpdateClassIcon(element, cur, max, diff, event)
 					ClassIcon:ClearAllPoints()
 					ClassIcon:SetPoint('LEFT', element[index - 1], 'RIGHT', 4, 0)
 				end
-
-				element:UpdateTexture()
 			end
 		end
+
+		element:UpdateTexture()
 	end
 end
 
 local function UpdateClassIconTexture(element)
-	local r, g, b
-	if(playerClass == 'MONK') then
-		r, g, b = 0, 4/5, 3/5
-	elseif(playerClass == 'WARLOCK') then
-		r, g, b = 2/3, 1/3, 2/3
-	elseif(playerClass == 'PRIEST') then
-		r, g, b = 2/3, 1/4, 2/3
-	elseif(playerClass == 'PALADIN') then
-		r, g, b = 1, 1, 2/5
-	elseif(playerClass == 'MAGE') then
-		r, g, b = 5/6, 1/2, 5/6
-	else
-		r, g, b = 1, 1, 2/5
+	local r, g, b = 1, 1, 2/5
+	if(not UnitHasVehicleUI('player')) then
+		if(playerClass == 'MONK') then
+			r, g, b = 0, 4/5, 3/5
+		elseif(playerClass == 'WARLOCK') then
+			r, g, b = 2/3, 1/3, 2/3
+		elseif(playerClass == 'PRIEST') then -- WoD only
+			r, g, b = 2/3, 1/4, 2/3
+		elseif(playerClass == 'PALADIN') then
+			r, g, b = 1, 1, 2/5
+		elseif(playerClass == 'MAGE') then
+			r, g, b = 5/6, 1/2, 5/6
+		end
 	end
 
 	for index = 1, 8 do
