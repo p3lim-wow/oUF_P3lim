@@ -1,9 +1,6 @@
 local _, ns = ...
 local oUF = ns.oUF
 
-local isBetaClient = select(4, GetBuildInfo()) >= 70000
-local textureMethod = isBetaClient and 'SetColorTexture' or 'SetTexture'
-
 local _, playerClass = UnitClass('player')
 
 local TEXTURE = [[Interface\ChatFrame\ChatFrameBackground]]
@@ -45,9 +42,9 @@ end
 local function PostUpdateCast(element, unit)
 	local Spark = element.Spark
 	if(not element.interrupt and UnitCanAttack('player', unit)) then
-		Spark[textureMethod](Spark, 1, 0, 0)
+		Spark:SetColorTexture(1, 0, 0)
 	else
-		Spark[textureMethod](Spark, 1, 1, 1)
+		Spark:SetColorTexture(1, 1, 1)
 	end
 end
 
@@ -87,7 +84,7 @@ local function PostUpdateClassIcon(element, cur, max, diff, event)
 				end
 
 				if(index > 5) then
-					ClassIcon.Texture[textureMethod](ClassIcon.Texture, 1, 0, 0)
+					ClassIcon.Texture:SetColorTexture(1, 0, 0)
 				end
 			else
 				if(index > 1) then
@@ -119,7 +116,7 @@ local function UpdateClassIconTexture(element)
 
 	for index = 1, 8 do
 		local ClassIcon = element[index]
-		ClassIcon.Texture[textureMethod](ClassIcon.Texture, r, g, b)
+		ClassIcon.Texture:SetColorTexture(r, g, b)
 	end
 end
 
@@ -138,8 +135,7 @@ local function UpdateThreat(self, event, unit)
 end
 
 local function UpdateExperienceTooltip(self)
-	if(isBetaClient and UnitLevel('player') == MAX_PLAYER_LEVEL and IsWatchingHonorAsXP()) then
-	else
+	if(not (UnitLevel('player') == MAX_PLAYER_LEVEL and IsWatchingHonorAsXP())) then
 		local cur = UnitXP('player')
 		local max = UnitXPMax('player')
 		local per = math.floor(cur / max * 100 + 0.5)
@@ -241,25 +237,19 @@ local UnitSpecific = {
 		PowerValue:SetPoint('RIGHT', PetHealth, 'LEFT', -2, 0)
 		PowerValue:SetWordWrap(false)
 
-		if(isBetaClient) then
-			self:Tag(PowerValue, '[p3lim:ptype][p3lim:curpp]|r[ |cff0090ff>p3lim:altpp<%|r][ : >p3lim:cast]')
-		else
-			self:Tag(PowerValue, '[p3lim:ptype][p3lim:curpp]|r[ |cff997fcc>demonicfury<|r][ |cff0090ff>p3lim:altpp<%|r][ : >p3lim:cast]')
-		end
+		self:Tag(PowerValue, '[p3lim:ptype][p3lim:curpp]|r[ |cff0090ff>p3lim:altpp<%|r][ : >p3lim:cast]')
 
-		if(isBetaClient) then
-			local PowerPrediction = CreateFrame('StatusBar', nil, self.Power)
-			PowerPrediction:SetPoint('RIGHT', self.Power:GetStatusBarTexture())
-			PowerPrediction:SetPoint('BOTTOM')
-			PowerPrediction:SetPoint('TOP')
-			PowerPrediction:SetWidth(230)
-			PowerPrediction:SetStatusBarTexture(TEXTURE)
-			PowerPrediction:SetStatusBarColor(1, 0, 0)
-			PowerPrediction:SetReverseFill(true)
-			self.PowerPrediction = {
-				mainBar = PowerPrediction
-			}
-		end
+		local PowerPrediction = CreateFrame('StatusBar', nil, self.Power)
+		PowerPrediction:SetPoint('RIGHT', self.Power:GetStatusBarTexture())
+		PowerPrediction:SetPoint('BOTTOM')
+		PowerPrediction:SetPoint('TOP')
+		PowerPrediction:SetWidth(230)
+		PowerPrediction:SetStatusBarTexture(TEXTURE)
+		PowerPrediction:SetStatusBarColor(1, 0, 0)
+		PowerPrediction:SetReverseFill(true)
+		self.PowerPrediction = {
+			mainBar = PowerPrediction
+		}
 
 		local Experience = CreateFrame('StatusBar', nil, self)
 		Experience:SetPoint('BOTTOM', 0, -20)
@@ -278,7 +268,7 @@ local UnitSpecific = {
 
 		local ExperienceBG = Rested:CreateTexture(nil, 'BORDER')
 		ExperienceBG:SetAllPoints()
-		ExperienceBG[textureMethod](ExperienceBG, 1/3, 1/3, 1/3)
+		ExperienceBG:SetColorTexture(1/3, 1/3, 1/3)
 
 		local ClassIcons = {}
 		ClassIcons.UpdateTexture = UpdateClassIconTexture
@@ -319,7 +309,7 @@ local UnitSpecific = {
 			local Background = Totem:CreateTexture(nil, 'BORDER')
 			Background:SetPoint('TOPLEFT', -1, 1)
 			Background:SetPoint('BOTTOMRIGHT', 1, -1)
-			Background[textureMethod](Background, 0, 0, 0)
+			Background:SetColorTexture(0, 0, 0)
 
 			local Cooldown = CreateFrame('Cooldown', nil, Totem, 'CooldownFrameTemplate')
 			Cooldown:SetAllPoints()
@@ -335,6 +325,7 @@ local UnitSpecific = {
 				local Rune = CreateFrame('StatusBar', nil, self)
 				Rune:SetSize(35, 6)
 				Rune:SetStatusBarTexture(TEXTURE)
+				Rune:SetStatusBarColor(1/2, 1/3, 2/3)
 				Rune:SetBackdrop(BACKDROP)
 				Rune:SetBackdropColor(0, 0, 0)
 
@@ -346,87 +337,11 @@ local UnitSpecific = {
 
 				local RuneBG = Rune:CreateTexture(nil, 'BORDER')
 				RuneBG:SetAllPoints()
-
-				if(isBetaClient) then
-					Rune:SetStatusBarColor(1/2, 1/3, 2/3)
-					RuneBG:SetColorTexture(1/6, 1/9, 1/3)
-				else
-					RuneBG:SetTexture(TEXTURE)
-					RuneBG.multiplier = 1/3
-					Rune.bg = RuneBG
-				end
+				RuneBG:SetColorTexture(1/6, 1/9, 1/3)
 
 				Runes[index] = Rune
 			end
 			self.Runes = Runes
-
-			if(not isBetaClient) then
-				self.colors.runes[1] = {0.9, 0.15, 0.15}
-				self.colors.runes[2] = {0.4, 0.9, 0.3}
-				self.colors.runes[3] = {0, 0.7, 0.9}
-				self.colors.runes[4] = {0.5, 0.27, 0.68}
-			end
-		elseif(playerClass == 'DRUID' and not isBetaClient) then
-			local EclipseBar = CreateFrame('Frame', nil, self)
-			EclipseBar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -4)
-			EclipseBar:SetSize(230, 6)
-			EclipseBar:SetBackdrop(BACKDROP)
-			EclipseBar:SetBackdropColor(0, 0, 0)
-
-			local LunarBar = CreateFrame('StatusBar', nil, EclipseBar)
-			LunarBar:SetPoint('LEFT')
-			LunarBar:SetSize(230, 6)
-			LunarBar:SetStatusBarTexture(TEXTURE)
-			LunarBar:SetStatusBarColor(4/5, 3/5, 0)
-			EclipseBar.LunarBar = LunarBar
-
-			local SolarBar = EclipseBar:CreateTexture(nil, 'BORDER')
-			SolarBar:SetAllPoints()
-			SolarBar:SetTexture(1/4, 2/5, 5/6)
-
-			self.EclipseBar = EclipseBar
-		elseif(playerClass == 'WARLOCK' and not isBetaClient) then
-			local BurningEmbers = {}
-			for index = 1, 4 do
-				local Ember = CreateFrame('StatusBar', nil, self)
-				Ember:SetSize(index > 2 and 55 or 54, 6)
-				Ember:SetStatusBarTexture(TEXTURE)
-				Ember:SetBackdrop(BACKDROP)
-				Ember:SetBackdropColor(0, 0, 0)
-
-				if(index == 1) then
-					Ember:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -4)
-				else
-					Ember:SetPoint('LEFT', BurningEmbers[index - 1], 'RIGHT', 4, 0)
-				end
-
-				local EmberBG = Ember:CreateTexture(nil, 'BORDER')
-				EmberBG:SetAllPoints()
-
-				if(IsSpellKnown(WARLOCK_GREEN_FIRE)) then
-					Ember:SetStatusBarColor(1/2, 3/4, 0.1)
-					EmberBG:SetTexture(1/5, 1/4, 0)
-				else
-					Ember:SetStatusBarColor(2/3, 1/5, 0)
-					EmberBG:SetTexture(1/7, 0.1, 0.1)
-				end
-
-				BurningEmbers[index] = Ember
-			end
-			self.BurningEmbers = BurningEmbers
-
-			local DemonicFury = CreateFrame('StatusBar', nil, self)
-			DemonicFury:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -4)
-			DemonicFury:SetSize(230, 6)
-			DemonicFury:SetStatusBarTexture(TEXTURE)
-			DemonicFury:SetStatusBarColor(3/5, 1/2, 4/5)
-			DemonicFury:SetBackdrop(BACKDROP)
-			DemonicFury:SetBackdropColor(0, 0, 0)
-			self.DemonicFury = DemonicFury
-
-			local DemonicFuryBG = DemonicFury:CreateTexture(nil, 'BORDER')
-			DemonicFuryBG:SetAllPoints()
-			DemonicFuryBG:SetTexture(1/5, 1/6, 1/4)
 		end
 
 		self.Debuffs.size = 22
@@ -529,7 +444,7 @@ local function Shared(self, unit)
 
 	local HealthBG = Health:CreateTexture(nil, 'BORDER')
 	HealthBG:SetAllPoints()
-	HealthBG[textureMethod](HealthBG, 1/3, 1/3, 1/3)
+	HealthBG:SetColorTexture(1/3, 1/3, 1/3)
 
 	local StringParent = CreateFrame('Frame', nil, self)
 	StringParent:SetFrameLevel(20)
@@ -572,13 +487,8 @@ local function Shared(self, unit)
 			Portrait:SetAllPoints()
 			Portrait.scrollChild = ScrollChild
 			Portrait.scrollFrame = ScrollFrame
+			Portrait.PostUpdate = PostUpdatePortrait
 			self.Portrait = Portrait
-
-			if(isBetaClient) then
-				Portrait.PostUpdate = PostUpdatePortrait
-			else
-				Portrait:SetAlpha(0.1)
-			end
 
 			Health.PostUpdate = PostUpdateHealth
 			Health:SetHeight(20)
@@ -594,7 +504,7 @@ local function Shared(self, unit)
 
 		local Spark = Castbar:CreateTexture(nil, 'OVERLAY')
 		Spark:SetSize(2, 20)
-		Spark[textureMethod](Spark, 1, 1, 1)
+		Spark:SetColorTexture(1, 1, 1)
 		Castbar.Spark = Spark
 
 		local RaidIcon = Health:CreateTexture(nil, 'OVERLAY')
