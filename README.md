@@ -31,15 +31,14 @@ The following units are supported:
 
 The following class-specific powers are supported:
 
-- Death Knight's Runes
-- Druid's Eclipse
-- Monk's Chi
-- Paladin's Holy Power
-- Priest's Shadow Orbs
-- Rogue's Anticipation
-- Warlock's Soul Shards, Demonic Fury & Burning Embers
+- Death Knight - Runes
+- Mage - Arcane Charges
+- Monk - Chi
+- Paladin - Holy Power
+- Warlock - Soul Shards
 
 Combo points are also supported for all classes and vehicles.
+Totems are also supported (not only for shamans).
 
 ## Feedback
 
