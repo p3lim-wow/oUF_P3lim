@@ -62,8 +62,10 @@ local function PostUpdateTotem(element)
 	end
 end
 
-local function PostUpdateClassIcon(element, cur, max, diff, event)
+local function PostUpdateClassIcon(element, cur, max, diff, powerType, event)
 	if(diff or event == 'ClassPowerEnable') then
+		element:UpdateTexture()
+
 		for index = 1, max do
 			local ClassIcon = element[index]
 			if(max == 3) then
@@ -93,8 +95,6 @@ local function PostUpdateClassIcon(element, cur, max, diff, event)
 				end
 			end
 		end
-
-		element:UpdateTexture()
 	end
 end
 
