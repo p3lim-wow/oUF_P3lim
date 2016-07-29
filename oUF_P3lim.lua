@@ -416,7 +416,7 @@ local UnitSpecific = {
 	end,
 	arena = function(self)
 		self:SetSize(126, 19)
-		self:Tag(self.Name, '[raidcolor][name]')
+		self:Tag(self.Name, '[raidcolor][arenaspec]')
 		self:Tag(self.HealthValue, '[p3lim:perhp<|cff0090ff%|r]')
 		self.Health:SetHeight(17)
 	end
@@ -608,72 +608,5 @@ oUF:Factory(function(self)
 			boss:SetPoint('TOP', _G['oUF_P3limBoss' .. index - 1], 'BOTTOM', 0, -6)
 			arena:SetPoint('TOP', _G['oUF_P3limArena' .. index - 1], 'BOTTOM', 0, -6)
 		end
-	end
-end)
-
-local preparationFrames = {}
-for index = 1, 5 do
-	local Frame = CreateFrame('Frame', 'oUF_P3limArenaPreparation' .. index, UIParent)
-	Frame:SetSize(126, 19)
-	Frame:SetBackdrop(BACKDROP)
-	Frame:SetBackdropColor(0, 0, 0)
-	Frame:Hide()
-
-	local Health = Frame:CreateTexture()
-	Health:SetPoint('TOPRIGHT')
-	Health:SetPoint('TOPLEFT')
-	Health:SetHeight(17)
-	Health[textureMethod](Health, 1/6, 1/6, 2/7)
-
-	local Power = Frame:CreateTexture()
-	Power:SetPoint('BOTTOMRIGHT')
-	Power:SetPoint('BOTTOMLEFT')
-	Power:SetPoint('TOP', Health, 'BOTTOM', 0, -1)
-	Frame.Power = Power
-
-	local Spec = Frame:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
-	Spec:SetPoint('LEFT', Health, 2, 0)
-	Frame.Spec = Spec
-
-	preparationFrames[index] = Frame
-end
-
-local PreparationHandler = CreateFrame('Frame')
-PreparationHandler:RegisterEvent('PLAYER_LOGIN')
-PreparationHandler:RegisterEvent('ARENA_OPPONENT_UPDATE')
-PreparationHandler:RegisterEvent('ARENA_PREP_OPPONENT_SPECIALIZATIONS')
-PreparationHandler:SetScript('OnEvent', function(self, event)
-	if(event == 'PLAYER_LOGIN') then
-		for index = 1, 5 do
-			if(index == 1) then
-				preparationFrames[index]:SetPoint('TOP', oUF_P3limRaid or Minimap, 'BOTTOM', 0, -20)
-			else
-				preparationFrames[index]:SetPoint('TOP', preparationFrames[index - 1], 'BOTTOM', 0, -6)
-			end
-		end
-	elseif(event == 'ARENA_OPPONENT_UPDATE') then
-		for index = 1, 5 do
-			preparationFrames[index]:Hide()
-		end
-
-		return
-	end
-
-	for index = 1, GetNumArenaOpponentSpecs() do
-		local Frame = preparationFrames[index]
-
-		local specID, gender = GetArenaOpponentSpec(index)
-		if(specID and specID > 0) then
-			local _, name, _, _, _, _, class = GetSpecializationInfoByID(specID, gender)
-			local color = RAID_CLASS_COLORS[class]
-
-			Frame.Spec:SetFormattedText('|c%s%s|r', color.colorStr, name)
-			Frame.Power[textureMethod](Frame.Power, color.r, color.g, color.b)
-		else
-			Frame.Spec:SetText('Unknown')
-			Frame.Power[textureMethod](Frame.Power, 1, 1, 1)
-		end
-
-		Frame:Show()
 	end
 end)
