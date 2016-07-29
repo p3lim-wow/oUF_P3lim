@@ -2,7 +2,7 @@ package-as: oUF_P3lim
 
 externals:
     embeds/oUF:
-        url: git://github.com/haste/oUF.git
+        url: git://github.com/p3lim-wow/oUF.git
     embeds/oUF_MovableFrames:
         url: git://github.com/haste/oUF_MovableFrames.git
     embeds/oUF_Experience:
