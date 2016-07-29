@@ -11,10 +11,8 @@ embeds\oUF\oUF.xml
 embeds\oUF_MovableFrames\movable.lua
 embeds\oUF_Experience\oUF_Experience.lua
 
-elements\tags.lua
+tags.lua
 elements\burningembers.lua
 elements\demonicfury.lua
-
 Fonts.xml
-
 oUF_P3lim.lua
