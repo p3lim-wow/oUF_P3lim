@@ -1,3 +1,19 @@
+### Changes in 70000.24-Release:
+
+- Added: Support for new class power icons introduced in Legion
+- Added: Totem element support
+- Added: Power prediction element support
+- Added: Fallback font for non-latin languages
+- Added: Highlight for buffs on target that can be stolen or removed
+- Added: New tooltip for the experience bar
+- Changed: Update Interface version
+- Changed: Sort raid/party by role (tank > healer > damager)
+- Changed: Increased the max buffs on the target to 27 (lines up nicely)
+- Fixed: Target name appearing behind portrait
+- Fixed: Words wrapping incorrectly (still)
+- Fixed: Various issues concerning API changes in Legion
+- Removed: Unsupported class power icons
+
 ### Changes in 60100.23-Release:
 
 - Changed: Update Interface version
