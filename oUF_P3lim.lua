@@ -251,7 +251,7 @@ local UnitSpecific = {
 			mainBar = PowerPrediction
 		}
 
-		local Experience = CreateFrame('StatusBar', nil, self)
+		local Experience = CreateFrame('StatusBar', nil, self, 'AnimatedStatusBarTemplate')
 		Experience:SetPoint('BOTTOM', 0, -20)
 		Experience:SetSize(230, 6)
 		Experience:SetStatusBarTexture(TEXTURE)
