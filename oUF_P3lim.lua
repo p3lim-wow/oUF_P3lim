@@ -164,7 +164,7 @@ end
 local function PostCreateAura(element, button)
 	button:SetBackdrop(BACKDROP)
 	button:SetBackdropColor(0, 0, 0)
-	button.cd:SetReverse()
+	button.cd:SetReverse(true)
 	button.cd:SetHideCountdownNumbers(true)
 	button.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 	button.icon:SetDrawLayer('ARTWORK')
@@ -313,6 +313,7 @@ local UnitSpecific = {
 
 			local Cooldown = CreateFrame('Cooldown', nil, Totem, 'CooldownFrameTemplate')
 			Cooldown:SetAllPoints()
+			Cooldown:SetReverse(true)
 			Totem.Cooldown = Cooldown
 
 			Totems[index] = Totem
