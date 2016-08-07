@@ -1,20 +1,19 @@
 package-as: oUF_P3lim
 
 externals:
-    embeds/oUF:
-        url: git://github.com/p3lim-wow/oUF.git
-    embeds/oUF_MovableFrames:
-        url: git://github.com/haste/oUF_MovableFrames.git
+    embeds/oUF: git://github.com/p3lim-wow/oUF.git
+    embeds/oUF_MovableFrames: git://github.com/haste/oUF_MovableFrames.git
     embeds/oUF_Experience:
         url: git://github.com/p3lim-wow/oUF_Experience.git
         tag: latest
+
+tools-used:
+  - ouf-experience
 
 manual-changelog:
     filename: CHANGELOG.md
     markup-type: markdown
 
 ignore:
-    - .gitmodules
     - README.md
     - CONTRIBUTING.md
-    - embeds/oUF/utils
