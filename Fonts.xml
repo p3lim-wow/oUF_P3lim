@@ -1,7 +1,7 @@
 <Ui xmlns='http://www.blizzard.com/wow/ui/'>
 	<FontFamily name='SempliceNormal' virtual='true'>
 		<Member alphabet='roman'>
-			<Font font='Interface\AddOns\oUF_P3lim\semplice.ttf' height='8' outline='NORMAL' monochrome='true'/>
+			<Font font='Interface\AddOns\oUF_P3lim\assets\semplice.ttf' height='8' outline='NORMAL' monochrome='true'/>
 		</Member>
 		<Member alphabet='korean'>
 			<Font font='Fonts\2002.ttf' height='11' outline='NORMAL' monochrome='true'/>

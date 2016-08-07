@@ -10,7 +10,7 @@ local BACKDROP = {
 }
 
 local GLOW = {
-	edgeFile = [[Interface\AddOns\oUF_P3lim\glow]], edgeSize = 3
+	edgeFile = [[Interface\AddOns\oUF_P3lim\assets\glow]], edgeSize = 3
 }
 
 local function PostUpdatePower(element, unit, cur, max)

@@ -17,6 +17,6 @@ embeds\oUF_Experience\oUF_Experience.lua
 ..\oUF_Experience\oUF_Experience.lua
 #@end-do-not-package@
 
-tags.lua
+Tags.lua
 Fonts.xml
 oUF_P3lim.lua
