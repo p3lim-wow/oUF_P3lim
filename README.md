@@ -1,7 +1,7 @@
 # oUF P3lim
 
 This is an addon for the popular MMORPG "World of Warcraft".  
-It can be downloaded at [Curse](http://curse.com/addons/wow/ouf-p3lim) or at [WoWInterface](http://wowinterface.com/downloads/info8455).
+It can be downloaded at [Curse](//mods.curse.com/addons/wow/ouf-p3lim) or at [WoWInterface](http://wowinterface.com/downloads/info8455).
 
 ## Description
 
@@ -15,8 +15,8 @@ It has the following features:
 - Minimalistic layout.
 - Supports most roles and playstyles, although designed around damage/tanking.
 - Completely stand-alone, oUF is embedded.
-- [oUF Experience](https://github.com/p3lim-wow/oUF_Experience/wiki) is embedded.
-- [oUF MovableFrames](https://github.com/haste/oUF_MovableFrames) is embedded (type `/pmf` to move).
+- [oUF Experience](//github.com/p3lim-wow/oUF_Experience/wiki) is embedded.
+- [oUF MovableFrames](//github.com/haste/oUF_MovableFrames) is embedded (type `/pmf` to move).
 
 The following units are supported:
 
@@ -43,8 +43,8 @@ Totems are also supported (not only for shamans).
 ## Feedback
 
 If you have a question, please use the comments section on Curse/WoWInterface.  
-If you would like to report a bug, please follow [this link](https://github.com/p3lim-wow/oUF_P3lim/blob/master/CONTRIBUTING.md) to get started.
+If you would like to report a bug, please follow [this link](//github.com/p3lim-wow/oUF_P3lim/issues?q=) to get started.
 
 ## Legal
 
-Please see the [LICENSE](https://github.com/p3lim-wow/oUF_P3lim/blob/master/LICENSE.txt) file.
+Please see the [LICENSE](//github.com/p3lim-wow/oUF_P3lim/blob/master/LICENSE.txt) file.
