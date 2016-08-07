@@ -18,4 +18,3 @@ manual-changelog:
 
 ignore:
     - README.md
-    - CONTRIBUTING.md
