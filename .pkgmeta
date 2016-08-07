@@ -3,18 +3,18 @@ package-as: oUF_P3lim
 enable-nolib-creation: no
 
 externals:
-    embeds/oUF: git://github.com/p3lim-wow/oUF.git
-    embeds/oUF_MovableFrames: git://github.com/haste/oUF_MovableFrames.git
-    embeds/oUF_Experience:
-        url: git://github.com/p3lim-wow/oUF_Experience.git
-        tag: latest
+  embeds/oUF: git://github.com/p3lim-wow/oUF.git
+  embeds/oUF_MovableFrames: git://github.com/haste/oUF_MovableFrames.git
+  embeds/oUF_Experience:
+    url: git://github.com/p3lim-wow/oUF_Experience.git
+    tag: latest
 
 tools-used:
   - ouf-experience
 
 manual-changelog:
-    filename: CHANGELOG.md
-    markup-type: markdown
+  filename: CHANGELOG.md
+  markup-type: markdown
 
 ignore:
-    - README.md
+  - README.md
