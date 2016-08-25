@@ -1,3 +1,8 @@
+### Changes in 70000.25-Release:
+
+- Changed: Using animated status bar for the Experience element
+- Fixed: Cooldown spirals
+
 ### Changes in 70000.24-Release:
 
 - Added: Support for new class power icons introduced in Legion
