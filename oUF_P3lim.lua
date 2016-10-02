@@ -503,7 +503,7 @@ local function Shared(self, unit)
 		self.Castbar = Castbar
 
 		local Spark = Castbar:CreateTexture(nil, 'OVERLAY')
-		Spark:SetSize(2, 20)
+		Spark:SetSize(2, self:GetHeight() - 2)
 		Spark:SetColorTexture(1, 1, 1)
 		Castbar.Spark = Spark
 
