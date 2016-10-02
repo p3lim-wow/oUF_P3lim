@@ -236,8 +236,7 @@ local UnitSpecific = {
 		PowerValue:SetPoint('LEFT', self.Health, 2, 0)
 		PowerValue:SetPoint('RIGHT', PetHealth, 'LEFT', -2, 0)
 		PowerValue:SetWordWrap(false)
-
-		self:Tag(PowerValue, '[p3lim:ptype][p3lim:curpp]|r[ |cff0090ff>p3lim:altpp<%|r][ : >p3lim:cast]')
+		self:Tag(PowerValue, '[powercolor][p3lim:curpp]|r[ |cff0090ff>p3lim:altpp<%|r][ : >p3lim:cast]')
 
 		local PowerPrediction = CreateFrame('StatusBar', nil, self.Power)
 		PowerPrediction:SetPoint('RIGHT', self.Power:GetStatusBarTexture())

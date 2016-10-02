@@ -51,7 +51,6 @@ local events = {
 	targethp = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH',
 	curpp = 'UNIT_POWER_FREQUENT UNIT_MAXPOWER',
 	altpp = 'UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_DISPLAYPOWER',
-	ptype = 'UNIT_DISPLAYPOWER',
 	leader = 'PARTY_LEADER_CHANGED',
 	cast = 'UNIT_SPELLCAST_START UNIT_SPELLCAST_STOP UNIT_SPELLCAST_CHANNEL_START UNIT_SPELLCAST_CHANNEL_STOP',
 	name = 'UNIT_SPELLCAST_START UNIT_SPELLCAST_STOP UNIT_SPELLCAST_CHANNEL_START UNIT_SPELLCAST_CHANNEL_STOP UNIT_NAME_UPDATE UNIT_REACTION UNIT_FACTION UNIT_CLASSIFICATION_CHANGED',
@@ -126,10 +125,6 @@ for tag, func in next, {
 		if(UnitPowerType(unit) ~= 0 and cur ~= max) then
 			return floor(cur / max * 100)
 		end
-	end,
-	ptype = function(unit)
-		local _, type = UnitPowerType(unit)
-		return Hex(_COLORS.power[type] or _COLORS.power.MANA)
 	end,
 	leader = function(unit)
 		return UnitIsGroupLeader(unit) and '|cffffff00!|r'
