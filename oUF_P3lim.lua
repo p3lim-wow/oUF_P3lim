@@ -14,24 +14,25 @@ local GLOW = {
 }
 
 local function PostUpdatePower(element, unit, cur, max)
-	local parent = element.__owner
-	local height = max ~= 0 and 20 or 22
-	parent.Health:SetHeight(height)
-	parent.Portrait.scrollFrame:SetHeight(height)
-	parent.Portrait.scrollChild:SetHeight(height)
+	local shouldShow = max ~= 0
+	element.__owner.Health:SetHeight(shouldShow and 20 or 22)
+	element:SetShown(shouldShow)
 end
 
-local function PostUpdateHealth(element, unit, cur, max)
-	local ScrollFrame = element.__owner.Portrait.scrollFrame
-
-	if(element.disconnected) then
-		cur, max = 0, 1
+local function UpdateHealth(self, event, unit)
+	if(not unit or self.unit ~= unit) then
+		return
 	end
 
-	-- XXX: this is broken in legion beta
-	local offset = -(element:GetWidth() * (1 - cur / max))
-	ScrollFrame:SetPoint('LEFT', offset, 0)
-	ScrollFrame:SetHorizontalScroll(offset)
+	local element = self.Health
+	element:SetShown(UnitIsConnected(unit))
+
+	if(element:IsShown()) then
+		local cur = UnitHealth(unit)
+		local max = UnitHealthMax(unit)
+		element:SetMinMaxValues(0, max)
+		element:SetValue(max - cur)
+	end
 end
 
 local function PostUpdatePortrait(element, unit)
@@ -169,6 +170,7 @@ local function PostCreateAura(element, button)
 	button.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 	button.icon:SetDrawLayer('ARTWORK')
 
+	-- We create a parent for aura strings so that they appear over the cooldown widget
 	local StringParent = CreateFrame('Frame', nil, button)
 	StringParent:SetFrameLevel(20)
 
@@ -438,14 +440,17 @@ local function Shared(self, unit)
 
 	local Health = CreateFrame('StatusBar', nil, self)
 	Health:SetStatusBarTexture(TEXTURE)
-	Health:SetStatusBarColor(1/6, 1/6, 2/7)
+	Health:SetStatusBarColor(1/3, 1/3, 1/3)
+	Health:SetReverseFill(true)
+	Health.Override = UpdateHealth
 	Health.frequentUpdates = true
 	self.Health = Health
 
-	local HealthBG = Health:CreateTexture(nil, 'BORDER')
-	HealthBG:SetAllPoints()
-	HealthBG:SetColorTexture(1/3, 1/3, 1/3)
+	local HealthBG = self:CreateTexture(nil, 'BORDER')
+	HealthBG:SetAllPoints(Health)
+	HealthBG:SetColorTexture(1/6, 1/6, 2/7)
 
+	-- We create a parent for strings so that they appear above everything else
 	local StringParent = CreateFrame('Frame', nil, self)
 	StringParent:SetFrameLevel(20)
 	self.StringParent = StringParent
@@ -475,22 +480,12 @@ local function Shared(self, unit)
 		Power.bg = PowerBG
 
 		if(unit ~= 'arena') then
-			local ScrollFrame = CreateFrame('ScrollFrame', nil, Health)
-			ScrollFrame:SetPoint('LEFT')
-			ScrollFrame:SetSize(230, 20)
-
-			local ScrollChild = CreateFrame('Frame')
-			ScrollChild:SetSize(ScrollFrame:GetSize())
-			ScrollFrame:SetScrollChild(ScrollChild)
-
-			local Portrait = CreateFrame('PlayerModel', nil, ScrollChild)
-			Portrait:SetAllPoints()
-			Portrait.scrollChild = ScrollChild
-			Portrait.scrollFrame = ScrollFrame
+			local Portrait = CreateFrame('PlayerModel', nil, self)
+			Portrait:SetAllPoints(Health)
+			Portrait:SetFrameLevel(Health:GetFrameLevel() - 1)
 			Portrait.PostUpdate = PostUpdatePortrait
 			self.Portrait = Portrait
 
-			Health.PostUpdate = PostUpdateHealth
 			Health:SetHeight(20)
 			self:SetHeight(22)
 		end
@@ -507,7 +502,7 @@ local function Shared(self, unit)
 		Spark:SetColorTexture(1, 1, 1)
 		Castbar.Spark = Spark
 
-		local RaidIcon = Health:CreateTexture(nil, 'OVERLAY')
+		local RaidIcon = StringParent:CreateTexture(nil, 'OVERLAY')
 		RaidIcon:SetPoint('TOP', self, 0, 8)
 		RaidIcon:SetSize(16, 16)
 		self.RaidIcon = RaidIcon
@@ -517,8 +512,8 @@ local function Shared(self, unit)
 	end
 
 	if(unit == 'focus' or unit == 'targettarget' or unit == 'boss') then
-		local Name = Health:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
-		Name:SetPoint('LEFT', 2, 0)
+		local Name = StringParent:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
+		Name:SetPoint('LEFT', Health, 2, 0)
 		Name:SetPoint('RIGHT', HealthValue, 'LEFT')
 		Name:SetWordWrap(false)
 		self:Tag(Name, '[p3lim:color][name]')
@@ -533,14 +528,14 @@ local function Shared(self, unit)
 	end
 
 	if(unit == 'party' or unit == 'raid' or unit == 'arena') then
-		local Name = self.Health:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
-		Name:SetPoint('LEFT', 3, 0)
+		local Name = StringParent:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
+		Name:SetPoint('LEFT', Health, 3, 0)
 		Name:SetPoint('RIGHT', HealthValue, 'LEFT')
 		Name:SetWordWrap(false)
 		self.Name = Name
 
-		local Resurrect = Health:CreateTexture(nil, 'OVERLAY')
-		Resurrect:SetPoint('CENTER', 0, -1)
+		local Resurrect = StringParent:CreateTexture(nil, 'OVERLAY')
+		Resurrect:SetPoint('CENTER', self)
 		Resurrect:SetSize(16, 16)
 		self.ResurrectIcon = Resurrect
 	end
