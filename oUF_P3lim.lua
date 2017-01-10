@@ -106,8 +106,6 @@ local function UpdateClassIconTexture(element)
 			r, g, b = 0, 4/5, 3/5
 		elseif(playerClass == 'WARLOCK') then
 			r, g, b = 2/3, 1/3, 2/3
-		elseif(playerClass == 'PRIEST') then -- WoD only
-			r, g, b = 2/3, 1/4, 2/3
 		elseif(playerClass == 'PALADIN') then
 			r, g, b = 1, 1, 2/5
 		elseif(playerClass == 'MAGE') then
