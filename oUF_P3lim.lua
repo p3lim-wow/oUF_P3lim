@@ -79,7 +79,7 @@ local function PostUpdateClassIcon(element, cur, max, diff, powerType, event)
 				ClassIcon:SetWidth(35)
 			end
 
-			if(max == 8) then
+			if(max == 10) then
 				-- Rogue anticipation
 				if(index == 6) then
 					ClassIcon:ClearAllPoints()
