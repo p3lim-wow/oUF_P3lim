@@ -273,7 +273,7 @@ local UnitSpecific = {
 		ClassIcons.UpdateTexture = UpdateClassIconTexture
 		ClassIcons.PostUpdate = PostUpdateClassIcon
 
-		for index = 1, 8 do
+		for index = 1, 10 do
 			local ClassIcon = CreateFrame('Frame', nil, self)
 			ClassIcon:SetHeight(6)
 			ClassIcon:SetBackdrop(BACKDROP)
