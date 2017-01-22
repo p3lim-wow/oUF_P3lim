@@ -160,6 +160,15 @@ local function UpdateAura(self, elapsed)
 	end
 end
 
+local function OnAuraEnter(self)
+	if(not self:IsVisible()) then
+		return
+	end
+
+	GameTooltip:SetOwner(self, 'ANCHOR_TOPLEFT')
+	self:UpdateTooltip()
+end
+
 local function PostCreateAura(element, button)
 	button:SetBackdrop(BACKDROP)
 	button:SetBackdropColor(0, 0, 0)
@@ -167,6 +176,7 @@ local function PostCreateAura(element, button)
 	button.cd:SetHideCountdownNumbers(true)
 	button.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 	button.icon:SetDrawLayer('ARTWORK')
+	button:SetScript('OnEnter', OnAuraEnter)
 
 	-- We create a parent for aura strings so that they appear over the cooldown widget
 	local StringParent = CreateFrame('Frame', nil, button)
