@@ -6,6 +6,7 @@
 ## SavedVariables: oUF_P3limDB
 ## X-SavedVariables: oUF_P3limDB
 ## X-SlashCmdList: /pmf
+## X-oUF: oUF_P3lim
 
 embeds\oUF\oUF.xml
 embeds\oUF_MovableFrames\movable.lua
