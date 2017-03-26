@@ -1,3 +1,12 @@
+### Changes in 70100.26-Release:
+
+- Changed: Update Interface version
+- Changed: Auto-adjust the castbar spark to the frame height
+- Fixed: Portrait cropping issues
+- Fixed: Not showing all 10 combo points for rogues with the Anticipation talent
+- Fixed: Aura tooltip being covered by the cursor
+- Removed: Leftover Warlords of Draenor compatibility code
+
 ### Changes in 70000.25-Release:
 
 - Changed: Using animated status bar for the Experience element
