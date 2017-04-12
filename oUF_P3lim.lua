@@ -19,6 +19,32 @@ local function PostUpdatePower(element, unit, cur, max)
 	element:SetShown(shouldShow)
 end
 
+local function UpdateGroupPower(self, event, unit)
+	if(unit ~= self.unit) then
+		return
+	end
+
+	local element = self.Power
+	local visibility
+
+	if(UnitIsConnected(unit) and not UnitHasVehicleUI(unit)) then
+		local role = UnitGroupRolesAssigned(unit)
+		visibility = role == 'HEALER' and UnitPowerType(unit) == SPELL_POWER_MANA
+	end
+
+	if(visibility) then
+		element:SetMinMaxValues(0, UnitPowerMax(unit, SPELL_POWER_MANA))
+		element:SetValue(UnitPower(unit, SPELL_POWER_MANA))
+	end
+
+	if(element.visibility ~= visibility) then
+		element:SetShown(visibility)
+		element.visibility = visibility
+
+		self.Health:SetHeight(visibility and 20 or 22)
+	end
+end
+
 local function UpdateHealth(self, event, unit)
 	if(not unit or self.unit ~= unit) then
 		return
@@ -415,6 +441,12 @@ local UnitSpecific = {
 		self.Debuffs:SetSize(100, 16)
 		self.Debuffs.CustomFilter = FilterGroupDebuffs
 
+		local mu = self.Power.bg.multiplier
+		local r, g, b = unpack(self.colors.power.MANA)
+		self.Power:SetStatusBarColor(r, g, b)
+		self.Power.bg:SetVertexColor(r * mu, b * mu, b * mu)
+		self.Power.Override = UpdateGroupPower
+
 		self.Health:SetAllPoints()
 		self:Tag(self.Name, '[p3lim:leader][raidcolor][name]')
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:perhp<|cff0090ff%|r]')
@@ -468,25 +500,6 @@ local function Shared(self, unit)
 	self.HealthValue = HealthValue
 
 	if(unit == 'player' or unit == 'target' or unit == 'arena') then
-		local Power = CreateFrame('StatusBar', nil, self)
-		Power:SetPoint('BOTTOMRIGHT')
-		Power:SetPoint('BOTTOMLEFT')
-		Power:SetHeight(1)
-		Power:SetStatusBarTexture(TEXTURE)
-		Power.frequentUpdates = true
-		self.Power = Power
-
-		Power.colorClass = true
-		Power.colorTapping = true
-		Power.colorDisconnected = true
-		Power.colorReaction = true
-
-		local PowerBG = Power:CreateTexture(nil, 'BORDER')
-		PowerBG:SetAllPoints()
-		PowerBG:SetTexture(TEXTURE)
-		PowerBG.multiplier = 1/3
-		Power.bg = PowerBG
-
 		if(unit ~= 'arena') then
 			local Portrait = CreateFrame('PlayerModel', nil, self)
 			Portrait:SetAllPoints(Health)
@@ -525,14 +538,35 @@ local function Shared(self, unit)
 		Name:SetPoint('RIGHT', HealthValue, 'LEFT')
 		Name:SetWordWrap(false)
 		self:Tag(Name, '[p3lim:color][name]')
-	elseif(unit ~= 'arena') then
-		local Threat = CreateFrame('Frame', nil, self)
-		Threat:SetPoint('TOPRIGHT', 3, 3)
-		Threat:SetPoint('BOTTOMLEFT', -3, -3)
-		Threat:SetFrameStrata('LOW')
-		Threat:SetBackdrop(GLOW)
-		Threat.Override = UpdateThreat
-		self.Threat = Threat
+	else
+		local Power = CreateFrame('StatusBar', nil, self)
+		Power:SetPoint('BOTTOMRIGHT')
+		Power:SetPoint('BOTTOMLEFT')
+		Power:SetHeight(1)
+		Power:SetStatusBarTexture(TEXTURE)
+		Power.frequentUpdates = true
+		self.Power = Power
+
+		Power.colorClass = true
+		Power.colorTapping = true
+		Power.colorDisconnected = true
+		Power.colorReaction = true
+
+		local PowerBG = Power:CreateTexture(nil, 'BORDER')
+		PowerBG:SetAllPoints()
+		PowerBG:SetTexture(TEXTURE)
+		PowerBG.multiplier = 1/3
+		Power.bg = PowerBG
+
+		if(unit ~= 'arena') then
+			local Threat = CreateFrame('Frame', nil, self)
+			Threat:SetPoint('TOPRIGHT', 3, 3)
+			Threat:SetPoint('BOTTOMLEFT', -3, -3)
+			Threat:SetFrameStrata('LOW')
+			Threat:SetBackdrop(GLOW)
+			Threat.Override = UpdateThreat
+			self.Threat = Threat
+		end
 	end
 
 	if(unit == 'party' or unit == 'raid' or unit == 'arena') then
