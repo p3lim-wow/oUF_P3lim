@@ -160,18 +160,21 @@ local function UpdateThreat(self, event, unit)
 end
 
 local function UpdateExperienceTooltip(self)
-	if(not (UnitLevel('player') == MAX_PLAYER_LEVEL and IsWatchingHonorAsXP())) then
-		local cur = UnitXP('player')
-		local max = UnitXPMax('player')
-		local per = math.floor(cur / max * 100 + 0.5)
-		local rested = math.floor((GetXPExhaustion() or 0) / max * 100 + 0.5)
+	local honor = UnitLevel('player') == MAX_PLAYER_LEVEL and IsWatchingHonorAsXP()
 
-		GameTooltip:SetOwner(self, 'ANCHOR_NONE')
-		GameTooltip:SetPoint('BOTTOMLEFT', self, 'TOPLEFT')
-		GameTooltip:SetText(string.format('%s / %s (%s%%)', BreakUpLargeNumbers(cur), BreakUpLargeNumbers(max), per))
-		GameTooltip:AddLine(string.format('%.1f bars, %s%% rested', cur / max * 20, rested))
-		GameTooltip:Show()
-	end
+	local bars = honor and 5 or 20
+	local cur = (honor and UnitHonor or UnitXP)('player')
+	local max = (honor and UnitHonorMax or UnitXPMax)('player')
+	local per = math.floor(cur / max * 100 + 0.5)
+
+	local rested = (honor and GetHonorExhaustion or GetXPExhaustion)() or 0
+	rested = math.floor(rested / max * 100 + 0.5)
+
+	GameTooltip:SetOwner(self, 'ANCHOR_NONE')
+	GameTooltip:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -5)
+	GameTooltip:SetText(string.format('%s / %s (%s%%)', BreakUpLargeNumbers(cur), BreakUpLargeNumbers(max), per))
+	GameTooltip:AddLine(string.format('%.1f bars, %s%% rested', cur / max * bars, rested))
+	GameTooltip:Show()
 end
 
 local function UpdateAura(self, elapsed)
