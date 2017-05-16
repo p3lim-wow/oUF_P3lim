@@ -13,7 +13,7 @@ local GLOW = {
 	edgeFile = [[Interface\AddOns\oUF_P3lim\assets\glow]], edgeSize = 3
 }
 
-local function PostUpdatePower(element, unit, cur, max)
+local function PostUpdatePower(element, unit, cur, min, max)
 	local shouldShow = max ~= 0
 	element.__owner.Health:SetHeight(shouldShow and 20 or 22)
 	element:SetShown(shouldShow)
@@ -68,7 +68,7 @@ end
 
 local function PostUpdateCast(element, unit)
 	local Spark = element.Spark
-	if(not element.interrupt and UnitCanAttack('player', unit)) then
+	if(not element.notInterruptible and UnitCanAttack('player', unit)) then
 		Spark:SetColorTexture(1, 0, 0)
 	else
 		Spark:SetColorTexture(1, 1, 1)
@@ -89,43 +89,37 @@ local function PostUpdateTotem(element)
 	end
 end
 
-local function PostUpdateClassIcon(element, cur, max, diff, powerType, event)
-	if(diff or event == 'ClassPowerEnable') then
-		element:UpdateTexture()
-
+local function PostUpdateClassPower(element, cur, max, mod, diff, powerType)
+	if(diff) then
 		for index = 1, max do
-			local ClassIcon = element[index]
+			local Bar = element[index]
 			if(max == 3) then
-				ClassIcon:SetWidth(74)
+				Bar:SetWidth(74)
 			elseif(max == 4) then
-				ClassIcon:SetWidth(index > 2 and 55 or 54)
-			elseif(max == 5 or max == 8) then
-				ClassIcon:SetWidth(index == 5 and 42 or 43)
+				Bar:SetWidth(index > 2 and 55 or 54)
+			elseif(max == 5 or max == 10) then
+				Bar:SetWidth((index == 1 or index == 6) and 42 or 43)
 			elseif(max == 6) then
-				ClassIcon:SetWidth(35)
+				Bar:SetWidth(35)
 			end
 
 			if(max == 10) then
-				-- Rogue anticipation
+				-- Rogue anticipation talent, align >5 on top of the first 5
 				if(index == 6) then
-					ClassIcon:ClearAllPoints()
-					ClassIcon:SetPoint('LEFT', element[index - 5])
-				end
-
-				if(index > 5) then
-					ClassIcon.Texture:SetColorTexture(1, 0, 0)
+					Bar:ClearAllPoints()
+					Bar:SetPoint('LEFT', element[index - 5])
 				end
 			else
 				if(index > 1) then
-					ClassIcon:ClearAllPoints()
-					ClassIcon:SetPoint('LEFT', element[index - 1], 'RIGHT', 4, 0)
+					Bar:ClearAllPoints()
+					Bar:SetPoint('LEFT', element[index - 1], 'RIGHT', 4, 0)
 				end
 			end
 		end
 	end
 end
 
-local function UpdateClassIconTexture(element)
+local function UpdateClassPowerColor(element)
 	local r, g, b = 1, 1, 2/5
 	if(not UnitHasVehicleUI('player')) then
 		if(playerClass == 'MONK') then
@@ -139,9 +133,14 @@ local function UpdateClassIconTexture(element)
 		end
 	end
 
-	for index = 1, 8 do
-		local ClassIcon = element[index]
-		ClassIcon.Texture:SetColorTexture(r, g, b)
+	for index = 1, #element do
+		local Bar = element[index]
+		if(playerClass == 'ROGUE' and element.__max == 10 and index > 5) then
+			r, g, b = 1, 0, 0
+		end
+
+		Bar:SetStatusBarColor(r, g, b)
+		Bar.bg:SetColorTexture(r * 1/3, g * 1/3, b * 1/3)
 	end
 end
 
@@ -153,9 +152,9 @@ local function UpdateThreat(self, event, unit)
 	local situation = UnitThreatSituation(unit)
 	if(situation and situation > 0) then
 		local r, g, b = GetThreatStatusColor(situation)
-		self.Threat:SetBackdropBorderColor(r, g, b, 1)
+		self.ThreatIndicator:SetBackdropBorderColor(r, g, b, 1)
 	else
-		self.Threat:SetBackdropBorderColor(0, 0, 0, 0)
+		self.ThreatIndicator:SetBackdropBorderColor(0, 0, 0, 0)
 	end
 end
 
@@ -308,29 +307,34 @@ local UnitSpecific = {
 		ExperienceBG:SetAllPoints()
 		ExperienceBG:SetColorTexture(1/3, 1/3, 1/3)
 
-		local ClassIcons = {}
-		ClassIcons.UpdateTexture = UpdateClassIconTexture
-		ClassIcons.PostUpdate = PostUpdateClassIcon
+		local ClassPower = {}
+		ClassPower.UpdateColor = UpdateClassPowerColor
+		ClassPower.PostUpdate = PostUpdateClassPower
 
-		for index = 1, 10 do
-			local ClassIcon = CreateFrame('Frame', nil, self)
-			ClassIcon:SetHeight(6)
-			ClassIcon:SetBackdrop(BACKDROP)
-			ClassIcon:SetBackdropColor(0, 0, 0)
+		for index = 1, 11 do -- have to create an extra to force __max to be different from UnitPowerMax
+			local Bar = CreateFrame('StatusBar', nil, self)
+			Bar:SetHeight(6)
+			Bar:SetStatusBarTexture(TEXTURE)
+			Bar:SetBackdrop(BACKDROP)
+			Bar:SetBackdropColor(0, 0, 0)
 
 			if(index > 1) then
-				ClassIcon:SetPoint('LEFT', ClassIcons[index - 1], 'RIGHT', 4, 0)
+				Bar:SetPoint('LEFT', ClassPower[index - 1], 'RIGHT', 4, 0)
 			else
-				ClassIcon:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -4)
+				Bar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, -4)
 			end
 
-			local Texture = ClassIcon:CreateTexture(nil, 'BORDER', nil, index > 5 and 1 or 0)
-			Texture:SetAllPoints()
-			ClassIcon.Texture = Texture
+			if(index > 5) then
+				Bar:SetFrameLevel(Bar:GetFrameLevel() + 1)
+			end
 
-			ClassIcons[index] = ClassIcon
+			local Background = Bar:CreateTexture(nil, 'BORDER')
+			Background:SetAllPoints()
+			Bar.bg = Background
+
+			ClassPower[index] = Bar
 		end
-		self.ClassIcons = ClassIcons
+		self.ClassPower = ClassPower
 
 		local Totems = {}
 		Totems.PostUpdate = PostUpdateTotem
@@ -364,7 +368,6 @@ local UnitSpecific = {
 				local Rune = CreateFrame('StatusBar', nil, self)
 				Rune:SetSize(35, 6)
 				Rune:SetStatusBarTexture(TEXTURE)
-				Rune:SetStatusBarColor(1/2, 1/3, 2/3)
 				Rune:SetBackdrop(BACKDROP)
 				Rune:SetBackdropColor(0, 0, 0)
 
@@ -376,7 +379,9 @@ local UnitSpecific = {
 
 				local RuneBG = Rune:CreateTexture(nil, 'BORDER')
 				RuneBG:SetAllPoints()
-				RuneBG:SetColorTexture(1/6, 1/9, 1/3)
+				RuneBG:SetTexture(TEXTURE)
+				RuneBG.multiplier = 1/3
+				Rune.bg = RuneBG
 
 				Runes[index] = Rune
 			end
@@ -429,13 +434,13 @@ local UnitSpecific = {
 		local ReadyCheck = self:CreateTexture()
 		ReadyCheck:SetPoint('LEFT', self, 'RIGHT', 3, 0)
 		ReadyCheck:SetSize(14, 14)
-		self.ReadyCheck = ReadyCheck
+		self.ReadyCheckIndicator = ReadyCheck
 
 		local RoleIcon = self:CreateTexture(nil, 'OVERLAY')
 		RoleIcon:SetPoint('LEFT', self, 'RIGHT', 3, 0)
 		RoleIcon:SetSize(14, 14)
 		RoleIcon:SetAlpha(0)
-		self.LFDRole = RoleIcon
+		self.GroupRoleIndicator = RoleIcon
 
 		self:HookScript('OnEnter', function() RoleIcon:SetAlpha(1) end)
 		self:HookScript('OnLeave', function() RoleIcon:SetAlpha(0) end)
@@ -461,7 +466,7 @@ local UnitSpecific = {
 	end,
 	arena = function(self)
 		self:SetSize(126, 19)
-		self:Tag(self.Name, '[raidcolor][arenaspec]')
+		self:Tag(self.Name, '[raidcolor][name]')
 		self:Tag(self.HealthValue, '[p3lim:perhp<|cff0090ff%|r]')
 		self.Health:SetHeight(17)
 	end
@@ -473,6 +478,7 @@ local function Shared(self, unit)
 
 	self.colors.power.MANA = {0, 144/255, 1}
 	self.colors.power.INSANITY = {4/5, 2/5, 1}
+	self.colors.power.RUNES = {1/2, 1/3, 2/3}
 
 	self:RegisterForClicks('AnyUp')
 	self:SetScript('OnEnter', UnitFrame_OnEnter)
@@ -526,10 +532,10 @@ local function Shared(self, unit)
 		Spark:SetColorTexture(1, 1, 1)
 		Castbar.Spark = Spark
 
-		local RaidIcon = StringParent:CreateTexture(nil, 'OVERLAY')
-		RaidIcon:SetPoint('TOP', self, 0, 8)
-		RaidIcon:SetSize(16, 16)
-		self.RaidIcon = RaidIcon
+		local RaidTarget = StringParent:CreateTexture(nil, 'OVERLAY')
+		RaidTarget:SetPoint('TOP', self, 0, 8)
+		RaidTarget:SetSize(16, 16)
+		self.RaidTargetIndicator = RaidTarget
 
 		Health:SetPoint('TOPRIGHT')
 		Health:SetPoint('TOPLEFT')
@@ -568,7 +574,7 @@ local function Shared(self, unit)
 			Threat:SetFrameStrata('LOW')
 			Threat:SetBackdrop(GLOW)
 			Threat.Override = UpdateThreat
-			self.Threat = Threat
+			self.ThreatIndicator = Threat
 		end
 	end
 
@@ -582,7 +588,7 @@ local function Shared(self, unit)
 		local Resurrect = StringParent:CreateTexture(nil, 'OVERLAY')
 		Resurrect:SetPoint('CENTER', self)
 		Resurrect:SetSize(16, 16)
-		self.ResurrectIcon = Resurrect
+		self.ResurrectIndicator = Resurrect
 	end
 
 	if(unit ~= 'boss' and unit ~= 'arena') then
