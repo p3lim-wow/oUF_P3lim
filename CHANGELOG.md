@@ -1,3 +1,11 @@
+### Changes in 70200.27-Release:
+
+- Added: Mana bars on group healers
+- Added: Honor support to the Experience bar tooltip
+- Changed: Update Interface version
+- Changed: Updated to latest version of oUF
+- Changed: Experience bar tooltip anchor
+
 ### Changes in 70100.26-Release:
 
 - Changed: Update Interface version
