@@ -89,7 +89,7 @@ local function PostUpdateTotem(element)
 	end
 end
 
-local function PostUpdateClassPower(element, cur, max, mod, diff, powerType)
+local function PostUpdateClassPower(element, cur, max, diff, powerType)
 	if(diff) then
 		for index = 1, max do
 			local Bar = element[index]
