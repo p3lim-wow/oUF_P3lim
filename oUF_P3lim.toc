@@ -1,4 +1,4 @@
-## Interface: 70100
+## Interface: 70200
 ## Author: p3lim
 ## Version: @project-version@
 ## Title: oUF P3lim
