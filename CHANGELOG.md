@@ -1,3 +1,7 @@
+### Changes in 70200.28-Release:
+
+- Fixed: Error from ClassPower callback
+
 ### Changes in 70200.27-Release:
 
 - Added: Mana bars on group healers
