@@ -1,3 +1,9 @@
+### Changes in 70300.29-Release:
+
+- Changed: Update Interface version
+- Changed: Height of raid/party frames
+- Fixed: Boss and Arena frames not always showing
+
 ### Changes in 70200.28-Release:
 
 - Fixed: Error from ClassPower callback
