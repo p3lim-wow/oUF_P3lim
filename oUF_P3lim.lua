@@ -25,7 +25,7 @@ local function UpdateGroupPower(self, event, unit)
 	end
 
 	local element = self.Power
-	local visibility
+	local visibility = false
 
 	if(UnitIsConnected(unit) and not UnitHasVehicleUI(unit)) then
 		local role = UnitGroupRolesAssigned(unit)
@@ -37,12 +37,7 @@ local function UpdateGroupPower(self, event, unit)
 		element:SetValue(UnitPower(unit, SPELL_POWER_MANA))
 	end
 
-	if(element.visibility ~= visibility) then
-		element:SetShown(visibility)
-		element.visibility = visibility
-
-		self.Health:SetHeight(visibility and 20 or 22)
-	end
+	element:SetShown(visibility)
 end
 
 local function UpdateHealth(self, event, unit)
@@ -431,6 +426,18 @@ local UnitSpecific = {
 		self:SetWidth(230)
 	end,
 	party = function(self)
+		local Name = self.StringParent:CreateFontString(nil, 'OVERLAY', 'oUF_P3limFont')
+		Name:SetPoint('LEFT', self.Health, 3, 0)
+		Name:SetPoint('RIGHT', self.HealthValue, 'LEFT')
+		Name:SetJustifyH('LEFT')
+		Name:SetWordWrap(false)
+		self:Tag(Name, '[p3lim:leader][raidcolor][name]')
+
+		local Resurrect = self.StringParent:CreateTexture(nil, 'OVERLAY')
+		Resurrect:SetPoint('CENTER', self)
+		Resurrect:SetSize(16, 16)
+		self.ResurrectIndicator = Resurrect
+
 		local ReadyCheck = self:CreateTexture()
 		ReadyCheck:SetPoint('LEFT', self, 'RIGHT', 3, 0)
 		ReadyCheck:SetSize(14, 14)
@@ -455,20 +462,23 @@ local UnitSpecific = {
 		self.Power.bg:SetVertexColor(r * mu, b * mu, b * mu)
 		self.Power.Override = UpdateGroupPower
 
-		self.Health:SetAllPoints()
-		self:Tag(self.Name, '[p3lim:leader][raidcolor][name]')
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:perhp<|cff0090ff%|r]')
 	end,
 	boss = function(self)
-		self:SetSize(126, 19)
-		self.Health:SetAllPoints()
 		self:Tag(self.HealthValue, '[p3lim:perhp<|cff0090ff%|r]')
 	end,
 	arena = function(self)
-		self:SetSize(126, 19)
-		self:Tag(self.Name, '[raidcolor][name]')
+		local Name = self.StringParent:CreateFontString(nil, 'OVERLAY', 'oUF_P3limFont')
+		Name:SetPoint('LEFT', self.Health, 3, 0)
+		Name:SetPoint('RIGHT', self.HealthValue, 'LEFT')
+		Name:SetJustifyH('LEFT')
+		Name:SetWordWrap(false)
+		self:Tag(Name, '[raidcolor][name]')
+
+		self.Power.Override = UpdateGroupPower
+		self.Power.OverrideArenaPreparation = UpdatePowerPrep
+		self.Health.OverrideArenaPreparation = UpdateHealthPrep
 		self:Tag(self.HealthValue, '[p3lim:perhp<|cff0090ff%|r]')
-		self.Health:SetHeight(17)
 	end
 }
 UnitSpecific.raid = UnitSpecific.party
@@ -508,17 +518,14 @@ local function Shared(self, unit)
 	HealthValue:SetPoint('RIGHT', Health, -2, 0)
 	self.HealthValue = HealthValue
 
-	if(unit == 'player' or unit == 'target' or unit == 'arena') then
-		if(unit ~= 'arena') then
-			local Portrait = CreateFrame('PlayerModel', nil, self)
-			Portrait:SetAllPoints(Health)
-			Portrait:SetFrameLevel(Health:GetFrameLevel() - 1)
-			Portrait.PostUpdate = PostUpdatePortrait
-			self.Portrait = Portrait
+	if(unit == 'player' or unit == 'target') then
+		self:SetHeight(22)
 
-			Health:SetHeight(20)
-			self:SetHeight(22)
-		end
+		local Portrait = CreateFrame('PlayerModel', nil, self)
+		Portrait:SetAllPoints(Health)
+		Portrait:SetFrameLevel(Health:GetFrameLevel() - 1)
+		Portrait.PostUpdate = PostUpdatePortrait
+		self.Portrait = Portrait
 
 		local Castbar = CreateFrame('StatusBar', nil, self)
 		Castbar:SetAllPoints(Health)
@@ -532,13 +539,11 @@ local function Shared(self, unit)
 		Spark:SetColorTexture(1, 1, 1)
 		Castbar.Spark = Spark
 
-		local RaidTarget = StringParent:CreateTexture(nil, 'OVERLAY')
-		RaidTarget:SetPoint('TOP', self, 0, 8)
-		RaidTarget:SetSize(16, 16)
-		self.RaidTargetIndicator = RaidTarget
-
+		Health:SetHeight(20)
 		Health:SetPoint('TOPRIGHT')
 		Health:SetPoint('TOPLEFT')
+	else
+		Health:SetAllPoints()
 	end
 
 	if(unit == 'focus' or unit == 'targettarget' or unit == 'boss') then
@@ -567,6 +572,11 @@ local function Shared(self, unit)
 		PowerBG.multiplier = 1/3
 		Power.bg = PowerBG
 
+		local RaidTarget = StringParent:CreateTexture(nil, 'OVERLAY')
+		RaidTarget:SetPoint('TOP', self, 0, 8)
+		RaidTarget:SetSize(16, 16)
+		self.RaidTargetIndicator = RaidTarget
+
 		if(unit ~= 'arena') then
 			local Threat = CreateFrame('Frame', nil, self)
 			Threat:SetPoint('TOPRIGHT', 3, 3)
@@ -576,19 +586,6 @@ local function Shared(self, unit)
 			Threat.Override = UpdateThreat
 			self.ThreatIndicator = Threat
 		end
-	end
-
-	if(unit == 'party' or unit == 'raid' or unit == 'arena') then
-		local Name = StringParent:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
-		Name:SetPoint('LEFT', Health, 3, 0)
-		Name:SetPoint('RIGHT', HealthValue, 'LEFT')
-		Name:SetWordWrap(false)
-		self.Name = Name
-
-		local Resurrect = StringParent:CreateTexture(nil, 'OVERLAY')
-		Resurrect:SetPoint('CENTER', self)
-		Resurrect:SetSize(16, 16)
-		self.ResurrectIndicator = Resurrect
 	end
 
 	if(unit ~= 'boss' and unit ~= 'arena') then
@@ -612,9 +609,10 @@ local function Shared(self, unit)
 			Debuffs.size = 19
 			Debuffs:SetSize(230, 19)
 
-			Health:SetAllPoints()
 			self:SetSize(161, 19)
 		end
+	else
+		self:SetSize(126, 19)
 	end
 
 	if(UnitSpecific[unit]) then
