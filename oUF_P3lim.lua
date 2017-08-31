@@ -648,8 +648,8 @@ oUF:Factory(function(self)
 		local arena = self:Spawn('arena' .. index)
 
 		if(index == 1) then
-			boss:SetPoint('TOP', oUF_P3limRaid or Minimap, 'BOTTOM', 0, -20)
-			arena:SetPoint('TOP', oUF_P3limRaid or Minimap, 'BOTTOM', 0, -20)
+			boss:SetPoint('TOP', oUF_P3limRaid, 'BOTTOM', 0, -20)
+			arena:SetPoint('TOP', oUF_P3limRaid, 'BOTTOM', 0, -20)
 		else
 			boss:SetPoint('TOP', _G['oUF_P3limBoss' .. index - 1], 'BOTTOM', 0, -6)
 			arena:SetPoint('TOP', _G['oUF_P3limArena' .. index - 1], 'BOTTOM', 0, -6)
