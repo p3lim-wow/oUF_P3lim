@@ -638,7 +638,7 @@ oUF:Factory(function(self)
 		'groupBy', 'ASSIGNEDROLE',
 		'groupingOrder', 'TANK,HEALER,DAMAGER',
 		'oUF-initialConfigFunction', [[
-			self:SetHeight(16)
+			self:SetHeight(19)
 			self:SetWidth(126)
 		]]
 	):SetPoint('TOP', Minimap, 'BOTTOM', 0, -10)
