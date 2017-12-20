@@ -130,7 +130,7 @@ local function UpdateClassPowerColor(element)
 
 	for index = 1, #element do
 		local Bar = element[index]
-		if(playerClass == 'ROGUE' and element.__max == 10 and index > 5) then
+		if(playerClass == 'ROGUE' and UnitPowerMax('player', SPELL_POWER_COMBO_POINTS) == 10 and index > 5) then
 			r, g, b = 1, 0, 0
 		end
 
