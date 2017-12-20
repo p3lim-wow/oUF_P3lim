@@ -9,6 +9,9 @@
 ## X-SlashCmdList: /pmf
 ## X-oUF: oUF_P3lim
 
+## X-Curse-Project-ID: 20335
+## X-WoWI-ID: 8455
+
 embeds\oUF\oUF.xml
 embeds\oUF_MovableFrames\movable.lua
 embeds\oUF_Experience\oUF_Experience.lua
