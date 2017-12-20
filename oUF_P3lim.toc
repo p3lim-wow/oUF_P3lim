@@ -3,6 +3,7 @@
 ## Version: @project-version@
 ## Title: oUF P3lim
 ## Notes: Minimalistic layout
+## RequiredDeps: PixelFont
 ## SavedVariables: oUF_P3limDB
 ## X-SavedVariables: oUF_P3limDB
 ## X-SlashCmdList: /pmf

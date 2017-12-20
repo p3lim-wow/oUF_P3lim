@@ -190,9 +190,9 @@ local function PostCreateAura(element, button)
 	button.count:SetParent(StringParent)
 	button.count:ClearAllPoints()
 	button.count:SetPoint('BOTTOMRIGHT', button, 2, 1)
-	button.count:SetFontObject('SempliceNormal')
+	button.count:SetFontObject('PixelFontNormal')
 
-	local Duration = StringParent:CreateFontString(nil, 'OVERLAY', 'SempliceNormal')
+	local Duration = StringParent:CreateFontString(nil, 'OVERLAY', 'PixelFontNormal')
 	Duration:SetPoint('TOPLEFT', button, 0, -1)
 	button.Duration = Duration
 
@@ -242,14 +242,16 @@ end
 
 local UnitSpecific = {
 	player = function(self)
-		local PetHealth = self.StringParent:CreateFontString(nil, 'OVERLAY', 'SempliceRight')
+		local PetHealth = self.StringParent:CreateFontString(nil, 'OVERLAY', 'PixelFontNormal')
 		PetHealth:SetPoint('RIGHT', self.HealthValue, 'LEFT', -2, 0)
+		PetHealth:SetJustifyH('RIGHT')
 		PetHealth.overrideUnit = 'pet'
 		self:CustomTag(PetHealth, '[p3lim:pethp< :]')
 
-		local PowerValue = self.StringParent:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
+		local PowerValue = self.StringParent:CreateFontString(nil, 'OVERLAY', 'PixelFontNormal')
 		PowerValue:SetPoint('LEFT', self.Health, 2, 0)
 		PowerValue:SetPoint('RIGHT', PetHealth, 'LEFT', -2, 0)
+		PowerValue:SetJustifyH('LEFT')
 		PowerValue:SetWordWrap(false)
 		self:Tag(PowerValue, '[powercolor][p3lim:curpp]|r[ |cff0090ff>p3lim:altpp<%|r][ : >p3lim:cast]')
 
@@ -372,9 +374,10 @@ local UnitSpecific = {
 		self:SetWidth(230)
 	end,
 	target = function(self)
-		local Name = self.StringParent:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
+		local Name = self.StringParent:CreateFontString(nil, 'OVERLAY', 'PixelFontNormal')
 		Name:SetPoint('LEFT', self.Health, 2, 0)
 		Name:SetPoint('RIGHT', self.HealthValue, 'LEFT')
+		Name:SetJustifyH('LEFT')
 		Name:SetWordWrap(false)
 		self:Tag(Name, '[p3lim:name]')
 
@@ -407,7 +410,7 @@ local UnitSpecific = {
 		self:SetWidth(230)
 	end,
 	party = function(self)
-		local Name = self.StringParent:CreateFontString(nil, 'OVERLAY', 'oUF_P3limFont')
+		local Name = self.StringParent:CreateFontString(nil, 'OVERLAY', 'PixelFontNormal')
 		Name:SetPoint('LEFT', self.Health, 3, 0)
 		Name:SetPoint('RIGHT', self.HealthValue, 'LEFT')
 		Name:SetJustifyH('LEFT')
@@ -449,7 +452,7 @@ local UnitSpecific = {
 		self:Tag(self.HealthValue, '[p3lim:perhp<|cff0090ff%|r]')
 	end,
 	arena = function(self)
-		local Name = self.StringParent:CreateFontString(nil, 'OVERLAY', 'oUF_P3limFont')
+		local Name = self.StringParent:CreateFontString(nil, 'OVERLAY', 'PixelFontNormal')
 		Name:SetPoint('LEFT', self.Health, 3, 0)
 		Name:SetPoint('RIGHT', self.HealthValue, 'LEFT')
 		Name:SetJustifyH('LEFT')
@@ -495,8 +498,9 @@ local function Shared(self, unit)
 	StringParent:SetFrameLevel(20)
 	self.StringParent = StringParent
 
-	local HealthValue = StringParent:CreateFontString(nil, 'OVERLAY', 'SempliceRight')
+	local HealthValue = StringParent:CreateFontString(nil, 'OVERLAY', 'PixelFontNormal')
 	HealthValue:SetPoint('RIGHT', Health, -2, 0)
+	HealthValue:SetJustifyH('RIGHT')
 	self.HealthValue = HealthValue
 
 	if(unit == 'player' or unit == 'target') then
@@ -528,9 +532,10 @@ local function Shared(self, unit)
 	end
 
 	if(unit == 'focus' or unit == 'targettarget' or unit == 'boss') then
-		local Name = StringParent:CreateFontString(nil, 'OVERLAY', 'SempliceLeft')
+		local Name = StringParent:CreateFontString(nil, 'OVERLAY', 'PixelFontNormal')
 		Name:SetPoint('LEFT', Health, 2, 0)
 		Name:SetPoint('RIGHT', HealthValue, 'LEFT')
+		Name:SetJustifyH('LEFT')
 		Name:SetWordWrap(false)
 		self:Tag(Name, '[p3lim:color][name]')
 	else

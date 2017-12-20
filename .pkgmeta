@@ -8,6 +8,10 @@ externals:
   embeds/oUF_Experience:
     url: git://github.com/p3lim-wow/oUF_Experience.git
     tag: latest
+  embeds/PixelFont: git://github.com/p3lim-wow/PixelFont.git
+
+move-folders:
+  oUF_P3lim/embeds/PixelFont: PixelFont
 
 tools-used:
   - ouf
