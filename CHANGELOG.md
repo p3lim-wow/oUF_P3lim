@@ -1,3 +1,9 @@
+### Changes in 70300.30-Release:
+
+- Added: Font library (PixelFont)
+- Fixed: Combo points not being colored correctly
+- Changed: Updated for oUF_Experience changes
+
 ### Changes in 70300.29-Release:
 
 - Changed: Update Interface version
