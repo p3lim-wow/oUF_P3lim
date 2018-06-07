@@ -3,12 +3,18 @@ package-as: oUF_P3lim
 enable-nolib-creation: no
 
 externals:
-  embeds/oUF: git://github.com/oUF-wow/oUF.git
-  embeds/oUF_MovableFrames: git://github.com/haste/oUF_MovableFrames.git
-  embeds/oUF_Experience:
-    url: git://github.com/p3lim-wow/oUF_Experience.git
+  embeds/oUF:
+    url: git://github.com/oUF-wow/oUF
     tag: latest
-  embeds/PixelFont: git://github.com/p3lim-wow/PixelFont.git
+  embeds/oUF_MovableFrames:
+    url: git://github.com/oUF-wow/oUF_MovableFrames
+    tag: latest
+  embeds/oUF_Experience:
+    url: git://github.com/p3lim-wow/oUF_Experience
+    tag: latest
+  embeds/PixelFont:
+    url: git://github.com/p3lim-wow/PixelFont
+    tag: latest
 
 move-folders:
   oUF_P3lim/embeds/PixelFont: PixelFont
@@ -23,3 +29,4 @@ manual-changelog:
 
 ignore:
   - README.md
+  - utils

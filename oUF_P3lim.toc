@@ -16,12 +16,6 @@ embeds\oUF\oUF.xml
 embeds\oUF_MovableFrames\movable.lua
 embeds\oUF_Experience\oUF_Experience.lua
 
-#@do-not-package@
-..\oUF\oUF.xml
-..\oUF_MovableFrames\movable.lua
-..\oUF_Experience\oUF_Experience.lua
-#@end-do-not-package@
-
 Tags.lua
 Fonts.xml
 oUF_P3lim.lua
