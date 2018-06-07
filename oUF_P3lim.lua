@@ -139,6 +139,21 @@ local function UpdateClassPowerColor(element)
 	end
 end
 
+local function UpdateExperienceColor(element, isHonor)
+	local colors = element.__owner.colors
+	if(isHonor) then
+		colors = colors.honor
+		element:SetStatusBarColor(unpack(colors[1]))
+		element:SetAnimatedTextureColors(unpack(colors[1]))
+		element.Rested:SetStatusBarColor(unpack(colors[2]))
+	else
+		colors = colors.experience
+		element:SetStatusBarColor(unpack(colors[1]))
+		element:SetAnimatedTextureColors(unpack(colors[1]))
+		element.Rested:SetStatusBarColor(unpack(colors[2]))
+	end
+end
+
 local function UpdateThreat(self, event, unit)
 	if(unit ~= self.unit) then
 		return
@@ -272,6 +287,7 @@ local UnitSpecific = {
 		Experience:SetSize(230, 6)
 		Experience:SetStatusBarTexture(TEXTURE)
 		Experience:EnableMouse(true)
+		Experience.OverrideUpdateColor = UpdateExperienceColor
 		self.Experience = Experience
 
 		local Rested = CreateFrame('StatusBar', nil, Experience)
@@ -473,6 +489,7 @@ local function Shared(self, unit)
 	self.colors.power.MANA = {0, 144/255, 1}
 	self.colors.power.INSANITY = {4/5, 2/5, 1}
 	self.colors.power.RUNES = {1/2, 1/3, 2/3}
+	self.colors.experience[1] = {1/6, 2/3, 1/5}
 
 	self:RegisterForClicks('AnyUp')
 	self:SetScript('OnEnter', UnitFrame_OnEnter)
