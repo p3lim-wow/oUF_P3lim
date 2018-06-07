@@ -4,6 +4,8 @@ local tagMethods = tags.Methods
 local tagEvents = tags.Events
 local tagSharedEvents = tags.SharedEvents
 
+local BfA = select(4, GetBuildInfo()) >= 80000
+
 local gsub = string.gsub
 local format = string.format
 local floor = math.floor
@@ -32,8 +34,14 @@ end
 
 local function GetAuraCount(unit, id)
 	local index = 1
+	local count, spellID, _
 	repeat
-		local _, _, _, count, _, _, _, _, _, _, spellID = UnitAura(unit, index, 'HELPFUL')
+		if(BfA) then
+			_, _, count, _, _, _, _, _, _, spellID = UnitAura(unit, index, 'HELPFUL')
+		else
+			_, _, _, count, _, _, _, _, _, _, spellID = UnitAura(unit, index, 'HELPFUL')
+		end
+
 		if(spellID == id) then
 			return count
 		end
@@ -53,8 +61,8 @@ local events = {
 	altpp = 'UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_DISPLAYPOWER',
 	leader = 'PARTY_LEADER_CHANGED',
 	cast = 'UNIT_SPELLCAST_START UNIT_SPELLCAST_STOP UNIT_SPELLCAST_CHANNEL_START UNIT_SPELLCAST_CHANNEL_STOP',
-	name = 'UNIT_SPELLCAST_START UNIT_SPELLCAST_STOP UNIT_SPELLCAST_CHANNEL_START UNIT_SPELLCAST_CHANNEL_STOP UNIT_NAME_UPDATE UNIT_REACTION UNIT_FACTION UNIT_CLASSIFICATION_CHANGED',
-	color = 'UNIT_REACTION UNIT_FACTION',
+	name = 'UNIT_SPELLCAST_START UNIT_SPELLCAST_STOP UNIT_SPELLCAST_CHANNEL_START UNIT_SPELLCAST_CHANNEL_STOP UNIT_NAME_UPDATE UNIT_FACTION UNIT_CLASSIFICATION_CHANGED',
+	color = 'UNIT_FACTION',
 	status = 'UNIT_CONNECTION UNIT_HEALTH',
 }
 

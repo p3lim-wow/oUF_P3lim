@@ -1,6 +1,7 @@
 local _, ns = ...
 local oUF = ns.oUF
 
+local BfA = select(4, GetBuildInfo()) >= 80000
 local _, playerClass = UnitClass('player')
 
 local TEXTURE = [[Interface\ChatFrame\ChatFrameBackground]]
@@ -215,7 +216,12 @@ local function PostCreateAura(element, button)
 end
 
 local function PostUpdateBuff(element, unit, button, index)
-	local _, _, _, _, _, duration, expiration, owner, canStealOrPurge = UnitAura(unit, index, button.filter)
+	local duration, expiration, owner, canStealOrPurge, _
+	if(BfA) then
+		_, _, _, _, duration, expiration, owner, canStealOrPurge = UnitAura(unit, index, button.filter)
+	else
+		_, _, _, _, _, duration, expiration, owner, canStealOrPurge = UnitAura(unit, index, button.filter)
+	end
 
 	if(duration and duration > 0) then
 		button.expiration = expiration - GetTime()
@@ -231,7 +237,12 @@ local function PostUpdateBuff(element, unit, button, index)
 end
 
 local function PostUpdateDebuff(element, unit, button, index)
-	local _, _, _, _, type, _, _, owner = UnitAura(unit, index, button.filter)
+	local type, owner, _
+	if(BfA) then
+		_, _, _, type, _, _, owner = UnitAura(unit, index, button.filter)
+	else
+		_, _, _, _, type, _, _, owner = UnitAura(unit, index, button.filter)
+	end
 
 	if(owner == 'player') then
 		local color = DebuffTypeColor[type or 'none']

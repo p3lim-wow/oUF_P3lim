@@ -17,5 +17,4 @@ embeds\oUF_MovableFrames\movable.lua
 embeds\oUF_Experience\oUF_Experience.lua
 
 Tags.lua
-Fonts.xml
 oUF_P3lim.lua
