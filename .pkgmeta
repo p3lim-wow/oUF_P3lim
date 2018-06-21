@@ -1,7 +1,5 @@
 package-as: oUF_P3lim
 
-enable-nolib-creation: no
-
 externals:
   embeds/oUF:
     url: git://github.com/oUF-wow/oUF
@@ -18,10 +16,6 @@ externals:
 
 move-folders:
   oUF_P3lim/embeds/PixelFont: PixelFont
-
-tools-used:
-  - ouf
-  - ouf-experience
 
 manual-changelog:
   filename: CHANGELOG.md
