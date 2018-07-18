@@ -12,7 +12,6 @@ externals:
     tag: latest
   embeds/PixelFont:
     url: git://github.com/p3lim-wow/PixelFont
-    tag: latest
 
 move-folders:
   oUF_P3lim/embeds/PixelFont: PixelFont
