@@ -1,3 +1,10 @@
+### Changes in 80000.31-Release:
+
+- Changed: Update Interface version
+- Changed: Using oUF tag logic for pet hp instead of our own
+- Changed: Using custom colors for Experience
+- Fixed: Compatibility with Battle for Azeroth
+
 ### Changes in 70300.30-Release:
 
 - Added: Font library (PixelFont)
