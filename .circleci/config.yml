@@ -1,0 +1,18 @@
+version: 2
+jobs:
+  release:
+    docker:
+      - image: p3lim/wow-packager:latest
+    steps:
+      - checkout
+      - run: release.sh
+workflows:
+  version: 2
+  release:
+    jobs:
+      - release:
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
