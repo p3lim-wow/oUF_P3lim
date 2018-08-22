@@ -29,12 +29,12 @@ local function UpdateGroupPower(self, event, unit)
 
 	if(UnitIsConnected(unit) and not UnitHasVehicleUI(unit)) then
 		local role = UnitGroupRolesAssigned(unit)
-		visibility = role == 'HEALER' and UnitPowerType(unit) == SPELL_POWER_MANA
+		visibility = role == 'HEALER' and UnitPowerType(unit) == Enum.PowerType.Mana
 	end
 
 	if(visibility) then
-		element:SetMinMaxValues(0, UnitPowerMax(unit, SPELL_POWER_MANA))
-		element:SetValue(UnitPower(unit, SPELL_POWER_MANA))
+		element:SetMinMaxValues(0, UnitPowerMax(unit, Enum.PowerType.Mana))
+		element:SetValue(UnitPower(unit, Enum.PowerType.Mana))
 	end
 
 	element:SetShown(visibility)
@@ -130,7 +130,7 @@ local function UpdateClassPowerColor(element)
 
 	for index = 1, #element do
 		local Bar = element[index]
-		if(playerClass == 'ROGUE' and UnitPowerMax('player', SPELL_POWER_COMBO_POINTS) == 10 and index > 5) then
+		if(playerClass == 'ROGUE' and UnitPowerMax('player', Enum.PowerType.ComboPoints) == 10 and index > 5) then
 			r, g, b = 1, 0, 0
 		end
 
