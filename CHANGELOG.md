@@ -1,3 +1,8 @@
+### Changes in 80000.32-Release:
+
+- Fixed: Healer mana not showing in party
+- Fixed: Combo points not working correctly
+
 ### Changes in 80000.31-Release:
 
 - Changed: Update Interface version
