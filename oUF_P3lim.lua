@@ -130,10 +130,6 @@ local function UpdateClassPowerColor(element)
 
 	for index = 1, #element do
 		local Bar = element[index]
-		if(playerClass == 'ROGUE' and UnitPowerMax('player', Enum.PowerType.ComboPoints) == 10 and index > 5) then
-			r, g, b = 1, 0, 0
-		end
-
 		Bar:SetStatusBarColor(r, g, b)
 		Bar.bg:SetColorTexture(r * 1/3, g * 1/3, b * 1/3)
 	end
