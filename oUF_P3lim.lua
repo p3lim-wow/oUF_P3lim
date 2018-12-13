@@ -455,6 +455,8 @@ local UnitSpecific = {
 		self.Power.bg:SetVertexColor(r * mu, b * mu, b * mu)
 		self.Power.Override = UpdateGroupPower
 
+		self.Range = {}
+
 		self:Tag(self.HealthValue, '[p3lim:status][p3lim:perhp<|cff0090ff%|r]')
 	end,
 	boss = function(self)
