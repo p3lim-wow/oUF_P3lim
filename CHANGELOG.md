@@ -1,3 +1,11 @@
+### Changes in 80100.33-Release:
+
+- Added: SummonIndicator on raid/party frames
+- Added: Range fading on raid/party frames
+- Changed: Update Interface version
+- Changed: Updated to oUF 9.0
+- Removed: Anticipation Rogue talent support
+
 ### Changes in 80000.32-Release:
 
 - Fixed: Healer mana not showing in party
