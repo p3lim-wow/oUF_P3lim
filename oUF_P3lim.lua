@@ -56,6 +56,38 @@ local function UpdateHealth(self, event, unit)
 	end
 end
 
+local function UpdateSummon(self, event)
+	local element = self.SummonIndicator
+	local icon = element.Icon
+
+	local status = C_IncomingSummon.IncomingSummonStatus(self.unit)
+	if(status == Enum.SummonStatus.None) then
+		element:Hide()
+	else
+		element:Show()
+
+		if(status == Enum.SummonStatus.Pending) then
+			icon:SetVertexColor(1, 1, 1)
+			icon:SetDesaturated(false)
+			element.tooltip = INCOMING_SUMMON_TOOLTIP_SUMMON_PENDING
+		elseif(status == Enum.SummonStatus.Accepted) then
+			icon:SetVertexColor(0, 1, 0)
+			icon:SetDesaturated(true)
+			element.tooltip = INCOMING_SUMMON_TOOLTIP_SUMMON_ACCEPTED
+		elseif(status == Enum.SummonStatus.Declined) then
+			icon:SetVertexColor(1, 0.3, 0.3)
+			icon:SetDesaturated(true)
+			element.tooltip = INCOMING_SUMMON_TOOLTIP_SUMMON_DECLINED
+		end
+	end
+end
+
+local function OnSummonEnter(self)
+	GameTooltip:SetOwner(self, 'ANCHOR_BOTTOMLEFT')
+	GameTooltip:SetText(self.tooltip)
+	GameTooltip:Show()
+end
+
 local function PostUpdatePortrait(element, unit)
 	element:SetModelAlpha(0.1)
 	element:SetDesaturation(1)
@@ -435,6 +467,19 @@ local UnitSpecific = {
 		ReadyCheck:SetPoint('LEFT', self, 'RIGHT', 3, 0)
 		ReadyCheck:SetSize(14, 14)
 		self.ReadyCheckIndicator = ReadyCheck
+
+		local Summon = CreateFrame('Frame', nil, self)
+		Summon:SetPoint('RIGHT', self, 'LEFT')
+		Summon:SetSize(32, 32)
+		Summon:SetScript('OnLeave', GameTooltip_Hide)
+		Summon:SetScript('OnEnter', OnSummonEnter)
+		Summon.Override = UpdateSummon
+		self.SummonIndicator = Summon
+
+		local SummonIcon = Summon:CreateTexture(nil, 'OVERLAY')
+		SummonIcon:SetAllPoints()
+		SummonIcon:SetAtlas('Raid-Icon-SummonPending')
+		Summon.Icon = SummonIcon
 
 		local RoleIcon = self:CreateTexture(nil, 'OVERLAY')
 		RoleIcon:SetPoint('LEFT', self, 'RIGHT', 3, 0)
