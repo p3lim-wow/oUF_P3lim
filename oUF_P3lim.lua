@@ -272,7 +272,7 @@ local function PostUpdateDebuff(element, unit, button, index)
 end
 
 local function FilterTargetDebuffs(...)
-	local _, unit, _, _, _, _, _, _, _, _, owner, _, _, id = ...
+	local _, unit, _, _, _, _, _, _, _, owner, _, _, id = ...
 	return owner == 'player' or owner == 'vehicle' or UnitIsFriend('player', unit) or not owner
 end
 
