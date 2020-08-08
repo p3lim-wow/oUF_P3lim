@@ -11,8 +11,6 @@ local gsub = string.gsub
 local format = string.format
 local floor = math.floor
 
-local DEAD_TEXTURE = [[|TInterface\RaidFrame\Raid-Icon-DebuffDisease:26|t]]
-
 local function Short(value)
 	if(value >= 1e6) then
 		return gsub(format('%.2fm', value / 1e6), '%.?0+([km])$', '%1')
@@ -56,7 +54,6 @@ local events = {
 	defhp = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH',
 	maxhp = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH',
 	perhp = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH',
-	pethp = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_PET',
 	targethp = 'UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH',
 	curpp = 'UNIT_POWER_FREQUENT UNIT_MAXPOWER',
 	altpp = 'UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_DISPLAYPOWER',
@@ -102,17 +99,6 @@ for tag, func in next, {
 		local max = UnitHealthMax(unit)
 		if(cur ~= max) then
 			return floor(cur / max * 100)
-		end
-	end,
-	pethp = function()
-		if(UnitIsUnit('pet', 'vehicle')) then return end
-
-		local cur = UnitHealth('pet')
-		local max = UnitHealthMax('pet')
-		if(cur > 0) then
-			return format('%s%d%%|r', Hex(ColorGradient(cur, max, 1, 0, 0, 1, 1, 0, 1, 1, 1)), cur / max * 100)
-		elseif(UnitIsDead('pet')) then
-			return DEAD_TEXTURE
 		end
 	end,
 	targethp = function(unit)

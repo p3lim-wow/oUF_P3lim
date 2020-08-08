@@ -9,6 +9,7 @@ local BACKDROP = {
 	insets = {top = -1, bottom = -1, left = -1, right = -1}
 }
 
+local DEAD_TEXTURE = [[|TInterface\RaidFrame\Raid-Icon-DebuffDisease:26|t ]]
 local GLOW = {
 	edgeFile = [[Interface\AddOns\oUF_P3lim\assets\glow]], edgeSize = 3
 }
@@ -290,7 +291,30 @@ local UnitSpecific = {
 		local PetHealth = self.StringParent:CreateFontString(nil, 'OVERLAY', 'PixelFontNormal')
 		PetHealth:SetPoint('RIGHT', self.HealthValue, 'LEFT', -2, 0)
 		PetHealth:SetJustifyH('RIGHT')
-		self:Tag(PetHealth, '[p3lim:pethp< :]', 'pet')
+
+		local PetHealthUpdater = CreateFrame('Frame')
+		PetHealthUpdater:RegisterUnitEvent('UNIT_HEALTH', 'pet')
+		PetHealthUpdater:RegisterUnitEvent('UNIT_MAXHEALTH', 'pet')
+		PetHealthUpdater:RegisterUnitEvent('UNIT_PET', 'player')
+		PetHealthUpdater:SetScript('OnEvent', function()
+			if(UnitIsUnit('pet', 'vehicle')) then
+				return
+			end
+
+			if(UnitIsDead('pet')) then
+				PetHealth:SetText(DEAD_TEXTURE)
+				return
+			end
+
+			local cur = UnitHealth('pet')
+			local max = UnitHealthMax('pet')
+			if(cur > 0) then
+				local color = CreateColor(oUF:ColorGradient(cur, max, 1, 0, 0, 1, 1, 0, 1, 1, 1))
+				PetHealth:SetFormattedText('%s%d%%|r ', color:GenerateHexColorMarkup(), cur / max * 100)
+			else
+				PetHealth:SetText()
+			end
+		end)
 
 		local PowerValue = self.StringParent:CreateFontString(nil, 'OVERLAY', 'PixelFontNormal')
 		PowerValue:SetPoint('LEFT', self.Health, 2, 0)
