@@ -66,7 +66,7 @@ local events = {
 
 if(WOW_9) then
 	for tag, event in next, events do
-		event = event:gsub('UNIT_HEALTH_FREQUENT', 'UNIT_HEALTH')
+		events[tag] = event:gsub('UNIT_HEALTH_FREQUENT', 'UNIT_HEALTH')
 	end
 end
 
