@@ -410,6 +410,7 @@ local UnitSpecific = {
 
 		if(playerClass == 'DEATHKNIGHT') then
 			local Runes = {}
+			Runes.sortOrder = 'asc'
 			for index = 1, 6 do
 				local Rune = CreateFrame('StatusBar', nil, self)
 				Rune:SetSize(35, 6)
