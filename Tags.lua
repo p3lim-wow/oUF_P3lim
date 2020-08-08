@@ -4,7 +4,8 @@ local tagMethods = tags.Methods
 local tagEvents = tags.Events
 local tagSharedEvents = tags.SharedEvents
 
-local BfA = select(4, GetBuildInfo()) >= 80000
+local WOW_8 = select(4, GetBuildInfo()) >= 80000
+local WOW_9 = select(4, GetBuildInfo()) >= 90000
 
 local gsub = string.gsub
 local format = string.format
@@ -36,7 +37,7 @@ local function GetAuraCount(unit, id)
 	local index = 1
 	local count, spellID, _
 	repeat
-		if(BfA) then
+		if(WOW_8) then
 			_, _, count, _, _, _, _, _, _, spellID = UnitAura(unit, index, 'HELPFUL')
 		else
 			_, _, _, count, _, _, _, _, _, _, spellID = UnitAura(unit, index, 'HELPFUL')
@@ -65,6 +66,12 @@ local events = {
 	color = 'UNIT_FACTION',
 	status = 'UNIT_CONNECTION UNIT_HEALTH',
 }
+
+if(WOW_9) then
+	for tag, event in next, events do
+		event = event:gsub('UNIT_HEALTH_FREQUENT', 'UNIT_HEALTH')
+	end
+end
 
 for tag, func in next, {
 	curhp = function(unit)
