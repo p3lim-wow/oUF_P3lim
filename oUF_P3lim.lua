@@ -174,7 +174,6 @@ local function UpdateExperienceColor(element, isHonor)
 		colors = colors.honor
 		element:SetStatusBarColor(unpack(colors[1]))
 		element:SetAnimatedTextureColors(unpack(colors[1]))
-		element.Rested:SetStatusBarColor(unpack(colors[2]))
 	else
 		colors = colors.experience
 		element:SetStatusBarColor(unpack(colors[1]))
