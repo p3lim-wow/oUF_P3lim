@@ -1,0 +1,29 @@
+name: Package and create artifact
+on:
+  push:
+    branches:
+      - master
+    tags-ignore:
+      - '**'
+
+jobs:
+  alpha:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone project
+        uses: actions/checkout@v2
+
+      - name: Package
+        uses: BigWigsMods/packager@master
+        with:
+          args: -z
+
+      - name: Get short commit sha
+        id: sha
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: oUF_P3lim-${{ steps.sha.outputs.sha_short }}
+          path: .release/
