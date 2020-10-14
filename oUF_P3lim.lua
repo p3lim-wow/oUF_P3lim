@@ -325,7 +325,7 @@ local UnitSpecific = {
 		PowerValue:SetPoint('RIGHT', PetHealth, 'LEFT', -2, 0)
 		PowerValue:SetJustifyH('LEFT')
 		PowerValue:SetWordWrap(false)
-		self:Tag(PowerValue, '[powercolor][p3lim:curpp]|r[ |cff0090ff>p3lim:altpp<%|r][ : >p3lim:cast]')
+		self:Tag(PowerValue, '[powercolor][p3lim:curpp]|r[ |cff0090ff$>p3lim:altpp<$%|r][ : $>p3lim:cast]')
 
 		local PowerPrediction = CreateFrame('StatusBar', nil, self.Power)
 		PowerPrediction:SetPoint('RIGHT', self.Power:GetStatusBarTexture())
@@ -444,7 +444,7 @@ local UnitSpecific = {
 		self.Debuffs:SetSize(230, 22)
 		self.Debuffs.PostUpdateIcon = PostUpdateBuff
 
-		self:Tag(self.HealthValue, '[p3lim:status][p3lim:maxhp][|cffff8080->p3lim:defhp<|r][ >p3lim:perhp<|cff0090ff%|r]')
+		self:Tag(self.HealthValue, '[p3lim:status][p3lim:maxhp][|cffff8080-$>p3lim:defhp<$|r][ $>p3lim:perhp<$|cff0090ff%|r]')
 		self:SetWidth(230)
 	end,
 	target = function(self)
@@ -480,7 +480,7 @@ local UnitSpecific = {
 		self.Debuffs.PostUpdateIcon = PostUpdateDebuff
 
 		self.Power.PostUpdate = PostUpdatePower
-		self:Tag(self.HealthValue, '[p3lim:status][p3lim:curhp][ >p3lim:targethp]')
+		self:Tag(self.HealthValue, '[p3lim:status][p3lim:curhp][ $>p3lim:targethp]')
 		self:SetWidth(230)
 	end,
 	party = function(self)
@@ -535,10 +535,10 @@ local UnitSpecific = {
 
 		self.Range = {}
 
-		self:Tag(self.HealthValue, '[p3lim:status][p3lim:perhp<|cff0090ff%|r]')
+		self:Tag(self.HealthValue, '[p3lim:status][p3lim:perhp<$|cff0090ff%|r]')
 	end,
 	boss = function(self)
-		self:Tag(self.HealthValue, '[p3lim:perhp<|cff0090ff%|r]')
+		self:Tag(self.HealthValue, '[p3lim:perhp<$|cff0090ff%|r]')
 	end,
 	arena = function(self)
 		local Name = self.StringParent:CreateFontString(nil, 'OVERLAY', 'PixelFontNormal')
@@ -551,7 +551,7 @@ local UnitSpecific = {
 		self.Power.Override = UpdateGroupPower
 		self.Power.OverrideArenaPreparation = UpdatePowerPrep
 		self.Health.OverrideArenaPreparation = UpdateHealthPrep
-		self:Tag(self.HealthValue, '[p3lim:perhp<|cff0090ff%|r]')
+		self:Tag(self.HealthValue, '[p3lim:perhp<$|cff0090ff%|r]')
 	end
 }
 UnitSpecific.raid = UnitSpecific.party
