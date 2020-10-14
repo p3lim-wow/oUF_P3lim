@@ -614,6 +614,7 @@ local function Shared(self, unit)
 		self.Castbar = Castbar
 
 		local Spark = Castbar:CreateTexture(nil, 'OVERLAY')
+		Spark:SetPoint('CENTER', Castbar:GetStatusBarTexture(), 'RIGHT')
 		Spark:SetSize(2, self:GetHeight() - 2)
 		Spark:SetTexture(TEXTURE)
 		Spark:SetVertexColor(1, 1, 1)
