@@ -469,8 +469,6 @@ local UnitSpecific = {
 
 		self.Castbar.PostCastStart = PostUpdateCast
 		self.Castbar.PostCastInterruptible = PostUpdateCast
-		self.Castbar.PostCastNotInterruptible = PostUpdateCast
-		self.Castbar.PostChannelStart = PostUpdateCast
 
 		self.Debuffs.size = 19.4
 		self.Debuffs['growth-y'] = 'DOWN'
