@@ -1,4 +1,9 @@
 local oUF = select(2, ...).oUF
+--@do-not-package@
+if not oUF then
+	oUF = _G.oUF
+end
+--@end-do-not-package@
 local tags = oUF.Tags
 local tagMethods = tags.Methods
 local tagEvents = tags.Events

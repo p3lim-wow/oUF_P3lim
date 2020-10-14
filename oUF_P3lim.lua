@@ -1,5 +1,10 @@
 local _, ns = ...
 local oUF = ns.oUF
+--@do-not-package@
+if not oUF then
+	oUF = _G.oUF
+end
+--@end-do-not-package@
 
 local _, playerClass = UnitClass('player')
 

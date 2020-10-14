@@ -5,6 +5,9 @@
 ## Notes: Minimalistic layout
 ## RequiredDeps: PixelFont
 ## SavedVariables: oUF_P3limDB
+#@do-not-package@
+## OptionalDeps: oUF, oUF_Experience, oUF_MovableFrames
+#@end-do-not-package@
 ## X-SavedVariables: oUF_P3limDB
 ## X-SlashCmdList: /pmf
 ## X-oUF: oUF_P3lim
