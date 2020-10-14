@@ -11,6 +11,9 @@ jobs:
       - name: Clone project
         uses: actions/checkout@v2
 
+      - name: Trim changelog
+        run: sed -ni '1p;2,/^###/{/^###/q;p;}' CHANGELOG.md
+
       - name: Package and release
         uses: BigWigsMods/packager@75faeae
     env:
