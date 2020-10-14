@@ -102,9 +102,9 @@ end
 local function PostUpdateCast(element, unit)
 	local Spark = element.Spark
 	if(not element.notInterruptible and UnitCanAttack('player', unit)) then
-		Spark:SetColorTexture(1, 0, 0)
+		Spark:SetVertexColor(1, 0, 0)
 	else
-		Spark:SetColorTexture(1, 1, 1)
+		Spark:SetVertexColor(1, 1, 1)
 	end
 end
 
@@ -615,7 +615,8 @@ local function Shared(self, unit)
 
 		local Spark = Castbar:CreateTexture(nil, 'OVERLAY')
 		Spark:SetSize(2, self:GetHeight() - 2)
-		Spark:SetColorTexture(1, 1, 1)
+		Spark:SetTexture(TEXTURE)
+		Spark:SetVertexColor(1, 1, 1)
 		Castbar.Spark = Spark
 
 		Health:SetHeight(20)
