@@ -558,8 +558,11 @@ local function Shared(self, unit)
 	unit = unit:match('^(.-)%d+') or unit
 
 	self.colors.power.MANA = {0, 144/255, 1}
-	self.colors.power.INSANITY = {4/5, 2/5, 1}
+	self.colors.power[0] = self.colors.power.MANA
 	self.colors.power.RUNES = {1/2, 1/3, 2/3}
+	self.colors.power[5] = self.colors.power.RUNES
+	self.colors.power.INSANITY = {4/5, 2/5, 1}
+	self.colors.power[13] = self.colors.power.INSANITY
 	self.colors.experience[1] = {1/6, 2/3, 1/5}
 
 	self:RegisterForClicks('AnyUp')
