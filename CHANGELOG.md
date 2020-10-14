@@ -1,3 +1,11 @@
+### Changes in 90000.34-Release:
+
+- Changed: Reversed rune order
+- Changed: Update Interface version
+- Fixed: Shadowlands compatibility
+- Fixed: Target debuffs filtering
+- Fixed: Castbar spark color
+
 ### Changes in 80100.33-Release:
 
 - Added: SummonIndicator on raid/party frames
