@@ -1,3 +1,7 @@
+### Changes in 90000.35-Release:
+
+- Fixed: Game crashing when entering a vehicle with a target selected
+
 ### Changes in 90000.34-Release:
 
 - Changed: Reversed rune order
