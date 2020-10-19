@@ -96,7 +96,7 @@ end
 
 local function PostUpdatePortrait(element, unit)
 	element:SetModelAlpha(0.1)
-	element:SetDesaturation(1)
+	-- element:SetDesaturation(1)
 end
 
 local function PostUpdateCast(element, unit)
