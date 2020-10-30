@@ -223,9 +223,7 @@ local function OnAuraEnter(self)
 end
 
 local function PostCreateAura(element, button)
-	if(BackdropTemplateMixin) then
-		Mixin(button, BackdropTemplateMixin)
-	end
+	Mixin(button, BackdropTemplateMixin)
 
 	button:SetBackdrop(BACKDROP)
 	button:SetBackdropColor(0, 0, 0)
@@ -347,7 +345,7 @@ local UnitSpecific = {
 		Experience.OverrideUpdateColor = UpdateExperienceColor
 		self.Experience = Experience
 
-		local Rested = CreateFrame('StatusBar', nil, Experience, BackdropTemplateMixin and 'BackdropTemplate')
+		local Rested = CreateFrame('StatusBar', nil, Experience, 'BackdropTemplate')
 		Rested:SetAllPoints()
 		Rested:SetStatusBarTexture(TEXTURE)
 		Rested:SetBackdrop(BACKDROP)
@@ -363,7 +361,7 @@ local UnitSpecific = {
 		ClassPower.PostUpdate = PostUpdateClassPower
 
 		for index = 1, 11 do -- have to create an extra to force __max to be different from UnitPowerMax
-			local Bar = CreateFrame('StatusBar', nil, self, BackdropTemplateMixin and 'BackdropTemplate')
+			local Bar = CreateFrame('StatusBar', nil, self, 'BackdropTemplate')
 			Bar:SetHeight(6)
 			Bar:SetStatusBarTexture(TEXTURE)
 			Bar:SetBackdrop(BACKDROP)
@@ -417,7 +415,7 @@ local UnitSpecific = {
 			local Runes = {}
 			Runes.sortOrder = 'asc'
 			for index = 1, 6 do
-				local Rune = CreateFrame('StatusBar', nil, self)
+				local Rune = CreateFrame('StatusBar', nil, self, 'BackdropTemplate')
 				Rune:SetSize(35, 6)
 				Rune:SetStatusBarTexture(TEXTURE)
 				Rune:SetBackdrop(BACKDROP)
@@ -569,10 +567,7 @@ local function Shared(self, unit)
 	self:SetScript('OnEnter', UnitFrame_OnEnter)
 	self:SetScript('OnLeave', UnitFrame_OnLeave)
 
-	if(BackdropTemplateMixin) then
-		Mixin(self, BackdropTemplateMixin)
-	end
-
+	Mixin(self, BackdropTemplateMixin)
 	self:SetBackdrop(BACKDROP)
 	self:SetBackdropColor(0, 0, 0)
 
@@ -661,7 +656,7 @@ local function Shared(self, unit)
 		self.RaidTargetIndicator = RaidTarget
 
 		if(unit ~= 'arena') then
-			local Threat = CreateFrame('Frame', nil, self, BackdropTemplateMixin and 'BackdropTemplate')
+			local Threat = CreateFrame('Frame', nil, self, 'BackdropTemplate')
 			Threat:SetPoint('TOPRIGHT', 3, 3)
 			Threat:SetPoint('BOTTOMLEFT', -3, -3)
 			Threat:SetFrameStrata('LOW')
