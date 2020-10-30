@@ -1,3 +1,8 @@
+### Changes in 90000.36-Release:
+
+- Fixed: Backdrop error for Death Knights
+- Removed: Compatibility for older game versions
+
 ### Changes in 90000.35-Release:
 
 - Fixed: Game crashing when entering a vehicle with a target selected
